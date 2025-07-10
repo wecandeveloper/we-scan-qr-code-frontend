@@ -1,0 +1,23 @@
+import { Fragment } from "react";
+import HomeHero from "../Components/HomePage/HomeHero/HomeHero";
+import CategorySection from "../Components/HomePage/CategorySection/CategorySection";
+import FilteredProducts from "../Components/HomePage/FilteredProducts/FilteredProducts";
+import PromoSlider from "../Components/HomePage/PromoSlider/PromoSlider";
+import BottomHero from "../Components/HomePage/BottomHero/BottomHero";
+
+export default function Home() {
+    return (
+        <Fragment>
+            <HomeHero/>
+            <CategorySection/>
+            <FilteredProducts
+                title="Featured Products"
+            />
+            <PromoSlider/>
+            <FilteredProducts
+                title="Offer Products"
+            />
+            <BottomHero/>
+        </Fragment>
+    )
+}

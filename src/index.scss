@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #fff5e4;
+  color: #470531;
+  font-family: "Oswald", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Color Code
+
+// red Color
+// hexa: #eb3424
+// rgb: 235, 52, 36
+
+// Cream Color
+// hexa: #f4eac5
+// rgb: 244, 234, 197
+
+// #dbd2b1
+
+
+
+html {
+  /* scroll-snap-type: y mandatory; */
+  scroll-behavior: smooth;
+  scroll-snap-type: none;
+}
+
+section{
+  height: 100%;
+  scroll-snap-align: center;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  list-style: none;
+  text-decoration: none;
+}
+
+a {
+  text-decoration: none;
+  transition: .5s;
+  color: inherit;
+}
+
+a:hover {
+  transition: .5s;
+}
+
+.main-title {
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.main-description {
+  margin-top: 20px;
+  max-width: 700px;
+}
+
+.section-container {
+  padding-left: 300px;
+  padding-right: 300px;
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  border: 2px solid #f4eac5;
+  border-radius: 10px;
+  transition: .3s;
+  cursor: pointer;
+
+  &:hover {
+    background: #f4eac5;
+    transition: .3s;
+  }
+}
+
+@media(max-width: 2000px) {
+  .section-container {
+    padding-left: 200px;
+    padding-right: 200px;
+  } 
+}
+
+@media(max-width: 1800px) {
+  .section-container {
+    padding-left: 150px;
+    padding-right: 150px;
+  } 
+}
+
+@media(max-width: 1600px) {
+  .section-container {
+    padding-left: 100px;
+    padding-right: 100px;
+  } 
+}
+
+@media(max-width: 900px) {
+  .section-container {
+    padding-left: 50px;
+    padding-right: 50px;
+  } 
+}
+
+@media(max-width: 600px) {
+  .section-container {
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  } 
+}

@@ -1,0 +1,32 @@
+footer {
+    background: #ff9494;
+    padding: 30px 50px;
+    width: 100%;
+
+    .footer-section {
+        display: flex;
+        flex-direction: row;
+        gap: 50px;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+
+        .social-links {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            transition: .3s all;
+
+            svg {
+                font-size: 25px;
+                transition: .3s all;
+                cursor: pointer;
+
+                &:hover {
+                    color: #eb3424;
+                }
+            }
+        }
+    }
+}

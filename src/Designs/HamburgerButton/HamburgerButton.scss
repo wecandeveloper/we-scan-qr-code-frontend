@@ -1,0 +1,47 @@
+.hamburger-btn {
+  position: relative;
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  
+  &:hover {
+    // background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .bar {
+    position: absolute;
+    height: 3px;
+    width: 25px;
+    background: #eb3424;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .top {
+    top: 35%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  .middle {
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+  }
+
+  .bottom {
+    left: 50%;
+    transform: translateX(-50%) translateY(50%);
+    width: 12.5px;
+    margin-left: 2.5px;
+    top: 38px;
+    transition: all .5s;
+  }
+
+  .bottom.hide {
+    display: none;
+    transition: all .5s;
+  }
+}
