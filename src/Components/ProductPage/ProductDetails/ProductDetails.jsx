@@ -12,10 +12,13 @@ import { FaArrowRightLong, FaMinus, FaPlus } from "react-icons/fa6";
 import { FiShoppingCart } from "react-icons/fi";
 
 import image from "../../../Assets/Banners/ice-cream-promo.jpg"
+import { useAuth } from "../../../Context/AuthContext";
+import { startCreateCart } from "../../../Actions/cartActions";
 
 export default function ProductDetails() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const { user } = useAuth()
     const { productName } = useParams(); // you can display it if needed
     const location = useLocation();
     const { productId } = location.state || {};
@@ -36,7 +39,7 @@ export default function ProductDetails() {
         }
     };
 
-    console.log("product Name", productName)
+    // console.log("product Name", productName)
     console.log("product", product)
 
     useEffect(() => {
@@ -91,6 +94,83 @@ export default function ProductDetails() {
             thumbnails.mount();
         }
     }, [product]);
+
+    const handleAddToCart = (product) => {
+        const lineItem = {
+            productId: product._id,
+            quantity: 1,
+        };
+
+        if (user?.token) {
+            // Logged-in user — backend handles everything
+            const payload = {
+                lineItems: [lineItem],
+            };
+            dispatch(startCreateCart(payload));
+        } else {
+            // Guest user
+            const guestCart = JSON.parse(localStorage.getItem("guestCart")) || {
+                lineItems: [],
+                totalAmount: 0,
+            };
+
+            // Check if product already exists
+            const existingItemIndex = guestCart.lineItems.findIndex(
+                (item) => item.productId._id === product._id
+            );
+
+            const itemQty = guestCart?.lineItems[existingItemIndex]?.quantity || 0
+            // console.log(itemQty)
+
+            if(product.stock <= 0) {
+                alert(`${product.name} Product is Out of Stock`)
+            } else if(qty > product.stock) {
+                alert(`Only ${product.stock} unit(s) of ${product.name} available in stock`)
+            } else {
+                const itemPrice =
+                    product.offerPrice && product.offerPrice > 0
+                        ? product.offerPrice
+                        : product.price;
+
+                if (existingItemIndex !== -1 && (itemQty + qty) > product.stock) {
+                    alert(`Only ${product.stock} unit(s) of ${product.name} available in stock, Decrease the Quantity`);
+                } else if (existingItemIndex !== -1) {
+                    guestCart.lineItems[existingItemIndex].quantity += qty;
+                    alert(`${product.name} Product is already in the cart, Updated the quantity by ${itemQty + qty}`);
+                } else {
+                    // Add new product
+                    guestCart.lineItems.push({
+                        productId: {
+                            _id: product._id,
+                            name: product.name,
+                            categoryId: {
+                                name: product.categoryId.name
+                            },
+                            price: product.price,
+                            offerPrice: product.offerPrice,
+                            images: product.images || "",
+                            discountPercentage: product.discountPercentage || 0,
+                            stock: product.stock || 0,
+                            isAvailable: product.isAvailable || true,
+                        },
+                        price: itemPrice,
+                        quantity: qty,
+                    });
+                    alert("Item added to cart!");
+                }
+
+                // Recalculate totalAmount
+                guestCart.totalAmount = guestCart.lineItems.reduce((acc, item) => {
+                    const quantity = parseFloat(item.quantity) || 0;
+                    const price = parseFloat(item.price) || 0;
+                    return acc + (quantity * price);
+                }, 0);
+
+                console.log(guestCart)
+                localStorage.setItem("guestCart", JSON.stringify(guestCart));
+            }
+        }
+    };
 
     if(!product) {
         return null
@@ -199,6 +279,10 @@ export default function ProductDetails() {
                             whileTap={{ scale: 0.9 }}
                             whileHover={{ scale: 1 }}
                             transition={{ type: "spring", stiffness: 300 }}
+                            onClick={(e) => {
+                                e.stopPropagation(); 
+                                handleAddToCart(product);
+                            }}
                             className="add-to-cart">
                             <span>Add to Cart</span>
                             <FiShoppingCart/>

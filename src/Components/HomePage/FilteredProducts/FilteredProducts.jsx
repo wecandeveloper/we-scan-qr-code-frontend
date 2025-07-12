@@ -1,15 +1,20 @@
 import "./FilteredProducts.scss"
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { RiShareFill } from "react-icons/ri";
 import { BsCartPlusFill } from "react-icons/bs";
 import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import slugify from "slugify";
+import { startCreateCart } from "../../../Actions/cartActions";
+import { useAuth } from "../../../Context/AuthContext";
 
 export default function FilteredProducts({title}) {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    const { user } = useAuth()
 
     const products = useSelector((state) => {
         return state.products.data;
@@ -31,6 +36,81 @@ export default function FilteredProducts({title}) {
         return filteredArray;
     };
 
+    const handleAddToCart = (product) => {
+        const lineItem = {
+            productId: product._id,
+            quantity: 1,
+        };
+
+        if (user?.token) {
+            // Logged-in user — backend handles everything
+            const payload = {
+                lineItems: [lineItem],
+            };
+            dispatch(startCreateCart(payload));
+        } else {
+            // Guest user
+            const guestCart = JSON.parse(localStorage.getItem("guestCart")) || {
+                lineItems: [],
+                totalAmount: 0,
+            };
+
+            // Check if product already exists
+            const existingItemIndex = guestCart.lineItems.findIndex(
+                (item) => item.productId._id === product._id
+            );
+            const itemQty = guestCart?.lineItems[existingItemIndex]?.quantity || 0
+
+            const newProduct = products.find(ele => ele._id === product._id)
+
+            if(newProduct.stock <= 0) {
+                alert(`${product.name} Product is Out of Stock`)
+            } else {
+                const itemPrice =
+                    product.offerPrice && product.offerPrice > 0
+                        ? product.offerPrice
+                        : product.price;
+
+                if (existingItemIndex !== -1 && (itemQty + 1) > product.stock) {
+                    alert(`Only ${product.stock} unit(s) of ${product.name} available in stock, Decrease the Quantity`);
+                } else if (existingItemIndex !== -1) {
+                    guestCart.lineItems[existingItemIndex].quantity += 1;
+                    alert(`${product.name} Product is already in the cart, Updated the quantity by ${itemQty + 1}`);
+                } else {
+                    // Add new product
+                    guestCart.lineItems.push({
+                        productId: {
+                            _id: product._id,
+                            name: product.name,
+                            categoryId: {
+                                name: product.categoryId.name
+                            },
+                            price: product.price,
+                            offerPrice: product.offerPrice,
+                            images: product.images || "",
+                            discountPercentage: product.discountPercentage || 0,
+                            stock: product.stock || 0,
+                            isAvailable: product.isAvailable || true,
+                        },
+                        price: itemPrice,
+                        quantity: 1,
+                    });
+                    alert("Item added to cart!");
+                }
+
+                // Recalculate totalAmount
+                guestCart.totalAmount = guestCart.lineItems.reduce((acc, item) => {
+                    const quantity = parseFloat(item.quantity) || 0;
+                    const price = parseFloat(item.price) || 0;
+                    return acc + (quantity * price);
+                }, 0);
+
+                console.log(guestCart)
+
+                localStorage.setItem("guestCart", JSON.stringify(guestCart));
+            }
+        }
+    };
 
     return (
         <section>
@@ -57,6 +137,10 @@ export default function FilteredProducts({title}) {
                                         whileTap={{ scale: 0.96 }}
                                         whileHover={{ scale: 1.01 }}
                                         transition={{ type: "spring", stiffness: 300 }}
+                                        onClick={(e) => {
+                                            e.stopPropagation(); 
+                                            handleAddToCart(product);
+                                        }}
                                         className="cart-div">
                                         <FiShoppingCart className="cart-icon"/>
                                     </motion.div>

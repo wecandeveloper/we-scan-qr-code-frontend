@@ -4,7 +4,7 @@ import {render, localhost} from "../Api/apis"
 export const startCreateCart=(cart)=>{
     return async(dispatch)=>{
         try{
-            const response = await axios.post(`${localhost}/api/user/cart/`,cart,{
+            const response = await axios.post(`${localhost}/api/user/cart/`, cart, {
                 headers:{
                     'Authorization' : localStorage.getItem('token')
                 }

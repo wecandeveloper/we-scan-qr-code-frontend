@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./Cart.scss"
 
 import { motion } from "framer-motion";
@@ -8,19 +8,35 @@ import { IoClose } from "react-icons/io5";
 import { RiSecurePaymentFill, RiUser3Fill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { startGetMyCart } from "../../Actions/cartActions";
+import { useAuth } from "../../Context/AuthContext";
 
 export default function CartPage() {
     const dispatch = useDispatch()
-
-    useEffect(() => {
-        dispatch(startGetMyCart("6871445b66451cb26dd90cee"))
-    }, [])
+    const { user } = useAuth()
+    const isLoggedIn = Boolean(user && user.id); // or user.token
 
     const cart = useSelector(state => {
         return state.cart.data
     })
-    
-    console.log(cart)
+
+    const [ guestCart, setGuestCart ] = useState([])
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            dispatch(startGetMyCart("6871445b66451cb26dd90cee"));
+        } else {
+            const guestCartData = JSON.parse(localStorage.getItem("guestCart")) || [];
+            setGuestCart(guestCartData);
+        }
+    }, [isLoggedIn]);
+
+    // const cartItems = cart?.lineItems
+    // const totalAmount = cart?.totalAmount
+
+    const cartItems = isLoggedIn ? cart?.lineItems || [] : guestCart?.lineItems || [];
+    const totalAmount = isLoggedIn ? cart?.totalAmount || 0 : guestCart?.totalAmount || 0;
+
+    console.log(cartItems)
 
     // const handleRemoveLineItem = (tourOption) => {
     //     const confirmation = window.confirm("Are you sure you want to remove this item from your cart?")
@@ -61,19 +77,19 @@ export default function CartPage() {
                     </div>
                     <div className="right">
                         <h1>You currently have {cart?.lineItems?.length || 0} item in your Cart</h1>
-                        <h2><a href="/">Keep Shopping</a></h2>
+                        <h2><a href="/collections">Keep Shopping</a></h2>
                     </div>
                 </div>
                 <div className="cart-payment-div">
                     <div className="cart-details-div">
-                        {cart?.lineItems?.length > 0 ? (
-                            cart?.lineItems?.map((lineItem) => {
+                        {cartItems?.length > 0 ? (
+                            cartItems?.map((lineItem) => {
                                 return (
                                     <div className="lineItem-card" key={lineItem._id}>
                                         <IoClose className="remove-item" onClick={() => {}}/>
                                         <div className="lineitem-details-div">
                                             <div className="img-div">
-                                                <img src={lineItem.productId.images[0]} alt="" />
+                                                <img src={lineItem.productId.images[1]} alt="" />
                                             </div>
                                             <div className="lineitem-details">
                                                 <div className="product-name-div">
@@ -90,11 +106,11 @@ export default function CartPage() {
                                             <div className="price-div">
                                                 {lineItem.productId.offerPrice != 0 && 
                                                     <span className="offer-price">
-                                                        AED {lineItem.productId.offerPrice}.00
+                                                        AED {lineItem.productId.offerPrice * lineItem.quantity}
                                                     </span>
                                                 }
                                                 <span className={`product-price ${lineItem.productId.offerPrice != 0 ? "strike" : ""}`}>
-                                                    AED {lineItem.productId.price}.00
+                                                    AED {lineItem.productId.price * lineItem.quantity}
                                                 </span>
                                             </div>
                                             <div className="qty-div">
@@ -126,7 +142,7 @@ export default function CartPage() {
                             })
                         ) : (
                             <div className="cart-details empty">
-                                <p>Cart is empty</p>
+                                <p>Your Cart is empty</p>
                                 <p>Go to <a href="/collections">Collection</a> to add a new Tour Activity</p>
                             </div>
                         )}
@@ -146,17 +162,17 @@ export default function CartPage() {
                         <hr className="hr"/>
                         <div className="amount-div">
                             <p className="amount">Sub Total Amount</p>
-                            <p className="amount">AED {cart.totalAmount}.00</p>
+                            <p className="amount">AED {totalAmount}.00</p>
                         </div>
                         <hr className="hr"/>
                         <div className="amount-div">
                             <p className="amount">Total Amount Incl. VAT</p>
-                            <p className="amount">AED {cart.totalAmount}.00</p>
+                            <p className="amount">AED {totalAmount}.00</p>
                         </div>
                         <div className="amount-bg-div">
                             <p className="amount">Proceed to Checkout</p>
                             {/* <p className="amount">Final Amount</p> */}
-                            {/* <p className="amount">AED {cart.totalAmount}.00</p> */}
+                            {/* <p className="amount">AED {totalAmount}.00</p> */}
                         </div>
                     </div>
                 </div>
