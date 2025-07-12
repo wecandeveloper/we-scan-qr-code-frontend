@@ -28,5 +28,19 @@ footer {
                 }
             }
         }
+
+        .nav-links {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            transition: .5;
+            cursor: pointer;
+
+            p:hover {
+                color: #fff5e4;
+                transition: .5;
+            }
+        }
     }
 }

@@ -16,6 +16,11 @@ export default function Footer() {
                     <FaFacebookSquare />
                     <IoLogoYoutube />
                 </div>
+                <div className="nav-links">
+                    <p>Privacy Policy</p>
+                    <p>Terms & Condition</p>
+                    <p>Retrun Policy</p>
+                </div>
             </div>
         </footer>
     )
