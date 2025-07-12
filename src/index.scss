@@ -8,6 +8,8 @@
 
 html, body {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -20,6 +22,16 @@ body {
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; // ✅ Ensures it fills the full viewport
+}
+
+main {
+  flex: 1; // ✅ Pushes the footer to the bottom if there's little content
 }
 
 // Color Code

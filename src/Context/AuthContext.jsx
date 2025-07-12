@@ -21,8 +21,12 @@ export const AuthProvider = ({ children }) => {
 
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
-        localStorage.setItem("category", JSON.stringify(category));
-        
+
+        if (category) {
+            localStorage.setItem("category", JSON.stringify(category));
+        } else {
+            localStorage.removeItem("category"); // Clear it if no category
+        }
     };
 
 

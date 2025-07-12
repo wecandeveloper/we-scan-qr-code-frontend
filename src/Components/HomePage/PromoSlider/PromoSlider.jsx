@@ -60,9 +60,6 @@ const PromoSlider = () => {
                             Order Now <FaArrowRightLong />
                         </div>
                     </div>
-                {/* <div className="promo-image">
-                    
-                </div> */}
                 </div>
             </SwiperSlide>
             ))}

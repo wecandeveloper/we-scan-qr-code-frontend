@@ -12,14 +12,16 @@ import { PiIceCreamBold } from "react-icons/pi";
 import { RiDrinksFill } from "react-icons/ri";
 import { useAuth } from "../../Context/AuthContext";
 import { useEffect } from "react";
+import { BiSolidCookie } from "react-icons/bi";
 
 const categoriesIcon = [
     <LuCandyCane />,
     <GiChocolateBar />,
     <PiIceCreamBold />,
-    <GiWrappedSweet />,
     <RiDrinksFill />,
-    <GiKetchup />
+    <GiWrappedSweet />,
+    <GiKetchup />,
+    <BiSolidCookie />,
 ]
 
 export default function Header() {
@@ -37,7 +39,7 @@ export default function Header() {
 
 
     // console.log(categories)
-    console.log("selectedCategory", selectedCategory)
+    // console.log("selectedCategory", selectedCategory)
 
     return (
         <nav>
@@ -50,7 +52,7 @@ export default function Header() {
                     <input type="text" placeholder="What are you looking for...?"/>
                 </div>
                 <div className="login-div">
-                    <FaCartArrowDown className="cart-icon"/>
+                    <a href="/cart"><FaCartArrowDown className="cart-icon"/></a>
                     <FaUser className="login-icon"/>
                 </div>
             </div>

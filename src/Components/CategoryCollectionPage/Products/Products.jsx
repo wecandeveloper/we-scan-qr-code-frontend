@@ -3,12 +3,13 @@ import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 
 import { RiExpandUpDownFill, RiShareFill } from "react-icons/ri";
-import { BsCartPlusFill } from "react-icons/bs";
 import { FiShoppingCart } from "react-icons/fi";
 import { FaCaretDown, FaCaretLeft, FaCaretRight, FaCaretUp } from "react-icons/fa6";
 import { useAuth } from "../../../Context/AuthContext";
 import { useState } from "react";
 import { CiGrid2H, CiGrid2V, CiGrid41 } from "react-icons/ci";
+import slugify from "slugify";
+import { useNavigate } from "react-router-dom";
 
 export default function Products() {
     const categories = useSelector((state) => {
@@ -18,6 +19,8 @@ export default function Products() {
     const products = useSelector((state) => {
         return state.products.data;
     })
+
+    const navigate = useNavigate()
 
     const { selectedCategory, handleCategoryChange } = useAuth()
     
@@ -323,7 +326,15 @@ export default function Products() {
                         <div className="product-grid">
                             {getProcessedProducts().map((product) => {
                                 return (
-                                    <div key={product._id} className="product-card">
+                                    <div 
+                                        key={product._id} 
+                                        className="product-card"
+                                        onClick={() => {
+                                            navigate(`/products/${slugify(product.name)}`, {
+                                            state: { productId: product._id },
+                                            });
+                                        }}
+                                    >
                                         <div className="img-div">
                                             <img className="product-image" src={product.images[1]}/>
                                             <motion.div 

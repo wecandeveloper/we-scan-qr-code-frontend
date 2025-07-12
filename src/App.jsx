@@ -6,7 +6,7 @@ import routes from './Routes/routes';
 import Header from './Components/Header/Header';
 import { startGetCategory } from './Actions/categoryActions';
 import { useDispatch } from 'react-redux';
-import { startGetProduct } from './Actions/productActions';
+import { startGetAllProducts } from './Actions/productActions';
 import Footer from './Components/Footer/Footer';
 import { useAuth } from './Context/AuthContext';
 // import Footer from './Components/Footer/Footer';
@@ -30,29 +30,36 @@ export default function App() {
 
   useEffect(() => {
     const storedCategory = localStorage.getItem("category");
-    if (storedCategory) {
-      const parsedCategory = JSON.parse(storedCategory); // ✅ Parse back to object
-      handleCategoryChange(parsedCategory);
+    if (storedCategory && storedCategory !== "undefined") {
+      try {
+        const parsedCategory = JSON.parse(storedCategory);
+        handleCategoryChange(parsedCategory);
+      } catch (err) {
+        console.error("Invalid category in localStorage:", err);
+        localStorage.removeItem("category");
+      }
     }
+
     dispatch(startGetCategory());
-    dispatch(startGetProduct());
+    dispatch(startGetAllProducts());
   }, [dispatch]);
 
-
-  if(selectedCategory) {
-    console.log("App", selectedCategory)
-  }
+  // if(selectedCategory) {
+  //   console.log("App", selectedCategory)
+  // }
   
 
   return (
     <>
       <AppLoader isVisible={pageLoading} />
         {!pageLoading && (
+          <div className="app">
           <Fragment>
             <Header />
             <AppRouter routes={routes} />
             <Footer />
           </Fragment>
+          </div>
         )}
     </>
   );

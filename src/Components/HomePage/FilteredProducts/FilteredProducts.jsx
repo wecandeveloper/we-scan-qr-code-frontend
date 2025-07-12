@@ -5,8 +5,12 @@ import { useSelector } from "react-redux";
 import { RiShareFill } from "react-icons/ri";
 import { BsCartPlusFill } from "react-icons/bs";
 import { FiShoppingCart } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import slugify from "slugify";
 
 export default function FilteredProducts({title}) {
+    const navigate = useNavigate()
+
     const products = useSelector((state) => {
         return state.products.data;
     })
@@ -38,7 +42,15 @@ export default function FilteredProducts({title}) {
                 <div className="product-grid">
                     {getProcessedProducts().map((product) => {
                         return (
-                            <div className="product-card">
+                            <div 
+                                key={product._id}
+                                className="product-card"
+                                onClick={() => {
+                                    navigate(`/products/${slugify(product.name)}`, {
+                                    state: { productId: product._id },
+                                    });
+                                }}
+                                >
                                 <div className="img-div">
                                     <img className="product-image" src={product.images[1]}/>
                                     <motion.div 

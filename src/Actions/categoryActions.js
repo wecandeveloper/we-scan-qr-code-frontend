@@ -7,7 +7,7 @@ export const startGetCategory = () => {
         try{
             const response = await axios.get(`${localhost}/api/category/list`)
             dispatch(getCategory(response.data.data))
-            console.log(response.data.data)
+            // console.log(response.data.data)
         }catch(err){
             alert(err)
             console.log(err)

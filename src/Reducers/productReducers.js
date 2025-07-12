@@ -1,12 +1,16 @@
 const initialState = {
     data: [],
-    serverErrors: []
+    serverErrors: [],
+    selected: null
 }
 
 export default function productReducers(state = initialState, action){
     switch (action.type) {
-        case 'GET_PRODUCT': {
+        case 'GET_ALL_PRODUCTS': {
             return {...state, data: action.payload }
+        }
+        case 'GET_ONE_PRODUCT': {
+            return {...state, selected: action.payload }
         }
         case 'CREATE_PRODUCT': {
             return {...state,data: [...state.data, action.payload]};

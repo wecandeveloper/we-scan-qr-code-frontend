@@ -2,12 +2,12 @@
 import axios from 'axios'
 import {render, localhost} from "../Api/apis"
 
-export const startGetProduct = () => {
+export const startGetAllProducts = () => {
     return async(dispatch)=>{
         try{
             const response = await axios.get(`${localhost}/api/product/list`)
-            dispatch(getProduct(response.data.data))
-            console.log("products", response.data.data)
+            dispatch(getAllProducts(response.data.data))
+            // console.log("products", response.data.data)
         }catch(err){
             alert(err)
             console.log(err)
@@ -15,12 +15,33 @@ export const startGetProduct = () => {
     }
 }
 
-const getProduct = (products)=>{
+const getAllProducts = (products)=>{
     return {
-        type: "GET_PRODUCT",
+        type: "GET_ALL_PRODUCTS",
         payload: products
     }
 }
+
+export const startGetOneProduct = (productId) => {
+    return async(dispatch)=>{
+        try{
+            const response = await axios.get(`${localhost}/api/product/show/${productId}`)
+            dispatch(getOneProduct(response.data.data))
+            console.log("product", response.data.data)
+        }catch(err){
+            alert(err)
+            console.log(err)
+        }
+    }
+}
+
+const getOneProduct = (product)=>{
+    return {
+        type: "GET_ONE_PRODUCT",
+        payload: product
+    }
+}
+
 export const startCreateCategory = (formData,navigate)=>{
     return async (dispatch)=>{
         try{
