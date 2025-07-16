@@ -8,7 +8,7 @@ export default function ProductDetailPage() {
         <Fragment>
             <ProductDetails/>
             <FilteredProducts 
-                title = "Realted Products"
+                title = "Related Products"
             />
         </Fragment>
     )

@@ -180,6 +180,7 @@ export default function LoginRegister({ setShowModal }) {
                 localStorage.setItem('token', token)
                 handleLogin(userData)
                 setLoginServerErrors("")
+                setFormErrors({})
                 setIsLoading(false)
                 toast.success("Login Successfull")
                 setShowModal(false)
@@ -204,6 +205,7 @@ export default function LoginRegister({ setShowModal }) {
                 setFormErrors({})
                 console.log(err)
                 setLoginServerErrors(err.response.data.message)
+                setIsLoading(false)
             }
         } else {
             setFormErrors(loginErrors);

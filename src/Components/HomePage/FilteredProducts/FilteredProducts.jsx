@@ -22,17 +22,33 @@ export default function FilteredProducts({title}) {
         return state.products.data;
     })
 
+    const product = useSelector((state) => {
+        return state.products.selected
+    })
+
+    console.log(product)
+
     const getProcessedProducts = () => {
         let filteredArray = products.filter((ele) => {
             if (title === "Offer Products" && !(ele.offerPrice > 0)) {
                 return false;
             }
-            return true; // For now, include all others
+            return true;
         });
 
-        // Limit to first 10 products if "Featured Products"
         if (title === "Featured Products") {
             return filteredArray.slice(0, 12);
+        }
+
+        if (title === "Related Products") {
+            const currentTags = product?.tags || []; // Tags of the current product
+
+            return filteredArray.filter((p) => {
+                if (!p.tags || !Array.isArray(p.tags)) return false;
+
+                // Check if at least one tag overlaps
+                return p.tags.some(tag => currentTags.includes(tag));
+            });
         }
 
         return filteredArray;

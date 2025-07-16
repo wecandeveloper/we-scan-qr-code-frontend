@@ -11,11 +11,11 @@ export default function Home() {
             <HomeHero/>
             <CategorySection/>
             <FilteredProducts
-                title="Featured Products"
+                title="Offer Products"
             />
             <PromoSlider/>
             <FilteredProducts
-                title="Offer Products"
+                title="Featured Products"
             />
             <BottomHero/>
         </Fragment>
