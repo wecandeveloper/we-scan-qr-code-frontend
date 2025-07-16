@@ -1,18 +1,36 @@
+import { useAuth } from "../../Context/AuthContext";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Badge from '@mui/material/Badge';
+import { styled } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+
 import "./Header.scss"
 
 import logo from "../../Assets/Logo/crunchie-cravings-logo.png"
 import HamburgerButton from "../../Designs/HamburgerButton/HamburgerButton"
+import LoginRegister from "../LoginRegister/LoginRegister";
+import defaultProfilePic from "../../Assets/Common/account-icon.png"
+import icon1 from "../../Assets/Icons/order.png"
+import icon2 from "../../Assets/Icons/account.png"
+import icon3 from "../../Assets/Icons/address.png"
+import icon4 from "../../Assets/Icons/password.png"
 
 import { IoIosSearch } from "react-icons/io";
 import { FaCartArrowDown, FaUser } from "react-icons/fa";
-import { useSelector } from "react-redux";
 import { LuCandyCane } from "react-icons/lu";
 import { GiChocolateBar, GiKetchup, GiWrappedSweet } from "react-icons/gi";
 import { PiIceCreamBold } from "react-icons/pi";
 import { RiDrinksFill } from "react-icons/ri";
-import { useAuth } from "../../Context/AuthContext";
-import { useEffect } from "react";
 import { BiSolidCookie } from "react-icons/bi";
+import { TbLogout } from "react-icons/tb";
+import { startGetMyCart } from "../../Actions/cartActions";
+
 
 const categoriesIcon = [
     <LuCandyCane />,
@@ -24,13 +42,66 @@ const categoriesIcon = [
     <BiSolidCookie />,
 ]
 
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    // right: -3,
+    // top: 13,
+    padding: '0 4px',
+    backgroundColor: 'white',
+    color: '#470531',
+    border: `2px solid #470531`,
+    fontWeight: 'bold',
+    fontFamily: '"Oswald", sans-serif',
+  },
+}));
+
+const style = {
+    position: 'absolute',
+    top: '70px',
+    right: '50px',
+    // transform: 'translate(-50%, -50%)',
+    // width: 250,
+    bgcolor: 'background.paper',
+    border: '2px solid #470531',
+    borderRadius: '5px',
+    // boxShadow: 24,
+    p: '20px 30px',
+};
+
 export default function Header() {
+    const dispatch = useDispatch()
+    const { user, globalGuestCart, setGlobalGuestCart, handleLogout, selectedCategory, handleCategoryChange } = useAuth()
+    const isLoggedIn = Boolean(user && user._id);
+
     const categories = useSelector((state) => {
         return state.categories.data;
     })
 
-    const { selectedCategory, handleCategoryChange } = useAuth()
-    
+    const [ showModal, setShowModal] = useState(false);
+    const [ openDashboardModal, setOpenDashboardModal ] = useState(false)
+
+    const handleDashboardModal = () => {
+        setOpenDashboardModal(!openDashboardModal)
+    }
+
+    const cart = useSelector(state => {
+        return state.cart.data
+    })
+
+    // const [guestCart, setGuestCart] = useState({ lineItems: [] });
+
+    const cartItems = isLoggedIn ? cart?.lineItems || [] : globalGuestCart?.lineItems || [];
+    console.log(cartItems)
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            dispatch(startGetMyCart());
+        } else {
+            const guestCartData = JSON.parse(localStorage.getItem("guestCart")) || { lineItems: [] };
+            setGlobalGuestCart(guestCartData);
+        }
+    }, [isLoggedIn]);
+
     // useEffect(() => {
     //     if (categories.length > 0) {
     //         handleCategoryChange(categories[0]);
@@ -38,7 +109,7 @@ export default function Header() {
     // }, [categories]);
 
 
-    // console.log(categories)
+    // console.log(cart)
     // console.log("selectedCategory", selectedCategory)
 
     return (
@@ -52,8 +123,21 @@ export default function Header() {
                     <input type="text" placeholder="What are you looking for...?"/>
                 </div>
                 <div className="login-div">
-                    <a href="/cart"><FaCartArrowDown className="cart-icon"/></a>
-                    <FaUser className="login-icon"/>
+                    <div className="account-div" onClick={() => { user ? handleDashboardModal() : setShowModal(!showModal) }}>
+                        <p className="username">{user ? `Hala,${user.firstName}` : "LogIn"}</p>
+                        <FaUser className="login-icon"/>
+                    </div>
+                    <span>|</span>
+                    <a href="/cart">
+                        <IconButton aria-label="cart" className="cart-icon">
+                            <StyledBadge anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }} badgeContent={cartItems.length} color="default">
+                                <ShoppingCartIcon sx={{ color: '#470531' }}/>
+                            </StyledBadge>
+                        </IconButton>
+                    </a>
                 </div>
             </div>
             <hr className="menu-hr"/>
@@ -77,6 +161,42 @@ export default function Header() {
                     )
                 })}
             </div>
+            <Modal
+                open={openDashboardModal}
+                onClose={handleDashboardModal}
+                BackdropProps={{ invisible: true }}
+                // aria-labelledby="modal-modal-title"
+                // aria-describedby="modal-modal-description"
+            >
+                <Box sx={{...style, outline: 'none',}}>
+                    <div className="profile-dashboard">
+                        <div className="profile-div">
+                            <div className="profile-image-div">
+                                <img src={user?.profilePic ? user.profilePic : defaultProfilePic} alt="profile-pic" className="profile-image"/>
+                            </div>
+                            <div className="profile-details">
+                                <h1 className="profile-name">{user?.firstName} {user?.lastName}</h1>
+                                <p className="profile-email">{user?.email.address}</p>
+                            </div>
+                        </div>
+                        <hr className="hr"/>
+                        <div className="dashboard-links">
+                            <a href="/orders" className="dashboard-link"><img src={icon1} alt="" />Orders</a>
+                            <a href="/account" className="dashboard-link"><img src={icon2} alt="" />Account</a>
+                            <a href="/address" className="dashboard-link"><img src={icon3} alt="" />Address</a>
+                            <a href="/password" className="dashboard-link"><img src={icon4} alt="" />Change Password</a>
+                        </div>
+                        <hr className="hr"/>
+                        <div className="logout-div">
+                            <div onClick={() => {
+                                handleLogout()
+                                setOpenDashboardModal(false)
+                            }} className="logout-link"><TbLogout className="icon"/>Logout</div>
+                        </div>
+                    </div>
+                </Box>
+            </Modal>
+            {showModal && <LoginRegister setShowModal={setShowModal}/>}
         </nav>
     )
 }

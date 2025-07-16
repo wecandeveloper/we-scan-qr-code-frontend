@@ -22,6 +22,8 @@ export default function CategorySection() {
         }
     }, [categories]);
 
+    // console.log(categories)
+
     return (
         <section id="categories">
             <div className="shop-section">
@@ -33,7 +35,7 @@ export default function CategorySection() {
                     <div className="category-grid">
                         {categories.map((category) => {
                             return (
-                                <a href={`/collections/${category.name.replace(/\s+/g, '-').toLowerCase()}`}><div key={category._id} className="category-card">
+                                <a key={category._id} href={`/collections/${category.name.replace(/\s+/g, '-').toLowerCase()}`}><div className="category-card">
                                     <div className="img-div">
                                         <img src={category.image} alt="" className="category-image"/>
                                     </div>

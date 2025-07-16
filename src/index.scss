@@ -112,6 +112,22 @@ a:hover {
   }
 }
 
+button, input {
+  font-family: "Oswald", sans-serif;
+} 
+
+.custom-toast {
+  font-family: "Oswald", sans-serif !important;
+  border-radius: 10px;
+  background-color: white !important;
+  color: #470531 !important;
+}
+
+.custom-toast-body {
+  font-family: "Oswald", sans-serif !important;
+}
+
+
 @media(max-width: 2000px) {
   .section-container {
     padding-left: 200px;

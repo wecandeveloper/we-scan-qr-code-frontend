@@ -9,6 +9,11 @@ import { useDispatch } from 'react-redux';
 import { startGetAllProducts } from './Actions/productActions';
 import Footer from './Components/Footer/Footer';
 import { useAuth } from './Context/AuthContext';
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import { localhost } from './Api/apis';
 // import Footer from './Components/Footer/Footer';
 
 export default function App() {
@@ -16,7 +21,7 @@ export default function App() {
   const dispatch = useDispatch();
   const [pageLoading, setPageLoading] = useState(true); // True initially for pre-loader
 
-  const { selectedCategory, handleCategoryChange } =useAuth()
+  const { handleLogin, handleCategoryChange } =useAuth()
 
   useEffect(() => {
     setPageLoading(true);
@@ -44,10 +49,29 @@ export default function App() {
     dispatch(startGetAllProducts());
   }, [dispatch]);
 
-  // if(selectedCategory) {
-  //   console.log("App", selectedCategory)
-  // }
-  
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      (async () => {
+        try {
+          const response = await axios.get(`${localhost}/api/user/account`, {
+            headers: {
+              "Authorization": localStorage.getItem("token")
+            }
+          });
+          // console.log(response)
+          handleLogin(response.data);
+        } catch (err) {
+          if (err.response && err.response.status === 401) {
+            // Token expired or unauthorized
+            localStorage.removeItem("token");
+            // navigate('/login'); // Navigate to login page
+          } else {
+            console.log(err);
+          }
+        }
+      })();
+    }
+  }, []);
 
   return (
     <>
@@ -55,6 +79,17 @@ export default function App() {
         {!pageLoading && (
           <div className="app">
           <Fragment>
+            <ToastContainer 
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={true}
+              closeOnClick
+              pauseOnHover
+              draggable
+              toastClassName="custom-toast"
+              bodyClassName="custom-toast-body"
+            />
             <Header />
             <AppRouter routes={routes} />
             <Footer />

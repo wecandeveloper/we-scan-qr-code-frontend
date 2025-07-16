@@ -1,7 +1,8 @@
-import CartPage from "../Components/CartPage/Cart.jsx"
 import ProductDetails from "../Components/ProductPage/ProductDetails/ProductDetails.jsx"
 import CategoryCollection from "../Pages/CategoryCollection.jsx"
 import Home from "../Pages/Home.jsx"
+import Cart from "../Components/CartPage/Cart.jsx"
+import ProductDetailPage from "../Pages/ProductDetailPage.jsx"
 
 const routes = [
   {
@@ -21,12 +22,12 @@ const routes = [
   },
   {
     path: "/products/:productName",
-    element: <ProductDetails/>,
+    element: <ProductDetailPage/>,
     isProtected: true,
   },
   {
     path: "/cart",
-    element: <CartPage/>,
+    element: <Cart/>,
     isProtected: true,
   },
 ]

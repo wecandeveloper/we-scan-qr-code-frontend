@@ -1,6 +1,6 @@
 .cart-details-page {
     margin-top: 130px;
-    padding: 50px;
+    padding: 50px 50px 0px 50px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -139,7 +139,21 @@
                     }
 
                     .lineitem-details {
+                        .price-div {
+                            display: flex;
+                            flex-direction: row;
+                            // justify-content: center;
+                            align-items: flex-end;
+                            gap: 10px;
+                            font-size: 18px;
 
+                            .product-price.strike {
+                                text-decoration: line-through;
+                                color: #eb3424;
+                                font-size: 14px;
+                                margin-bottom: 2px;
+                            }
+                        }
                     }
                 }
 

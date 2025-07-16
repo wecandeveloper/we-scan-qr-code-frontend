@@ -14,11 +14,13 @@ import { FiShoppingCart } from "react-icons/fi";
 import image from "../../../Assets/Banners/ice-cream-promo.jpg"
 import { useAuth } from "../../../Context/AuthContext";
 import { startCreateCart } from "../../../Actions/cartActions";
+import { toast } from "react-toastify";
 
 export default function ProductDetails() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { user } = useAuth()
+    const { user, setGlobalGuestCart } = useAuth()
+    const isLoggedIn = Boolean(user && user._id);
     const { productName } = useParams(); // you can display it if needed
     const location = useLocation();
     const { productId } = location.state || {};
@@ -40,7 +42,7 @@ export default function ProductDetails() {
     };
 
     // console.log("product Name", productName)
-    console.log("product", product)
+    // console.log("product", product)
 
     useEffect(() => {
         dispatch(startGetOneProduct(productId))
@@ -98,10 +100,12 @@ export default function ProductDetails() {
     const handleAddToCart = (product) => {
         const lineItem = {
             productId: product._id,
-            quantity: 1,
+            quantity: qty,
         };
 
-        if (user?.token) {
+        console.log(lineItem)
+
+        if (isLoggedIn) {
             // Logged-in user — backend handles everything
             const payload = {
                 lineItems: [lineItem],
@@ -123,9 +127,9 @@ export default function ProductDetails() {
             // console.log(itemQty)
 
             if(product.stock <= 0) {
-                alert(`${product.name} Product is Out of Stock`)
+                toast.warning(`${product.name} Product is Out of Stock`)
             } else if(qty > product.stock) {
-                alert(`Only ${product.stock} unit(s) of ${product.name} available in stock`)
+                toast.warning(`Only ${product.stock} unit(s) of ${product.name} available in stock`)
             } else {
                 const itemPrice =
                     product.offerPrice && product.offerPrice > 0
@@ -133,10 +137,10 @@ export default function ProductDetails() {
                         : product.price;
 
                 if (existingItemIndex !== -1 && (itemQty + qty) > product.stock) {
-                    alert(`Only ${product.stock} unit(s) of ${product.name} available in stock, Decrease the Quantity`);
+                    toast.warning(`Only ${product.stock} unit(s) of ${product.name} available in stock, Decrease the Quantity`);
                 } else if (existingItemIndex !== -1) {
                     guestCart.lineItems[existingItemIndex].quantity += qty;
-                    alert(`${product.name} Product is already in the cart, Updated the quantity by ${itemQty + qty}`);
+                    toast.success(`${product.name} Product is already in the cart, Updated the quantity by ${itemQty + qty}`);
                 } else {
                     // Add new product
                     guestCart.lineItems.push({
@@ -156,7 +160,7 @@ export default function ProductDetails() {
                         price: itemPrice,
                         quantity: qty,
                     });
-                    alert("Item added to cart!");
+                    toast.success("Item added to cart!");
                 }
 
                 // Recalculate totalAmount
@@ -168,6 +172,7 @@ export default function ProductDetails() {
 
                 console.log(guestCart)
                 localStorage.setItem("guestCart", JSON.stringify(guestCart));
+                setGlobalGuestCart(guestCart)
             }
         }
     };

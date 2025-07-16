@@ -7,23 +7,63 @@ import { HiPrinter } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { RiSecurePaymentFill, RiUser3Fill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
-import { startGetMyCart } from "../../Actions/cartActions";
+import { startDecQty, startDeleteMyCartLineItem, startGetMyCart, startIncQty } from "../../Actions/cartActions";
 import { useAuth } from "../../Context/AuthContext";
+import { toast } from "react-toastify";
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import ConfirmToast from "../../Designs/ConfirmToast/ConfirmToast";
 
-export default function CartPage() {
+export default function Cart() {
     const dispatch = useDispatch()
-    const { user } = useAuth()
-    const isLoggedIn = Boolean(user && user.id); // or user.token
+    const { user, setGlobalGuestCart } = useAuth()
+    const isLoggedIn = Boolean(user && user._id); // or user.token
+
+    // console.log(user)
 
     const cart = useSelector(state => {
         return state.cart.data
     })
 
+    const products = useSelector(state => {
+        return state.products.data
+    })
+
     const [ guestCart, setGuestCart ] = useState([])
+    const [ showConfirm, setShowConfirm ] = useState(false);
+    const [ productToRemove, setProductToRemove ] = useState(null);
+
+    const handleRemoveClick = (product) => {
+        console.log("Hii")
+        setShowConfirm(true);
+        setProductToRemove(product)
+    };
+
+    const confirmRemove = () => {
+        // your delete logic here
+        if(isLoggedIn) {
+            dispatch(startDeleteMyCartLineItem(productToRemove._id))
+            toast.success("Product removed from cart")
+        } else {
+            const updatedLineItems = guestCart.lineItems.filter((ele) => ele.productId._id !== productToRemove._id)
+            const updatedGuestCart = {
+            ...guestCart,
+            lineItems: updatedLineItems,
+            totalAmount: updatedLineItems.reduce((acc, item) => acc + (item.quantity * item.price), 0),
+        };
+        setGuestCart(updatedGuestCart)
+        localStorage.setItem("guestCart", JSON.stringify(updatedGuestCart));
+        setGlobalGuestCart(updatedGuestCart)
+        }
+        setShowConfirm(false);
+    };
+
+    const cancelRemove = () => {
+        setShowConfirm(false);
+    };
 
     useEffect(() => {
         if (isLoggedIn) {
-            dispatch(startGetMyCart("6871445b66451cb26dd90cee"));
+            dispatch(startGetMyCart());
         } else {
             const guestCartData = JSON.parse(localStorage.getItem("guestCart")) || [];
             setGuestCart(guestCartData);
@@ -36,7 +76,7 @@ export default function CartPage() {
     const cartItems = isLoggedIn ? cart?.lineItems || [] : guestCart?.lineItems || [];
     const totalAmount = isLoggedIn ? cart?.totalAmount || 0 : guestCart?.totalAmount || 0;
 
-    console.log(cartItems)
+    console.log(guestCart)
 
     // const handleRemoveLineItem = (tourOption) => {
     //     const confirmation = window.confirm("Are you sure you want to remove this item from your cart?")
@@ -50,6 +90,68 @@ export default function CartPage() {
     //     }
     // }
 
+    const handleQtyInc = (productId) => {
+        const product = products.find(ele => ele._id === productId._id)
+        console.log(productId)
+        if(isLoggedIn) {
+            dispatch(startIncQty(productId._id))
+        } else {
+            const updatedLineItems = guestCart.lineItems.map((ele) => {
+                if (ele.productId._id === productId._id) {
+                    if (product.stock >= ele.quantity + 1) {
+                        toast.success(`Quantity updated by ${ele.quantity + 1}`)
+                        return { ...ele, quantity: ele.quantity + 1 };
+                    } else {
+                        toast.warning(`Only ${product.stock} unit(s) of ${product.name} available in stock`);
+                    }
+                }
+                return ele;
+            });
+            const updatedGuestCart = {
+                ...guestCart,
+                lineItems: updatedLineItems,
+                totalAmount: updatedLineItems.reduce((acc, item) => acc + (item.quantity * item.price), 0),
+            };
+            setGuestCart(updatedGuestCart)
+            localStorage.setItem("guestCart", JSON.stringify(updatedGuestCart));
+        }
+    }
+
+    const handleQtyDec = (productId) => {
+        if (isLoggedIn) {
+            const item = cart.lineItems.find((ele) => ele.productId === productId);
+            if (item) {
+                if(item.quantity <= 1) {
+                    handleRemoveClick(productId);
+                } else {
+                    dispatch(startDecQty(productId._id))
+                }
+            }
+        } else {
+            const item = guestCart.lineItems.find((ele) => ele.productId === productId);
+
+            if (item) {
+                if (item.quantity > 1) {
+                    const updatedLineItems = guestCart.lineItems.map((ele) =>
+                        ele.productId === productId
+                            ? { ...ele, quantity: ele.quantity - 1 }
+                            : ele
+                    );
+
+                    const updatedGuestCart = {
+                        ...guestCart,
+                        lineItems: updatedLineItems,
+                        totalAmount: updatedLineItems.reduce((acc, item) => acc + (item.quantity * item.price), 0),
+                    };
+                    toast.success(`Quantity decreased, new quantity is ${item.quantity - 1}`)
+                    setGuestCart(updatedGuestCart);
+                    localStorage.setItem("guestCart", JSON.stringify(updatedGuestCart));
+                } else {
+                    handleRemoveClick(productId);
+                }
+            }
+        }
+    };
 
     return (
         <section>
@@ -85,8 +187,8 @@ export default function CartPage() {
                         {cartItems?.length > 0 ? (
                             cartItems?.map((lineItem) => {
                                 return (
-                                    <div className="lineItem-card" key={lineItem._id}>
-                                        <IoClose className="remove-item" onClick={() => {}}/>
+                                    <div className="lineItem-card" key={lineItem.productId._id}>
+                                        <IoClose className="remove-item" onClick={() => { handleRemoveClick(lineItem.productId )}}/>
                                         <div className="lineitem-details-div">
                                             <div className="img-div">
                                                 <img src={lineItem.productId.images[1]} alt="" />
@@ -97,9 +199,19 @@ export default function CartPage() {
                                                         {lineItem.productId.name}
                                                     </h1>
                                                     <h3 className="product-category">
-                                                        {lineItem.productId.categoryId.name}
+                                                        {lineItem.productId.categoryId?.name}
                                                     </h3>
                                                 </div>
+                                                <div className="price-div">
+                                                {lineItem.productId.offerPrice != 0 && 
+                                                    <span className="offer-price">
+                                                        AED {lineItem.productId.offerPrice}
+                                                    </span>
+                                                }
+                                                <span className={`product-price ${lineItem.productId.offerPrice != 0 ? "strike" : ""}`}>
+                                                    AED {lineItem.productId.price}
+                                                </span>
+                                            </div>
                                             </div>
                                         </div>
                                         <div className="price-qty-div">
@@ -118,7 +230,7 @@ export default function CartPage() {
                                                     whileTap={{ scale: 0.85 }}
                                                     whileHover={{ scale: 1 }}
                                                     transition={{ type: "spring", stiffness: 300 }}
-                                                    // onClick={decreaseQty}
+                                                    onClick={() => { handleQtyDec(lineItem.productId) }}
                                                     style={{ cursor: "pointer" }}
                                                 >
                                                     <FaMinus />
@@ -130,7 +242,7 @@ export default function CartPage() {
                                                     whileTap={{ scale: 0.85 }}
                                                     whileHover={{ scale: 1 }}
                                                     transition={{ type: "spring", stiffness: 300 }}
-                                                    // onClick={increaseQty}
+                                                    onClick = {() => { handleQtyInc(lineItem.productId) }}
                                                     style={{ cursor: "pointer" }}
                                                 >
                                                     <FaPlus />
@@ -141,7 +253,7 @@ export default function CartPage() {
                                 )
                             })
                         ) : (
-                            <div className="cart-details empty">
+                            <div key="empty-cart" className="cart-details empty">
                                 <p>Your Cart is empty</p>
                                 <p>Go to <a href="/collections">Collection</a> to add a new Tour Activity</p>
                             </div>
@@ -177,6 +289,13 @@ export default function CartPage() {
                     </div>
                 </div>
             </div>
+            {showConfirm && (
+                <ConfirmToast
+                    message="Are you sure you want to remove this item from your cart?"
+                    onConfirm={confirmRemove}
+                    onCancel={cancelRemove}
+                />
+            )}
         </section>
     )
 }

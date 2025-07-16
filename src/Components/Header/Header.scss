@@ -62,18 +62,49 @@ nav {
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 30px;
+            justify-content: center;
+            gap: 20px;
             // color: #fff5e4;
             color: #470531;
             font-size: 23px;
             // width: 100%;
-            .login-icon, .cart-icon {
-                
+
+            .account-div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                // padding: 5px;
+                gap: 10px;
+                cursor: pointer;
                 transition: .3s;
+
+                .username {
+                    display: flex;
+                    align-items: center;
+                    font-size: 18px;
+                    width: 100% !important;
+                    margin-top: 5px;
+                }
+
+                .login-icon {
+                    font-size: 25px;
+                    margin-top: 5px;
+                }
 
                 &:hover {
                     // color: #eb3424;
                     color: #fff5e4;
+                    transition: .3s;
+                }
+            }
+            
+            .cart-icon {
+                transition: .3s;
+                margin-top: 5px;
+
+                &:hover svg {
+                    // color: #eb3424;
+                    color: #fff5e4 !important;
                     cursor: pointer;
                     transition: .3s;
                 }
@@ -125,6 +156,104 @@ nav {
             &:hover, &.active {
                 color: #fff5e4;
                 transition: .3s;
+            }
+        }
+    }
+}
+
+.profile-dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    .profile-div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 20px;
+
+        .profile-image-div {
+            width: 50px;
+            height: 50px;
+
+            img {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+        }
+
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            // gap: 5px;
+
+            .profile-name {
+                font-size: 16px;
+            }
+
+            .profile-email {
+                font-size: 14px;
+            }
+        }
+    }
+
+    .hr {
+        height: 1px;
+        width: 100%;
+        background: #470531;
+        // border: .5px solid #470531;
+        border: none;
+    }
+
+    .logout-div {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        margin-left: auto;
+
+        .logout-link {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border: 2px solid #470531;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: .5s;
+
+            .icon {
+                font-size: 20px;
+            }
+
+            &:hover {
+                background: #470531;
+                color: white;
+                transition: .5s;
+            }
+        }
+    }
+
+    .dashboard-links {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 10px;
+        margin-right: auto;
+
+        .dashboard-link {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+
+            img {
+                width: 25px;
             }
         }
     }

@@ -11,10 +11,12 @@ import { CiGrid2H, CiGrid2V, CiGrid41 } from "react-icons/ci";
 import slugify from "slugify";
 import { useNavigate } from "react-router-dom";
 import { startCreateCart } from "../../../Actions/cartActions";
+import { toast } from "react-toastify";
 
 export default function Products() {
     const dispatch = useDispatch();
-    const { user } = useAuth()
+    const { user, setGlobalGuestCart } = useAuth()
+    const isLoggedIn = Boolean(user && user._id);
     const categories = useSelector((state) => {
         return state.categories.data;
     })
@@ -154,12 +156,13 @@ export default function Products() {
             quantity: 1,
         };
 
-        if (user?.token) {
+        if (isLoggedIn) {
             // Logged-in user — backend handles everything
             const payload = {
                 lineItems: [lineItem],
             };
             dispatch(startCreateCart(payload));
+            // toast.success("Item added to cart!")
         } else {
             // Guest user
             const guestCart = JSON.parse(localStorage.getItem("guestCart")) || {
@@ -176,7 +179,7 @@ export default function Products() {
             const newProduct = products.find(ele => ele._id === product._id)
 
             if(newProduct.stock <= 0) {
-                alert(`${product.name} Product is Out of Stock`)
+                toast.error(`${product.name} Product is Out of Stock`)
             } else {
                 const itemPrice =
                     product.offerPrice && product.offerPrice > 0
@@ -184,10 +187,10 @@ export default function Products() {
                         : product.price;
 
                 if (existingItemIndex !== -1 && (itemQty + 1) > product.stock) {
-                    alert(`Only ${product.stock} unit(s) of ${product.name} available in stock, Decrease the Quantity`);
+                    toast.warning(`Only ${product.stock} unit(s) of ${product.name} available in stock, Decrease the Quantity`);
                 } else if (existingItemIndex !== -1) {
                     guestCart.lineItems[existingItemIndex].quantity += 1;
-                    alert(`${product.name} Product is already in the cart, Updated the quantity by ${itemQty + 1}`);
+                    toast.success(`${product.name} Product is already in the cart, Updated the quantity by ${itemQty + 1}`);
                 } else {
                     // Add new product
                     guestCart.lineItems.push({
@@ -207,7 +210,7 @@ export default function Products() {
                         price: itemPrice,
                         quantity: 1,
                     });
-                    alert("Item added to cart!");
+                    toast.success("Item added to cart!");
                 }
 
                 // Recalculate totalAmount
@@ -220,6 +223,7 @@ export default function Products() {
                 console.log(guestCart)
 
                 localStorage.setItem("guestCart", JSON.stringify(guestCart));
+                setGlobalGuestCart(guestCart)
             }
         }
     };

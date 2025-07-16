@@ -1,19 +1,21 @@
 import axios from 'axios'
 import {render, localhost} from "../Api/apis"
+import { toast } from 'react-toastify'
 
-export const startCreateCart=(cart)=>{
+export const startCreateCart = (cart) => {
     return async(dispatch)=>{
         try{
-            const response = await axios.post(`${localhost}/api/user/cart/`, cart, {
+            const response = await axios.post(`${localhost}/api/cart/create`, cart, {
                 headers:{
                     'Authorization' : localStorage.getItem('token')
                 }
             })
             console.log(response.data)
-            dispatch(createCart(response.data))
-            alert('item added to cart')
+            dispatch(createCart(response.data.data))
+            toast.success(response.data.message)
         }catch(err){
             console.log(err)
+            toast.error(err.response.data.message)
         }
     }
 }
@@ -24,34 +26,19 @@ const createCart =(cartItems)=>{
     }
 }
 
-// export const startGetMyCart = ()=>{
-//     return async(dispatch)=>{
-//         try{
-//             const response = await axios.get(`${localhost}/api/user/cart/`,{
-//                 headers:{
-//                     "Authorization" : localStorage.getItem('token')
-//                 }
-//             })
-//             // console.log(response.data)
-//             dispatch(getMyCart(response.data))
-//         }catch(err){
-//             console.log(err)
-//         }
-//     }
-// }
-
-export const startGetMyCart = (cartId)=>{
+export const startGetMyCart = () => {
     return async(dispatch)=>{
         try{
-            const response = await axios.get(`${localhost}/api/cart/myCart/${cartId}`,{
-                // headers:{
-                //     "Authorization" : localStorage.getItem('token')
-                // }
+            const response = await axios.get(`${localhost}/api/cart/myCart`,{
+                headers:{
+                    "Authorization" : localStorage.getItem('token')
+                }
             })
             // console.log(response.data)
             dispatch(getMyCart(response.data.data))
         }catch(err){
             console.log(err)
+            toast.error(err.response.data.message)
         }
     }
 }
@@ -67,83 +54,87 @@ export const startDeleteMyCartLineItem = (id) => {
     return async(dispatch) => {
         try {
             // console.log("hii 2")
-            const response = await axios.delete(`${localhost}/api/user/cart/${id}`, {
+            const response = await axios.delete(`${localhost}/api/cart/removeLineItem/${id}`, {
                 headers : {
                     "Authorization" : localStorage.getItem('token')
                 }
             })
-            const lineItem = response.data.lineItems.find((ele)=>{
-                return ele._id === id
-            })
-            dispatch(deleteMyCartLineItem(response.data))
+            dispatch(deleteMyCartLineItem(id))
             // window.location.reload()
             console.log(id, response.data)
         } catch(err) {
             console.log(err)
+            toast.error(err.response.data.message)
         }
     }
 }
 
-const deleteMyCartLineItem = (lineItem) => {
+const deleteMyCartLineItem = (id) => {
     return {
         type : "DELETE_LINEITEM",
-        payload : lineItem
+        payload : id
     }
 }
 
-export const startIncQty = (id) => {
+export const startIncQty = (productId) => {
+    console.log(productId)
     return async(dispatch) => {
         try {
-            const response = await axios.put(`${localhost}/api/user/cart/inc/${id}`, {}, {
+            const response = await axios.put(`${localhost}/api/cart/incQty/${productId}`, {}, {
                 headers : {
                     "Authorization" : localStorage.getItem('token')
                 }
             })
-            const lineItem= response.data.lineItems.find((ele)=>{
-                return ele._id === id
-            })
+            // const lineItem = response.data.lineItems.find((ele)=>{
+            //     return ele._id === id
+            // })
             
-            dispatch(incQty(lineItem))
-            // console.log(id, response.data)
+            dispatch(incQty(productId))
+            console.log(response.data)
+            toast.success(response.data.message)
             // console.log(lineItem)
         } catch(err) {
             console.log(err)
+            toast.error(err.response.data.message)
         }
     }
 }
 
-const incQty = (lineItem) => {
+const incQty = (productId) => {
     return {
         type : "INC_QTY",
-        payload : lineItem
+        payload : productId
     }
 }
 
-export const startDecQty = (id) => {
+export const startDecQty = (productId) => {
+    console.log(productId)
     return async(dispatch) => {
         try {
-            const response = await axios.put(`${localhost}/api/user/cart/dec/${id}`, {}, {
+            const response = await axios.put(`${localhost}/api/cart/decQty/${productId}`, {}, {
                 headers : {
                     "Authorization" : localStorage.getItem('token')
                 }
             })
-            const lineItem= response.data.lineItems.find((ele)=>{
-                return ele._id === id
-            })
+            // const lineItem = response.data.lineItems.find((ele)=>{
+            //     return ele._id === id
+            // })
             
-            dispatch(decQty(lineItem))
-            // console.log(id, response.data)
-            // window.location.reload()
+            dispatch(decQty(productId))
+            console.log(response.data)
+            toast.success(response.data.message)
+            // console.log(lineItem)
         } catch(err) {
             console.log(err)
+            toast.error(err.response.data.message)
         }
     }
 }
 
-const decQty = (lineItem) => {
+const decQty = (productId) => {
     return {
         type : "DEC_QTY",
-        payload : lineItem
+        payload : productId
     }
 }
 
@@ -159,6 +150,7 @@ export const startEmptyCart = () => {
             dispatch(emptyCart(response.data))
         } catch(err) {
             console.log(err)
+            toast.error(err.response.data.message)
         }
     }
 }

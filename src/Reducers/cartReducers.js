@@ -8,39 +8,76 @@ export default function cartReducers(state=initialState,action){
             return {...state,data: action.payload }
         }
 
-        case "CREATE_CART":{
-            return {...state ,data: [...state.data, action.payload]}; 
+        case "CREATE_CART": {
+            return { ...state, data: action.payload };  // Because `myCart` is one object, not an array
         }
 
-        case "INC_QTY" : {
+        case "INC_QTY": {
             const updatedLineItems = state.data.lineItems.map((ele) => {
-                if (ele._id === action.payload._id) {
-                return { ...ele, quantity: ele.quantity + 1 }
-                } else {
-                return ele
+                // Compare with correct path
+                const currentId = ele.productId._id || ele.productId;
+                if (currentId === action.payload) {
+                    return { ...ele, quantity: ele.quantity + 1 };
                 }
-            })
-            const newTotalAmount = updatedLineItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
-            return { ...state, data: { ...state.data, lineItems: updatedLineItems, totalAmount: newTotalAmount } }
+                return ele;
+            });
+
+            const newTotalAmount = updatedLineItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    lineItems: updatedLineItems,
+                    totalAmount: newTotalAmount,
+                },
+            };
         }
           
-        case "DEC_QTY" : {
-            console.log('state',state)
-            console.log('action',action.payload)
+        case "DEC_QTY": {
             const updatedLineItems = state.data.lineItems.map((ele) => {
-            if (ele._id === action.payload._id) {
-                return { ...ele, quantity: ele.quantity - 1 }
-            } else {
-                return ele
-            }
-            })
-            console.log('updated state',updatedLineItems)
-            const newTotalAmount = updatedLineItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
-            return { ...state, data: { ...state.data, lineItems: updatedLineItems, totalAmount: newTotalAmount } }
+                // Compare with correct path
+                const currentId = ele.productId._id || ele.productId;
+                if (currentId === action.payload) {
+                    return { ...ele, quantity: ele.quantity - 1 };
+                }
+                return ele;
+            });
+
+            const newTotalAmount = updatedLineItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    lineItems: updatedLineItems,
+                    totalAmount: newTotalAmount,
+                },
+            };
         }
 
-        case "DELETE_LINEITEM" : {
-            return {...state,data: action.payload }
+        case "DELETE_LINEITEM": {
+            const updatedLineItems = state.data.lineItems.filter(
+                (ele) => ele.productId._id !== action.payload
+            );
+
+            const newTotalAmount = updatedLineItems.reduce((acc, item) => {
+                const quantity = parseFloat(item.quantity) || 0;
+                const price =
+                item.productId.offerPrice && item.productId.offerPrice > 0
+                    ? item.productId.offerPrice
+                    : item.productId.price;
+                return acc + quantity * price;
+            }, 0);
+
+            return {
+                ...state,
+                data: {
+                ...state.data,
+                lineItems: updatedLineItems,
+                totalAmount: newTotalAmount,
+                },
+            };
         }
 
         case "EMPTY_CART" : {
