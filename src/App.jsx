@@ -14,6 +14,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { localhost } from './Api/apis';
+import { startCreateOrder } from './Actions/orderActions';
 // import Footer from './Components/Footer/Footer';
 
 export default function App() {
@@ -72,6 +73,37 @@ export default function App() {
       })();
     }
   }, []);
+
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const params = new URLSearchParams(window.location.search);
+        const sessionId = params.get("session_id");
+        const stripeId = localStorage.getItem('stripeId')
+        if(sessionId && stripeId && sessionId === stripeId) {
+          console.log("same")
+          const response = await axios.get(`${localhost}/api/payment/session/${stripeId}`, {
+            headers:{
+                  'Authorization' : localStorage.getItem('token')
+              }
+          })
+          console.log(response)
+
+          const response2 = await axios.post(`${localhost}/api/payment/session/${stripeId}/success`, {paymentStatus: "Successful"}, {
+              headers:{
+                  'Authorization' : localStorage.getItem('token')
+              }
+          })
+          console.log(response2)
+          const paymentId = response2.data.data._id
+          dispatch(startCreateOrder(paymentId))
+        }
+        localStorage.removeItem('stripeId')
+      }catch(err){
+          console.log(err)
+      }
+    })()
+  },[])
 
   return (
     <>

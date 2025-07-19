@@ -83,6 +83,33 @@ export default function cartReducers(state=initialState,action){
         case "EMPTY_CART" : {
             return { ...state, data : state.data.lineItems.length = 0}
         }
+
+        case "APPLY_COUPON": {
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    discountAmount: action.payload.discountAmount,
+                    discountPercentage: action.payload.discountPercentage ?? state.data.discountPercentage,
+                    totalAmount: action.payload.totalAmount,
+                    originalAmount: action.payload.originalAmount
+                }
+            };
+        }
+
+        case "REMOVE_COUPON": {
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    discountAmount: 0,
+                    discountPercentage: 0,
+                    totalAmount: action.payload.totalAmount,
+                    originalAmount: action.payload.originalAmount,
+                    appliedCoupon: null
+                }
+            };
+        }
         
         default:{
             return state

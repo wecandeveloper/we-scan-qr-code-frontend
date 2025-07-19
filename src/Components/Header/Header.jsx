@@ -27,7 +27,7 @@ import { LuCandyCane } from "react-icons/lu";
 import { GiChocolateBar, GiKetchup, GiWrappedSweet } from "react-icons/gi";
 import { PiIceCreamBold } from "react-icons/pi";
 import { RiDrinksFill } from "react-icons/ri";
-import { BiSolidCookie } from "react-icons/bi";
+import { BiSolidCookie, BiSolidOffer } from "react-icons/bi";
 import { TbLogout } from "react-icons/tb";
 import { startGetMyCart } from "../../Actions/cartActions";
 
@@ -40,6 +40,37 @@ const categoriesIcon = [
     <GiWrappedSweet />,
     <GiKetchup />,
     <BiSolidCookie />,
+]
+
+const dashboardMenuLinks = [
+    {
+        id: 1,
+        name: "Orders",
+        dashboardMenu: "orders",
+        link: "/orders",
+        icon: icon1
+    },
+    {
+        id: 1,
+        name: "Account",
+        dashboardMenu: "account",
+        link: "/account",
+        icon: icon2
+    },
+    {
+        id: 1,
+        name: "Address",
+        dashboardMenu: "address",
+        link: "/address",
+        icon: icon3
+    },
+    {
+        id: 1,
+        name: "Change Password",
+        dashboardMenu: "change-password",
+        link: "/change-password",
+        icon: icon4
+    },
 ]
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -70,12 +101,23 @@ const style = {
 
 export default function Header() {
     const dispatch = useDispatch()
-    const { user, globalGuestCart, setGlobalGuestCart, handleLogout, selectedCategory, handleCategoryChange } = useAuth()
+    const { 
+        user, 
+        globalGuestCart, 
+        setGlobalGuestCart, 
+        handleLogout, 
+        selectedCategory, 
+        handleCategoryChange,
+        selectedDashboardMenu,
+        setSelectedDashboardMenu
+    } = useAuth()
     const isLoggedIn = Boolean(user && user._id);
 
     const categories = useSelector((state) => {
         return state.categories.data;
     })
+
+    console.log(selectedDashboardMenu)
 
     const [ showModal, setShowModal] = useState(false);
     const [ openDashboardModal, setOpenDashboardModal ] = useState(false)
@@ -91,7 +133,7 @@ export default function Header() {
     // const [guestCart, setGuestCart] = useState({ lineItems: [] });
 
     const cartItems = isLoggedIn ? cart?.lineItems || [] : globalGuestCart?.lineItems || [];
-    console.log(cartItems)
+    // console.log(cartItems)
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -101,16 +143,6 @@ export default function Header() {
             setGlobalGuestCart(guestCartData);
         }
     }, [isLoggedIn]);
-
-    // useEffect(() => {
-    //     if (categories.length > 0) {
-    //         handleCategoryChange(categories[0]);
-    //     }
-    // }, [categories]);
-
-
-    // console.log(cart)
-    // console.log("selectedCategory", selectedCategory)
 
     return (
         <nav>
@@ -160,6 +192,19 @@ export default function Header() {
                         </a>
                     )
                 })}
+                <a href="#sales">
+                    <li 
+                        className="category-tab"
+                        onClick={() => {
+                            handleCategoryChange("")
+                        }}
+                        >
+                        <span className="category-icon"><BiSolidOffer /> </span>
+                        <h1 className="category-name">
+                            Sales
+                        </h1>
+                    </li>
+                </a>
             </div>
             <Modal
                 open={openDashboardModal}
@@ -181,10 +226,21 @@ export default function Header() {
                         </div>
                         <hr className="hr"/>
                         <div className="dashboard-links">
-                            <a href="/orders" className="dashboard-link"><img src={icon1} alt="" />Orders</a>
-                            <a href="/account" className="dashboard-link"><img src={icon2} alt="" />Account</a>
-                            <a href="/address" className="dashboard-link"><img src={icon3} alt="" />Address</a>
-                            <a href="/password" className="dashboard-link"><img src={icon4} alt="" />Change Password</a>
+                            {dashboardMenuLinks.map((menu) => {
+                                return (
+                                    <a 
+                                        // href={`/account${menu.link}`} 
+                                        onClick={() => {setSelectedDashboardMenu(menu.dashboardMenu)}} 
+                                        className="dashboard-link"
+                                    >
+                                        <img src={menu.icon} alt="" />
+                                        <h1 className={`dashboard-menu ${selectedDashboardMenu === menu.dashboardMenu ? "active" : ""}`}>
+                                            {menu.name}
+                                        </h1>
+                                    </a>
+                                )
+                            })}
+                            
                         </div>
                         <hr className="hr"/>
                         <div className="logout-div">

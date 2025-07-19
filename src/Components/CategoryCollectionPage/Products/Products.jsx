@@ -29,7 +29,7 @@ export default function Products() {
 
     const { selectedCategory, handleCategoryChange } = useAuth()
     
-    console.log(products)
+    // console.log(products)
 
     const [categoryFilterOpen, setCategoryFilterOpen ] = useState(true)
     const [priceFilter, setPriceFilter] = useState("")
@@ -214,16 +214,41 @@ export default function Products() {
                 }
 
                 // Recalculate totalAmount
-                guestCart.totalAmount = guestCart.lineItems.reduce((acc, item) => {
+                const originalAmount = guestCart.lineItems.reduce((acc, item) => {
                     const quantity = parseFloat(item.quantity) || 0;
                     const price = parseFloat(item.price) || 0;
                     return acc + (quantity * price);
                 }, 0);
 
-                console.log(guestCart)
+                let discountAmount = 0;
+                let discountPercentage = 0;
 
-                localStorage.setItem("guestCart", JSON.stringify(guestCart));
-                setGlobalGuestCart(guestCart)
+                const appliedCoupon = guestCart.appliedCoupon;
+
+                if (appliedCoupon) {
+                    if (appliedCoupon.type === "percentage") {
+                        discountPercentage = appliedCoupon.value;
+                        discountAmount = (originalAmount * discountPercentage) / 100;
+                    } else if (appliedCoupon.type === "fixed") {
+                        discountAmount = appliedCoupon.value;
+                    }
+                }
+
+                let updatedGuestCart;
+
+                updatedGuestCart = {
+                    ...guestCart,
+                    lineItems: guestCart.lineItems,
+                    originalAmount,
+                    discountAmount: discountAmount || 0,
+                    discountPercentage: discountPercentage || 0,
+                    totalAmount: originalAmount - discountAmount,
+                };
+
+                console.log(updatedGuestCart)
+
+                localStorage.setItem("guestCart", JSON.stringify(updatedGuestCart));
+                setGlobalGuestCart(updatedGuestCart)
             }
         }
     };
@@ -355,6 +380,17 @@ export default function Products() {
                                     }}
                                 />
                                 <span>Available Products</span>
+                            </li>
+                            <li>
+                                <input 
+                                    type="checkbox"
+                                    // value={availableProducts}
+                                    // checked={availableProducts}
+                                    // onChange={() => {
+                                    //     setAvailableProducts(!availableProducts)
+                                    // }}
+                                />
+                                <span>Best Selling Products</span>
                             </li>
                         </motion.ul>
                     </div>

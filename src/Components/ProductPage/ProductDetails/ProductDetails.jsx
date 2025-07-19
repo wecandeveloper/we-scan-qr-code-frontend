@@ -164,15 +164,41 @@ export default function ProductDetails() {
                 }
 
                 // Recalculate totalAmount
-                guestCart.totalAmount = guestCart.lineItems.reduce((acc, item) => {
+                const originalAmount = guestCart.lineItems.reduce((acc, item) => {
                     const quantity = parseFloat(item.quantity) || 0;
                     const price = parseFloat(item.price) || 0;
                     return acc + (quantity * price);
                 }, 0);
 
-                console.log(guestCart)
-                localStorage.setItem("guestCart", JSON.stringify(guestCart));
-                setGlobalGuestCart(guestCart)
+                let discountAmount = 0;
+                let discountPercentage = 0;
+
+                const appliedCoupon = guestCart.appliedCoupon;
+
+                if (appliedCoupon) {
+                    if (appliedCoupon.type === "percentage") {
+                        discountPercentage = appliedCoupon.value;
+                        discountAmount = (originalAmount * discountPercentage) / 100;
+                    } else if (appliedCoupon.type === "fixed") {
+                        discountAmount = appliedCoupon.value;
+                    }
+                }
+
+                let updatedGuestCart;
+
+                updatedGuestCart = {
+                    ...guestCart,
+                    lineItems: guestCart.lineItems,
+                    originalAmount,
+                    discountAmount: discountAmount || 0,
+                    discountPercentage: discountPercentage || 0,
+                    totalAmount: originalAmount - discountAmount,
+                };
+
+                console.log(updatedGuestCart)
+
+                localStorage.setItem("guestCart", JSON.stringify(updatedGuestCart));
+                setGlobalGuestCart(updatedGuestCart)
             }
         }
     };

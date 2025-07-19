@@ -3,6 +3,7 @@ import CategoryCollection from "../Pages/CategoryCollection.jsx"
 import Home from "../Pages/Home.jsx"
 import Cart from "../Components/CartPage/Cart.jsx"
 import ProductDetailPage from "../Pages/ProductDetailPage.jsx"
+import CustomerAccount from "../Pages/CustomerAccount.jsx"
 
 const routes = [
   {
@@ -28,6 +29,11 @@ const routes = [
   {
     path: "/cart",
     element: <Cart/>,
+    isProtected: true,
+  },
+  {
+    path: "/account/:dashboradMenu",
+    element: <CustomerAccount/>,
     isProtected: true,
   },
 ]

@@ -112,6 +112,24 @@ a:hover {
   }
 }
 
+.btn-dark {
+  background: #470531;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  border: 2px solid #470531;
+  transition: .3s all;
+  cursor: pointer;
+
+  &:hover {
+      background: transparent;
+      color: #470531;
+  }
+}
+
 button, input {
   font-family: "Oswald", sans-serif;
 } 

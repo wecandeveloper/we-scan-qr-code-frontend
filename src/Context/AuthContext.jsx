@@ -10,6 +10,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [ user, setUser ] = useState(null)
     const [ globalGuestCart, setGlobalGuestCart ] = useState(null)
+    const [ selectedDashboardMenu, setSelectedDashboardMenu ] = useState(null)
 
     const handleLogin = (user) => {
         setUser(user)
@@ -46,7 +47,9 @@ export const AuthProvider = ({ children }) => {
                 selectedCategory,
                 handleCategoryChange,
                 globalGuestCart,
-                setGlobalGuestCart
+                setGlobalGuestCart,
+                selectedDashboardMenu,
+                setSelectedDashboardMenu
             }}>
             { children }
         </AuthContext.Provider>

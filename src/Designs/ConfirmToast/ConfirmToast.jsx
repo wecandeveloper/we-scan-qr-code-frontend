@@ -7,23 +7,27 @@ const ConfirmToast = ({ message, onConfirm, onCancel }) => {
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    // Auto close after 3 seconds
     const timer = setTimeout(() => {
-      setExiting(true);
-      setTimeout(onCancel, 300); // match CSS exit duration
+      handleCancel(); // call handler instead of directly using onCancel to ensure exit transition
     }, 3000);
 
-    return () => clearTimeout(timer); // cleanup on unmount
-  }, [onCancel]);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleCancel = () => {
+    if (exiting) return;
     setExiting(true);
-    setTimeout(onCancel, 300); // match CSS exit duration
+    setTimeout(() => {
+      onCancel();
+    }, 300); // match exit animation
   };
 
   const handleConfirm = () => {
+    if (exiting) return;
     setExiting(true);
-    setTimeout(onConfirm, 300);
+    setTimeout(() => {
+      onConfirm();
+    }, 300);
   };
 
   return createPortal(

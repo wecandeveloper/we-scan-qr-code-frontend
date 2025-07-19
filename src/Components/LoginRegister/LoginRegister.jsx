@@ -12,8 +12,8 @@ import axios from "axios";
 import { localhost } from "../../Api/apis";
 import CustomAlert from "../../Designs/CustomAlert";
 import { useAuth } from "../../Context/AuthContext";
-import { useDispatch } from "react-redux";
-import { startCreateCart } from "../../Actions/cartActions";
+import { useDispatch, useSelector } from "react-redux";
+import { startCreateCart, startValidateCoupon } from "../../Actions/cartActions";
 
 export default function LoginRegister({ setShowModal }) {
     const { handleLogin } = useAuth()
@@ -21,6 +21,14 @@ export default function LoginRegister({ setShowModal }) {
     const [ isRegister, setIsRegister ] = useState(false);
     const [ isLogin, setIsLogin ] = useState(true);
     const [ isLoading, setIsLoading ] = useState(false);
+    const [ couponError, setCouponError ] = useState(false)
+    const [ couponSuccess, setCouponSuccess ] = useState(false)
+
+    const cart = useSelector(state => {
+        return state.cart.data
+    })
+
+    console.log(cart)
 
     const [registerFormData, setRegisterFormData] = useState({
         firstName: "",
@@ -189,16 +197,23 @@ export default function LoginRegister({ setShowModal }) {
                 if (guestCartData && guestCartData.lineItems?.length > 0) {
                     const newCart = {
                         lineItems: guestCartData.lineItems.map(lineItem => ({
-                        productId: lineItem.productId._id,
-                        quantity: lineItem.quantity
+                            productId: lineItem.productId._id,
+                            quantity: lineItem.quantity
                         }))
                     };
 
-                    console.log(newCart)
-
+                    console.log(guestCartData)
                     dispatch(startCreateCart(newCart)); // This will merge/create on backend
+
+                    if(!cart.appliedCoupon) {
+                        if(guestCartData.appliedCoupon) {
+                            dispatch(startValidateCoupon(guestCartData.appliedCoupon.code, setCouponSuccess, setCouponError))
+                        }
+                    } else {
+                        toast.warning(`Only One Coupon can be claimed for ${cart?.lineItems?.length > 1 ? "these" : "this"} Item${cart?.lineItems?.length > 1 ? "s" : ""}`);
+                    }
                     localStorage.removeItem("guestCart"); // Cleanup guest cart
-                    // toast.success("Guest cart transferred successfully!");
+                    toast.success("Guest cart transferred successfully!");
                 }
 
             } catch (err) {
