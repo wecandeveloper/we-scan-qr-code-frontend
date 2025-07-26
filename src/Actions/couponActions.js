@@ -3,11 +3,11 @@ import axios from 'axios'
 import {render, localhost} from "../Api/apis"
 import { toast } from 'react-toastify'
 
-export const startGetCategory = () => {
+export const startGetCoupon = () => {
     return async(dispatch)=>{
         try{
-            const response = await axios.get(`${localhost}/api/category/list`)
-            dispatch(getCategory(response.data.data))
+            const response = await axios.get(`${localhost}/api/coupon/list`)
+            dispatch(getCoupon(response.data.data))
             // console.log(response.data.data)
         }catch(err){
             alert(err)
@@ -16,74 +16,74 @@ export const startGetCategory = () => {
     }
 }
 
-const getCategory = (category)=>{
+const getCoupon = (coupon)=>{
     return {
-        type:"GET_CATEGORY",
-        payload:category
+        type: "GET_COUPON",
+        payload: coupon
     }
 }
-export const startCreateCategory = (formData, setServerErrors, handleCloseAll)=>{
+export const startCreateCoupon = (formData, setServerErrors, handleCloseAll)=>{
     return async (dispatch)=>{
         try{
-            const response = await axios.post(`${localhost}/api/category/create`, formData, {
+            const response = await axios.post(`${localhost}/api/coupon/create`, formData, {
                 headers:{
                     "Authorization":localStorage.getItem("token")
                 }
             })
-            dispatch(createCategory(response.data.data))
-            toast.success('Succesfully created category')
+            dispatch(createCoupon(response.data.data))
+            toast.success('Succesfully created Coupon')
             handleCloseAll()
             console.log(response.data.data)
         }catch(err){
             console.log(err)
-            toast.error("Failed to Add category")
+            toast.error("Failed to Add Coupon")
             setServerErrors(err.response.data.message)
         }
     }
 }
-const createCategory = (category)=>{
+const createCoupon = (coupon)=>{
     return {
-        type:"CREATE_CATEGORY",
-        payload: category
+        type: "CREATE_COUPON",
+        payload: coupon
     }
 }
 
-export const startUpdateCategory = (formData, categoryId, setServerErrors, handleCloseAll)=>{
+export const startUpdateCoupon = (formData, couponId, setServerErrors, handleCloseAll)=>{
     return async(dispatch)=>{
         try{
-            const response = await axios.put(`${localhost}/api/category/update/${categoryId}`, formData, {
+            const response = await axios.put(`${localhost}/api/coupon/update/${couponId}`, formData, {
                 headers:{
                     "Authorization":localStorage.getItem("token")
                 }
             })
-            dispatch(updateCategory(response.data.data));
-            toast.success('Category Updated Succesfully')
+            dispatch(updateCoupon(response.data.data));
+            toast.success('Coupon Updated Succesfully')
             handleCloseAll()
             console.log(response.data.data)
         }catch(err){
             setServerErrors(err.response.data.message)
-            toast.error("Failed to Update category")
+            toast.error("Failed to Update Coupon")
             alert(err)
             console.log(err)
         }
     }
 }
-const updateCategory = (category)=>{
+const updateCoupon = (coupon)=>{
     return{
-        type:'UPDATE_CATEGORY',
-        payload:category
+        type: "UPDATE_COUPON",
+        payload: coupon
     }
 }
 
-export const startDeleteCategory = (categoryId, handleCloseAll)=>{
+export const startDeleteCoupon = (couponId, handleCloseAll)=>{
     return async (dispatch)=>{
         try{
-            const response = await axios.delete(`${localhost}/api/category/delete/${categoryId}`,{
+            const response = await axios.delete(`${localhost}/api/coupon/delete/${couponId}`,{
                 headers: {
                     "Authorization": localStorage.getItem("token")
                 }
             })
-            dispatch(deleteCategory(response.data.data))
+            dispatch(deleteCoupon(response.data.data))
             toast.success(response.data.message)
             handleCloseAll()
             console.log(response.data.data)
@@ -93,9 +93,9 @@ export const startDeleteCategory = (categoryId, handleCloseAll)=>{
         }
     }
 }
-const deleteCategory = (category)=>{
+const deleteCoupon = (coupon)=>{
     return{
-        type:"DELETE_CATEGORY",
-        payload:category
+        type: "DELETE_COUPON",
+        payload: coupon
     }
 }

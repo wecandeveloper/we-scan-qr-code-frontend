@@ -5,6 +5,8 @@ import categoryReducers from "../Reducers/categoryReducers"
 import productReducers from "../Reducers/productReducers"
 import cartReducers from "../Reducers/cartReducers"
 import ordersReducers from "../Reducers/orderReducers"
+import addressesReducers from "../Reducers/addressReducers"
+import couponReducers from "../Reducers/couponReducers"
 
 const configureStore = () => {
     const store = createStore(combineReducers({
@@ -12,7 +14,9 @@ const configureStore = () => {
         categories: categoryReducers,
         products: productReducers,
         cart: cartReducers,
-        orders: ordersReducers
+        orders: ordersReducers,
+        addresses: addressesReducers,
+        coupons: couponReducers,
     }), applyMiddleware(thunk))
 
     return store

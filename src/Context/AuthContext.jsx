@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const AuthContext = createContext()
@@ -10,11 +11,16 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [ user, setUser ] = useState(null)
     const [ globalGuestCart, setGlobalGuestCart ] = useState(null)
-    const [ selectedDashboardMenu, setSelectedDashboardMenu ] = useState(null)
+    const [ selectedDashboardMenu, setSelectedDashboardMenu ] = useState("")
+    const [ selectedCategory, setSelectedCategory ] = useState("")
+    const [ openDashboardModal, setOpenDashboardModal ] = useState(false)
 
     const handleLogin = (user) => {
         setUser(user)
     }
+
+    const openDashboardModalFunc = () => setOpenDashboardModal(true);
+    const closeDashboardModalFunc = () => setOpenDashboardModal(false);
 
     // console.log(user)
 
@@ -22,9 +28,11 @@ export const AuthProvider = ({ children }) => {
         toast.success("Successfully Logged Out")
         setUser(null)
         localStorage.removeItem("token")
-    }
+        handleDashboardMenuChange("")
+        localStorage.removeItem("dashboardMenu")
+        Navigate("/")
 
-    const [ selectedCategory, setSelectedCategory ] = useState("")
+    }
 
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
@@ -36,6 +44,14 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const handleDashboardMenuChange = (menu) => {
+        setSelectedDashboardMenu(menu);
+        if(menu) {
+            localStorage.setItem("dashboardMenu", JSON.stringify(menu));
+        } else {
+            localStorage.removeItem("dashboardMenu")
+        }
+    }
 
     return (
         <AuthContext.Provider 
@@ -49,7 +65,10 @@ export const AuthProvider = ({ children }) => {
                 globalGuestCart,
                 setGlobalGuestCart,
                 selectedDashboardMenu,
-                setSelectedDashboardMenu
+                handleDashboardMenuChange,
+                openDashboardModal,
+                openDashboardModalFunc,
+                closeDashboardModalFunc
             }}>
             { children }
         </AuthContext.Provider>

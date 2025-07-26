@@ -4,6 +4,8 @@ import { startCancelOrder, startGetMyOrders } from "../../../../../Actions/order
 
 import "./CustomerOrders.scss"
 import { RiExpandUpDownFill } from "react-icons/ri";
+import { useAuth } from "../../../../../Context/AuthContext";
+import ConfirmToast from "../../../../../Designs/ConfirmToast/ConfirmToast";
 
 function formatDeliveryDate(isoString) {
   const date = new Date(isoString);
@@ -36,13 +38,26 @@ function formatDeliveryDate(isoString) {
 }
 
 export default function CustomerOrder() {
-    const dispacth = useDispatch()
+    const dispatch = useDispatch()
+    const { user } = useAuth()
+    const isLoggedIn = Boolean(user && user._id);
     const orders = useSelector((state) => {
         return state.orders.data
     })
 
     const [orderStatus, setOrderStatus] = useState("");
     const [orderDateFilter, setOrderDateFilter] = useState("");
+    const [showConfirmCancelOrder, setShowConfirmCancelOrder] = useState(false)
+    const [orderId, setOrderId] = useState("");
+    console.log(orders)
+
+    useEffect(() => {
+        if(isLoggedIn) {
+            dispatch(startGetMyOrders())
+        }
+    }, [isLoggedIn])
+
+    console.log(orders)
 
     const getFilteredOrders = () => {
         const now = new Date();
@@ -86,17 +101,18 @@ export default function CustomerOrder() {
         return filtered;
     };
 
-
-    useEffect(() => {
-        dispacth(startGetMyOrders())
-    }, [dispacth])
-
-    console.log(orders)
-
     const handleCancelOrder = (orderId) => {
-        dispacth(startCancelOrder(orderId))
+        setShowConfirmCancelOrder(true)
+        setOrderId(orderId)
     }
 
+    const confirmCancelOrder = () => {
+        dispatch(startCancelOrder(orderId))
+    }
+    
+    const cancelCanacelOrder = () => {
+        setShowConfirmCancelOrder(false)
+    }
     return (
         <section>
             <div className="customer-order-div">
@@ -191,6 +207,13 @@ export default function CustomerOrder() {
                     </div>
                 )}
             </div>
+            {showConfirmCancelOrder && (
+                <ConfirmToast
+                    message="Are you sure you want to Delete this Address?"
+                    onConfirm={confirmCancelOrder}
+                    onCancel={cancelCanacelOrder}
+                />
+            )}
         </section>
     )
 }

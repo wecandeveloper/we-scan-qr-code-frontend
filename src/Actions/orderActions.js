@@ -36,7 +36,7 @@ export const startGetAllOrders = () => {
                     "Authorization": localStorage.getItem("token")
                 }
             })
-            console.log(response.data.data)
+            // console.log(response.data.data)
             dispatch(setAllOrders(response.data.data))
         } catch(err) {
             console.log(err)
@@ -108,9 +108,9 @@ export const startCancelOrder = (orderId) => {
                     'Authorization' : localStorage.getItem('token')
                 }
             })
-            dispatch(cancelOrder(orderResponse.data))
-            alert("Order Canceled Successfully")
-            console.log(orderResponse.data)
+            dispatch(cancelOrder(orderResponse.data.data))
+            toast.success("Order Canceled Successfully")
+            // console.log(orderResponse.data)
         } catch(err) {
             console.log(err)
             alert(err.message)
@@ -134,7 +134,7 @@ export const startChangeOrderStatus = (orderId, status) => {
                 }
             })
             dispatch(changeOrderStatus(orderResponse.data))
-            alert("Order Status Changed Successfully")
+            toast.success("Order Status Changed Successfully")
             console.log(orderResponse.data)
         } catch(err) {
             console.log(err)

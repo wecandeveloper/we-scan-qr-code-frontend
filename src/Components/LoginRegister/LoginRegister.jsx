@@ -14,10 +14,13 @@ import CustomAlert from "../../Designs/CustomAlert";
 import { useAuth } from "../../Context/AuthContext";
 import { useDispatch, useSelector } from "react-redux";
 import { startCreateCart, startValidateCoupon } from "../../Actions/cartActions";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function LoginRegister({ setShowModal }) {
-    const { handleLogin } = useAuth()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const { handleLogin, handleDashboardMenuChange } = useAuth()
+
     const [ isRegister, setIsRegister ] = useState(false);
     const [ isLogin, setIsLogin ] = useState(true);
     const [ isLoading, setIsLoading ] = useState(false);
@@ -28,7 +31,7 @@ export default function LoginRegister({ setShowModal }) {
         return state.cart.data
     })
 
-    console.log(cart)
+    // console.log(cart)
 
     const [registerFormData, setRegisterFormData] = useState({
         firstName: "",
@@ -215,7 +218,12 @@ export default function LoginRegister({ setShowModal }) {
                     localStorage.removeItem("guestCart"); // Cleanup guest cart
                     toast.success("Guest cart transferred successfully!");
                 }
-
+                if(userData.role === "superAdmin") {
+                    navigate("/admin/dashboard")
+                } else if (userData.role === "customer") {
+                    navigate("/account")
+                    handleDashboardMenuChange("my-orders")
+                }
             } catch (err) {
                 setFormErrors({})
                 console.log(err)

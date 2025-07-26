@@ -1,0 +1,251 @@
+.superadmin-dashboard {
+    background: #f5f5f5;
+    margin-top: 80px;
+    height: calc(100vh - 80px); // Make sure it fits the remaining viewport
+    overflow: hidden; // prevent the entire page from scrolling
+}
+
+.super-admin-dashboard-home-section {
+    display: flex;
+    width: 100%;
+    height: 100%; // full height of dashboard
+    overflow: hidden;
+
+    .dashboard-navigation-div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        width: 300px;
+        background: white;
+        box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.08);
+        overflow-y: auto;
+        // max-height: 100%; // restrict scrolling inside
+        transition: 0.5s;
+
+        .dashboard-hr-1 {
+            // margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            width: 100%;
+            height: 1px;
+        }
+
+        .close-menu-btn {
+            position: fixed;
+            top: 50%;
+            left: 300px;
+            transform: translateY(-50%);
+            background: #470531;
+            color: white;
+            height: 50px;
+            width: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            cursor: pointer;
+            transition: 0.5s;
+            box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.08);
+
+
+            .icon {
+                font-size: 50px;
+                // margin-right: 10px;
+            }
+        }
+
+        .dashboard-head {
+            padding: 30px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            width: 300px;
+            cursor: pointer;
+
+            .icon {
+                font-size: 30px;
+            }
+
+            .heading {
+                font-size: 20px;
+            }
+        }
+
+        .dashboard-section-grid {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+
+            .dashboard-menu-div {
+                // position: sticky;
+                height: 100%;
+                width: 100%;
+                background: white;
+                padding: 0px;
+
+                .heading {
+                    padding: 0px 30px 0px;
+
+                    .main-heading {
+                        font-size: 20px;
+                        letter-spacing: 1px;
+                    }
+                }
+
+                .dashboard-hr-2 {
+                    margin-top: 20px;
+                    border: .5px solid #e0e0e0;
+                    width: 280px;
+                    height: 1px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+
+                .menubar-ul {
+                    margin: 20px 10px 20px;
+                    width: 280px;
+                    // margin-left: 30px;
+
+                    .menubar-li {
+                        display: flex;
+                        flex-direction: column;
+                        padding: 10px 30px 10px;
+                        border-left: 3px solid white;
+                        cursor: pointer;
+                        transition: .5s;
+                    }
+
+                    .menubar-li.active {
+                        font-weight: 600;
+                        border-left: 3px solid #470531;
+                        transition: .5s;
+                        background: #eaeaea;
+                    }
+
+                    .menubar-li:hover {
+                        background: #eaeaea;
+                        border-left: 3px solid #470531;
+                        transition: .5s;
+                    }
+
+                    .dropdown-ul {
+                        padding-left: 10px;
+
+                        .dropdown-li {
+                            display: flex;
+                            flex-direction: column;
+                            padding: 10px 30px 10px;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+
+            .dashboard-menu-div:last-child .dashboard-hr-2 {
+                display: none;
+            }
+
+        }
+
+        .logout-div {
+            // height: 100%;
+            width: 100%;
+            padding: 30px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: left;
+            gap: 10px;
+            cursor: pointer;
+
+            svg {
+                font-size: 25px;
+                transition: transform 0.2s ease; // smooth transition
+            }
+
+            p {
+                transition: transform 0.2s ease; // smooth transition
+            }
+
+            &:hover {
+                svg, p {
+                    transform: translateX(4px); // move right by 4px
+                }
+            }
+        }
+    }
+
+    .dashboard-navigation-div.close {
+        margin-left: -300px;
+        transition: 0.5s;
+
+        .close-menu-btn {
+            left: 0;
+            transition: 0.5s;
+        }
+    }
+
+    .dashboard-overview-div {
+        flex: 1;
+        background: #eaeaea;
+        padding: 50px;
+        overflow-y: auto;
+        max-height: 100%;
+
+        .dashboard-overview-head {
+            font-size: 30px;
+        }
+
+        .dashboard-overview-grid {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            // flex-wrap: wrap;
+            gap: 30px;
+
+            .dashboard-overview-card {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                width: 100%;
+                background: #470531;
+                color: white;
+                padding: 20px 30px;
+                border-radius: 10px;
+                gap: 30px;
+
+                .icon {
+                    font-size: 50px;
+                }
+            }
+        }
+    }
+
+    .dashboard-menu-section {
+        flex: 1;
+        overflow-y: auto;
+        max-height: 100%;
+    }
+}
+
+@media (max-width: 950px) {
+    .dashboardhome-container {
+        margin-top: 50px;
+        flex-direction: column;
+
+        .navigation-section {
+            width: 100%;
+        }
+
+        .dashboardhome-section {
+            width: 100%;
+        }
+    }
+}

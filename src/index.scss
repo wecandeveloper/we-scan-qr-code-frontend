@@ -105,6 +105,7 @@ a:hover {
   border-radius: 10px;
   transition: .3s;
   cursor: pointer;
+  font-size: 16px;
 
   &:hover {
     background: #f4eac5;
@@ -120,9 +121,11 @@ a:hover {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
   border: 2px solid #470531;
   transition: .3s all;
   cursor: pointer;
+  font-size: 16px;
 
   &:hover {
       background: transparent;
@@ -145,6 +148,9 @@ button, input {
   font-family: "Oswald", sans-serif !important;
 }
 
+.dashboard-head {
+  font-size: 30px;
+}
 
 @media(max-width: 2000px) {
   .section-container {

@@ -99,45 +99,6 @@ export default function Cart() {
         })()
     },[])
 
-    const confirmRemoveCoupon = () => {
-        if (isLoggedIn) {
-            dispatch(startRemoveCoupon(setCouponSuccess));
-        } else {
-            const guestCartData = JSON.parse(localStorage.getItem("guestCart"));
-
-            if (guestCartData?.appliedCoupon) {
-                // Remove coupon-related fields
-                // const { appliedCoupon, discountAmount, discountPercentage, totalAmount, ...rest } = guestCartData;
-
-                // const updatedGuestCart = {
-                //     ...rest,
-                //     totalAmount: guestCartData.originalAmount, // Revert to original amount
-                // };
-
-                const updatedGuestCart = {
-                    ...guestCartData,
-                    appliedCoupon: null,
-                    discountAmount: 0,
-                    discountPercentage: 0,
-                    totalAmount: guestCartData.originalAmount, // Reset to original
-                };
-
-                localStorage.setItem("guestCart", JSON.stringify(updatedGuestCart));
-                setGuestCart(updatedGuestCart); // update state
-                // console.log(guestCart)
-                setCouponError("")
-                setCouponSuccess("Coupon removed");
-                toast.success("Coupon removed successfully");
-            } else {
-                toast.warning("No coupon applied");
-            }
-        }
-    };
-
-    const cancelRemoveCoupon = () => {
-        setShowRemoveCouponConfirm(false)
-    }
-
     const handleRemoveLineItem = (product) => {
         // console.log("Hii")
         setShowConfirm(true);
@@ -350,6 +311,45 @@ export default function Cart() {
             setCouponError("Please add something to cart to Claim Coupon");
             toast.error("Please add something to cart to Claim Coupon")
         }
+    }
+
+    const confirmRemoveCoupon = () => {
+        if (isLoggedIn) {
+            dispatch(startRemoveCoupon(setCouponSuccess));
+        } else {
+            const guestCartData = JSON.parse(localStorage.getItem("guestCart"));
+
+            if (guestCartData?.appliedCoupon) {
+                // Remove coupon-related fields
+                // const { appliedCoupon, discountAmount, discountPercentage, totalAmount, ...rest } = guestCartData;
+
+                // const updatedGuestCart = {
+                //     ...rest,
+                //     totalAmount: guestCartData.originalAmount, // Revert to original amount
+                // };
+
+                const updatedGuestCart = {
+                    ...guestCartData,
+                    appliedCoupon: null,
+                    discountAmount: 0,
+                    discountPercentage: 0,
+                    totalAmount: guestCartData.originalAmount, // Reset to original
+                };
+
+                localStorage.setItem("guestCart", JSON.stringify(updatedGuestCart));
+                setGuestCart(updatedGuestCart); // update state
+                // console.log(guestCart)
+                setCouponError("")
+                setCouponSuccess("Coupon removed");
+                toast.success("Coupon removed successfully");
+            } else {
+                toast.warning("No coupon applied");
+            }
+        }
+    };
+
+    const cancelRemoveCoupon = () => {
+        setShowRemoveCouponConfirm(false)
     }
 
     const handleRemoveCoupon = () => {

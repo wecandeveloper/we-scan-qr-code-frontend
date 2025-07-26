@@ -1,10 +1,10 @@
 import { Fragment } from "react";
-import CustomerHomeDashboard from "../Components/Account/Customer/CustomerHomeDashboard/CustomerHomeDashboard";
+import CustomerDashboardHome from "../Components/Account/Customer/CustomerDashboardHome/CustomerDashboardHome";
 
 export default function CustomerAccount() {
     return (
         <Fragment>
-            <CustomerHomeDashboard/>
+            <CustomerDashboardHome/>
         </Fragment>
     )
 }

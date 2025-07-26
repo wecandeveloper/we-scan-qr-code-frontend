@@ -1,0 +1,367 @@
+.customer-addresses-section {
+    display: block;
+
+    .head-div {
+        display: flex;
+        flex-direction: row;
+        background: white;
+        // box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 26px;
+        border-radius: 10px;
+        justify-content: space-between;
+        align-items: center;
+
+        .head {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+
+    .addresses-grid {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        gap: 30px;
+
+        .address-card:not(:last-child)::after {
+            content: "";
+            display: block;
+            height: 1px;
+            background-color: #470531; /* or any color */
+            margin-top: 10px;
+        }
+    }
+
+    .address-head {
+        font-size: 25px;
+    }
+
+    .hr {
+        // height: 1px;
+        width: 100%;
+        background: #470531;
+        border: .5px solid #470531;
+        margin-top: -10px;
+        margin-bottom: -10px;
+    }
+
+    .address-card {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+
+        .address-card-head {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 50px;
+
+            .address-type {
+                font-size: 20px;
+            }
+
+            .address-actions {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+
+                .edit-btn, .delete-btn {
+                    cursor: pointer;
+                    text-decoration: underline;
+                }
+
+                .set-default-div {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 10px;
+
+                    .switch {
+                        position: relative;
+                        display: inline-block;
+                        width: 30px;
+                        height: 20px;
+                        margin-top: 2px;
+                    }
+
+                    .switch input {
+                        opacity: 0;
+                        width: 0;
+                        height: 0;
+                    }
+
+                    .slider {
+                        position: absolute;
+                        cursor: pointer;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-color: #ccc;
+                        transition: 0.3s;
+                        border-radius: 24px;
+                    }
+
+                    .slider:before {
+                        position: absolute;
+                        content: "";
+                        height: 14px;
+                        width: 14px;
+                        left: 3px;
+                        bottom: 3px;
+                        background-color: white;
+                        transition: 0.3s;
+                        border-radius: 50%;
+                    }
+
+                    input:checked + .slider {
+                        background-color: #470531; /* Your brand color */
+                    }
+
+                    input:checked + .slider:before {
+                        transform: translateX(10px);
+                    }
+
+                }
+            }
+        }
+
+        .address-card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            .card-row {
+                display: flex;
+                flex-direction: row;
+                gap: 20px;
+
+                .head {
+                    width: 100px;
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+
+    .address-card.default {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        gap: 30px;
+    }
+
+    .no-address-div {
+        .no-address-text {
+            span {
+                text-decoration: underline;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.address-form-modal {
+    display: block;
+
+    .address-form-head {
+        display: flex;
+        flex-direction: column;
+        background: white;
+        // box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        border-radius: 10px;
+        gap: 20px;
+
+        .head {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .btn-back {
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    }
+
+    .address-form-body {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: row;
+        gap: 50px;
+        width: 100%;
+        background: white;
+        // box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 26px;
+        border-radius: 10px;
+        position: relative;
+
+        .address-details {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            
+
+            .contact-form {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                width: 100%;
+
+                .form-field {
+                    width: 100%;
+                    // border: 2px solid #470531;
+                    border-radius: 10px;
+
+                    .MuiOutlinedInput-root {
+                        color: #470531;
+                        font-family: "Oswald", sans-serif;
+                        border-radius: 10px;
+                        transition: all 0.3s ease;
+
+                        fieldset {
+                            border-color: #470531;
+                            border-width: 1.5px;
+                            transition: 0.3s;
+                        }
+
+                        &:hover fieldset {
+                            border-color: #470531;
+                            border-width: 2px;
+                        }
+
+                        &.Mui-focused fieldset {
+                            border-color: #470531;
+                            border-width: 2px;
+                        }
+                    }
+
+                    .MuiInputLabel-root {
+                        color: #470531;
+                        font-family: "Oswald", sans-serif;
+                    }
+
+                    .MuiInputLabel-root.Mui-focused {
+                        color: #470531;
+                    }
+
+                    .MuiInputBase-input,
+                    .MuiSelect-select {
+                        color: #470531;
+                        font-family: "Oswald", sans-serif;
+                        text-align: left;
+                    }
+
+                    .start-adornment {
+                        font-family: "Oswald", sans-serif;
+                        color: #470531;
+                        font-weight: 500;
+                    }
+                }
+
+                .address-label-div {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+
+                    .address-label {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 20px;
+                    }
+
+                    .custom-radio {
+                        font-family: 'Oswald', sans-serif;
+                        font-size: 16px;
+                        color: #000;
+                        cursor: pointer;
+                    }
+
+                    .custom-radio input[type="radio"] {
+                        accent-color: #470531;
+                        margin-right: 10px;
+                        cursor: pointer;
+                    }
+                }
+
+                .set-default-div {
+                    margin-top: 10px;
+                    display: flex;
+                    flex-direction: row;
+                    gap: 20px;
+
+                    .switch {
+                        position: relative;
+                        display: inline-block;
+                        width: 42px;
+                        height: 24px;
+                    }
+
+                    .switch input {
+                        opacity: 0;
+                        width: 0;
+                        height: 0;
+                    }
+
+                    .slider {
+                        position: absolute;
+                        cursor: pointer;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-color: #ccc;
+                        transition: 0.3s;
+                        border-radius: 24px;
+                    }
+
+                    .slider:before {
+                        position: absolute;
+                        content: "";
+                        height: 18px;
+                        width: 18px;
+                        left: 3px;
+                        bottom: 3px;
+                        background-color: white;
+                        transition: 0.3s;
+                        border-radius: 50%;
+                    }
+
+                    input:checked + .slider {
+                        background-color: #470531; /* Your brand color */
+                    }
+
+                    input:checked + .slider:before {
+                        transform: translateX(18px);
+                    }
+
+                }
+
+                .btn-dark {
+                    position: absolute;
+                    bottom: 30px;
+                    right: 30px;
+                    width: 150px;
+                    margin-left: auto;
+                    margin-top: auto;
+                }
+            }
+        }
+    }
+}

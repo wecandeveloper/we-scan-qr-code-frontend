@@ -2,19 +2,23 @@ import { useEffect, useState } from "react"
 import { useAuth } from "../../../../Context/AuthContext"
 import { useNavigate } from "react-router-dom"
 
-import "./CustomerHomeDashboard.scss"
+import "./CustomerDashboardHome.scss"
 import defaultProfilePic from "../../../../Assets/Common/account-icon.png"
 import { TbLogout } from "react-icons/tb"
 import Cart from "../../../CartPage/Cart"
 import CustomerOrder from "../CustomerDashboardMenu/CustomerOrders/CustomerOrders"
+import CustomerCart from "../CustomerDashboardMenu/CustomerCart/CustomerCart"
+import CustomerProfile from "../CustomerDashboardMenu/CustomerProfile/CustomerProfile"
+import CustomerAddresses from "../CustomerDashboardMenu/CustomerAddresses/CustomerAddresses"
+import CustomerPassword from "../CustomerDashboardMenu/CustomerPassword/CustomerPassword"
 
-export default function CustomerHomeDashboard() {
+export default function CustomerDashboardHome() {
     const navigate = useNavigate()
     const { 
         user,
         handleLogout,
         selectedDashboardMenu,
-        setSelectedDashboardMenu
+        handleDashboardMenuChange
     } = useAuth()
 
     // console.log(user)
@@ -32,37 +36,37 @@ export default function CustomerHomeDashboard() {
             dashboardMenu: "my-cart", 
             name: "My Cart", 
             link: "/my-cart",
-            component: <Cart/>
+            component: <CustomerCart/>
         },
         { 
             id: 3, 
             dashboardMenu: "my-profile", 
             name: "My Profile", 
             link: "/my-profile",
-            component: "" 
+            component: <CustomerProfile/>
         },
         { 
             id: 4, 
             dashboardMenu: "my-addresses", 
             name: "My Addresses", 
             link: "/my-addresses",
-            component: "" 
+            component: <CustomerAddresses/>
         },
         { 
             id: 5,
-            dashboardMenu: "Change Password", 
+            dashboardMenu: "change-password", 
             name: "Change Password", 
             link: "/change-password",
-            component: "" },
-        { 
-            id: 6,
-            dashboardMenu: "payments", 
-            name: "Payments", 
-            link: "/payments",
-            component: "" 
+            component: <CustomerPassword/>
         },
+        // { 
+        //     id: 6,
+        //     dashboardMenu: "payments", 
+        //     name: "Payments", 
+        //     link: "/payments",
+        //     component: "" 
+        // },
     ];
-
 
     return (
         <section>
@@ -70,7 +74,7 @@ export default function CustomerHomeDashboard() {
                 <div className="dashboard-navigation-div">
                     <div className="profile-div">
                         <div className="profile-image-div">
-                            <img src={user?.profilePic ? user.profilePic : defaultProfilePic} alt="profile-pic" className="profile-image"/>
+                            <img src={defaultProfilePic} alt="profile-pic" className="profile-image"/>
                         </div>
                         <div className="profile-details">
                             <h1 className="profile-name">{user?.firstName} {user?.lastName}</h1>
@@ -89,7 +93,7 @@ export default function CustomerHomeDashboard() {
                                         key={menu.id}
                                         className={`menubar-li ${selectedDashboardMenu == menu.dashboardMenu ? "active" : ""}`} 
                                         onClick={() => {
-                                            setSelectedDashboardMenu(menu.dashboardMenu)
+                                            handleDashboardMenuChange(menu.dashboardMenu)
                                             navigate(`/account${menu.link}`)
                                         }}
                                     >

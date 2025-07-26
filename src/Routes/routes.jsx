@@ -4,38 +4,61 @@ import Home from "../Pages/Home.jsx"
 import Cart from "../Components/CartPage/Cart.jsx"
 import ProductDetailPage from "../Pages/ProductDetailPage.jsx"
 import CustomerAccount from "../Pages/CustomerAccount.jsx"
+import UnAuthorized from "../Components/UnAuthorized/UnAuthorixed.jsx"
+import SuperAdminAccount from "../Pages/SuperAdminAccount.jsx"
 
 const routes = [
   {
     path: "/",
     element: <Home/>,
-    isProtected: true,
+    isProtected: false,
   },
   {
     path: "/collections",
     element: <CategoryCollection/>,
-    isProtected: true,
+    isProtected: false,
   },
   {
     path: "/collections/:categoryName",
     element: <CategoryCollection/>,
-    isProtected: true,
+    isProtected: false,
   },
   {
     path: "/products/:productName",
     element: <ProductDetailPage/>,
-    isProtected: true,
+    isProtected: false,
   },
   {
     path: "/cart",
     element: <Cart/>,
+    isProtected: false,
+    // roles: ["customer"],
+  },
+  {
+    path: "/account",
+    element: <CustomerAccount/>,
     isProtected: true,
+    roles: ["customer"],
   },
   {
     path: "/account/:dashboradMenu",
     element: <CustomerAccount/>,
     isProtected: true,
+    roles: ["customer"],
   },
+  {
+    path: "/admin/dashboard",
+    element: <SuperAdminAccount/>,
+    isProtected: true,
+    roles: ["superAdmin"],
+  },
+  {
+    path: "/un-authorized",
+    element: <UnAuthorized/>,
+    isProtected: false,
+  },
+  
+
 ]
 
 export default routes

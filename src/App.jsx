@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { localhost } from './Api/apis';
 import { startCreateOrder } from './Actions/orderActions';
+import AdminHeader from './Components/Header/AdminHeader/AdminHeader';
 // import Footer from './Components/Footer/Footer';
 
 export default function App() {
@@ -22,7 +23,8 @@ export default function App() {
   const dispatch = useDispatch();
   const [pageLoading, setPageLoading] = useState(true); // True initially for pre-loader
 
-  const { handleLogin, handleCategoryChange } =useAuth()
+  const { user, handleLogin, handleCategoryChange, handleDashboardMenuChange } =useAuth()
+  const isLoggedIn = Boolean(user && user._id);
 
   useEffect(() => {
     setPageLoading(true);
@@ -46,6 +48,16 @@ export default function App() {
       }
     }
 
+    const storedDashboardMenu = localStorage.getItem("dashboardMenu");
+    if (storedDashboardMenu && storedDashboardMenu !== "undefined") {
+      try {
+        const parsedDashboardMenu = JSON.parse(storedDashboardMenu);
+        handleDashboardMenuChange(parsedDashboardMenu)
+      } catch (err) {
+        console.error("Invalid dashboard menu in localStorage:", err);
+        localStorage.removeItem("dashboardMenu");
+      }
+    }
     dispatch(startGetCategory());
     dispatch(startGetAllProducts());
   }, [dispatch]);
@@ -122,9 +134,9 @@ export default function App() {
               toastClassName="custom-toast"
               bodyClassName="custom-toast-body"
             />
-            <Header />
+            {location.pathname === "/admin/dashboard" ? <AdminHeader/> : <Header />}
             <AppRouter routes={routes} />
-            <Footer />
+            {location.pathname !== "/admin/dashboard" && <Footer />}
           </Fragment>
           </div>
         )}

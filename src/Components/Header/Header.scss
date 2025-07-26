@@ -77,12 +77,21 @@ nav {
                 gap: 10px;
                 cursor: pointer;
                 transition: .3s;
+                white-space: nowrap;
 
                 .username {
                     display: flex;
                     align-items: center;
                     font-size: 18px;
-                    width: 100% !important;
+                    // width: 100% !important;
+                    margin-top: 5px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .account-icon {
+                    font-size: 20px;
                     margin-top: 5px;
                 }
 

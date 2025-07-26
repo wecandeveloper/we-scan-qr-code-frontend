@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "../../../../../Context/AuthContext"
 
-import "./CustomerProfile.scss"
+import "./ProfileDashboard.scss"
 
 import { TextField } from "@mui/material"
 import PhoneInput from "react-phone-input-2"
@@ -14,6 +14,7 @@ import { localhost } from "../../../../../Api/apis"
 import { toast } from "react-toastify"
 import CustomAlert from "../../../../../Designs/CustomAlert"
 import checkIcon from "../../../../../Assets/Icons/check-icon.png"
+import defaultProfile from "../../../../../Assets/Common/account-icon.png"
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -57,7 +58,7 @@ function formatDateToYYYYMMDD(dateString) {
     return `${year}-${month}-${day}`;
 }
 
-export default function CustomerProfile() {
+export default function ProfileDashboard() {
     const { user, handleLogin } = useAuth()
     console.log(user)
     const [ loading, setLoading ] = useState(false)
@@ -258,7 +259,7 @@ export default function CustomerProfile() {
                         <h1 className="contact-info-head">Personal Information</h1>
                         <div className="contact-info">
                             <div className="profile-image-div">
-                                <img src={preview || user.profilePic} alt="" />
+                                <img src={preview || user.profilePic || defaultProfile} alt="" />
                             </div>
                         </div>
                         <UploadButton

@@ -28,8 +28,9 @@ import { GiChocolateBar, GiKetchup, GiWrappedSweet } from "react-icons/gi";
 import { PiIceCreamBold } from "react-icons/pi";
 import { RiDrinksFill } from "react-icons/ri";
 import { BiSolidCookie, BiSolidOffer } from "react-icons/bi";
-import { TbLogout } from "react-icons/tb";
+import { TbLogin, TbLogout } from "react-icons/tb";
 import { startGetMyCart } from "../../Actions/cartActions";
+import { useNavigate } from "react-router-dom";
 
 
 const categoriesIcon = [
@@ -46,26 +47,26 @@ const dashboardMenuLinks = [
     {
         id: 1,
         name: "Orders",
-        dashboardMenu: "orders",
-        link: "/orders",
+        dashboardMenu: "my-orders",
+        link: "/my-orders",
         icon: icon1
     },
     {
-        id: 1,
+        id: 2,
         name: "Account",
-        dashboardMenu: "account",
-        link: "/account",
+        dashboardMenu: "my-profile",
+        link: "/my-profile",
         icon: icon2
     },
     {
-        id: 1,
+        id: 3,
         name: "Address",
-        dashboardMenu: "address",
-        link: "/address",
+        dashboardMenu: "my-addresses",
+        link: "/my-addresses",
         icon: icon3
     },
     {
-        id: 1,
+        id: 4,
         name: "Change Password",
         dashboardMenu: "change-password",
         link: "/change-password",
@@ -101,6 +102,7 @@ const style = {
 
 export default function Header() {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { 
         user, 
         globalGuestCart, 
@@ -109,7 +111,10 @@ export default function Header() {
         selectedCategory, 
         handleCategoryChange,
         selectedDashboardMenu,
-        setSelectedDashboardMenu
+        handleDashboardMenuChange,
+        openDashboardModal,
+        openDashboardModalFunc,
+        closeDashboardModalFunc
     } = useAuth()
     const isLoggedIn = Boolean(user && user._id);
 
@@ -117,14 +122,10 @@ export default function Header() {
         return state.categories.data;
     })
 
-    console.log(selectedDashboardMenu)
+    // console.log(selectedDashboardMenu)
 
     const [ showModal, setShowModal] = useState(false);
-    const [ openDashboardModal, setOpenDashboardModal ] = useState(false)
-
-    const handleDashboardModal = () => {
-        setOpenDashboardModal(!openDashboardModal)
-    }
+    
 
     const cart = useSelector(state => {
         return state.cart.data
@@ -136,7 +137,7 @@ export default function Header() {
     // console.log(cartItems)
 
     useEffect(() => {
-        if (isLoggedIn) {
+        if (isLoggedIn && user.role === 'customer') {
             dispatch(startGetMyCart());
         } else {
             const guestCartData = JSON.parse(localStorage.getItem("guestCart")) || { lineItems: [] };
@@ -155,9 +156,13 @@ export default function Header() {
                     <input type="text" placeholder="What are you looking for...?"/>
                 </div>
                 <div className="login-div">
-                    <div className="account-div" onClick={() => { user ? handleDashboardModal() : setShowModal(!showModal) }}>
-                        <p className="username">{user ? `Hala,${user.firstName}` : "LogIn"}</p>
-                        <FaUser className="login-icon"/>
+                    <div className="account-div" onClick={() => { 
+                        user?.role === "superAdmin" ? navigate("/admin/dashboard") : user ? openDashboardModalFunc() : setShowModal(!showModal) 
+                        }}>
+                        <p className="username">
+                            {user?.role === "superAdmin" ? "Admin" : user ? `Hala, ${user.firstName}` : "LogIn"}
+                        </p>
+                        {user ? <FaUser className="account-icon"/> : <TbLogin className="login-icon"/>}
                     </div>
                     <span>|</span>
                     <a href="/cart">
@@ -206,52 +211,55 @@ export default function Header() {
                     </li>
                 </a>
             </div>
-            <Modal
-                open={openDashboardModal}
-                onClose={handleDashboardModal}
-                BackdropProps={{ invisible: true }}
-                // aria-labelledby="modal-modal-title"
-                // aria-describedby="modal-modal-description"
-            >
-                <Box sx={{...style, outline: 'none',}}>
-                    <div className="profile-dashboard">
-                        <div className="profile-div">
-                            <div className="profile-image-div">
-                                <img src={user?.profilePic ? user.profilePic : defaultProfilePic} alt="profile-pic" className="profile-image"/>
+            {(user) && (
+                <Modal
+                    open={openDashboardModal}
+                    onClose={closeDashboardModalFunc}
+                    BackdropProps={{ invisible: true }}
+                    // aria-labelledby="modal-modal-title"
+                    // aria-describedby="modal-modal-description"
+                >
+                    <Box sx={{...style, outline: 'none',}}>
+                        <div className="profile-dashboard">
+                            <div className="profile-div">
+                                <div className="profile-image-div">
+                                    <img src={user?.profilePic ? user.profilePic : defaultProfilePic} alt="profile-pic" className="profile-image"/>
+                                </div>
+                                <div className="profile-details">
+                                    <h1 className="profile-name">{user?.firstName} {user?.lastName}</h1>
+                                    <p className="profile-email">{user?.email.address}</p>
+                                </div>
                             </div>
-                            <div className="profile-details">
-                                <h1 className="profile-name">{user?.firstName} {user?.lastName}</h1>
-                                <p className="profile-email">{user?.email.address}</p>
+                            <hr className="hr"/>
+                            <div className="dashboard-links">
+                                {dashboardMenuLinks.map((menu) => {
+                                    return (
+                                        <a 
+                                            key={menu.id}
+                                            href={`/account${menu.link}`} 
+                                            onClick={() => {handleDashboardMenuChange(menu.dashboardMenu)}} 
+                                            className="dashboard-link"
+                                        >
+                                            <img src={menu.icon} alt="" />
+                                            <h1 className={`dashboard-menu ${selectedDashboardMenu === menu.dashboardMenu ? "active" : ""}`}>
+                                                {menu.name}
+                                            </h1>
+                                        </a>
+                                    )
+                                })}
+                                
+                            </div>
+                            <hr className="hr"/>
+                            <div className="logout-div">
+                                <div onClick={() => {
+                                    handleLogout()
+                                    closeDashboardModalFunc()
+                                }} className="logout-link"><TbLogout className="icon"/>Logout</div>
                             </div>
                         </div>
-                        <hr className="hr"/>
-                        <div className="dashboard-links">
-                            {dashboardMenuLinks.map((menu) => {
-                                return (
-                                    <a 
-                                        // href={`/account${menu.link}`} 
-                                        onClick={() => {setSelectedDashboardMenu(menu.dashboardMenu)}} 
-                                        className="dashboard-link"
-                                    >
-                                        <img src={menu.icon} alt="" />
-                                        <h1 className={`dashboard-menu ${selectedDashboardMenu === menu.dashboardMenu ? "active" : ""}`}>
-                                            {menu.name}
-                                        </h1>
-                                    </a>
-                                )
-                            })}
-                            
-                        </div>
-                        <hr className="hr"/>
-                        <div className="logout-div">
-                            <div onClick={() => {
-                                handleLogout()
-                                setOpenDashboardModal(false)
-                            }} className="logout-link"><TbLogout className="icon"/>Logout</div>
-                        </div>
-                    </div>
-                </Box>
-            </Modal>
+                    </Box>
+                </Modal>
+            )}
             {showModal && <LoginRegister setShowModal={setShowModal}/>}
         </nav>
     )

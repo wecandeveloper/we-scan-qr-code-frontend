@@ -1,6 +1,7 @@
 // import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
 import {render, localhost} from "../Api/apis"
+import { toast } from 'react-toastify'
 
 export const startGetAllProducts = () => {
     return async(dispatch)=>{
@@ -42,75 +43,80 @@ const getOneProduct = (product)=>{
     }
 }
 
-export const startCreateCategory = (formData,navigate)=>{
+export const startCreateProduct = (formData, setServerErrors, handleCloseAll)=>{
     return async (dispatch)=>{
         try{
-            const response = await axios.post(`${localhost}/api/product/create`,formData,{
+            const response = await axios.post(`${localhost}/api/product/create`, formData, {
                 headers:{
                     "Authorization":localStorage.getItem("token")
                 }
             })
-            dispatch(createCategory(response.data))
-            navigate('/manage-category')
-            alert('succesfully created category')
-            console.log(response.data)
+            dispatch(createProduct(response.data.data))
+            toast.success('Succesfully created Product')
+            handleCloseAll()
+            console.log(response.data.data)
         }catch(err){
-            alert(err)
             console.log(err)
+            toast.error("Failed to Add Product")
+            setServerErrors(err.response.data.message)
         }
     }
 }
-const createCategory = (products)=>{
+const createProduct = (category)=>{
     return {
         type:"CREATE_PRODUCT",
-        payload: products
+        payload: category
     }
 }
 
-export const startUpdateCategory = (formData,id,toggle)=>{
+export const startUpdateProduct = (formData, categoryId, setServerErrors, handleCloseAll)=>{
     return async(dispatch)=>{
         try{
-            const response = await axios.put(`${localhost}/api/product/update/${id}`,formData,{
+            const response = await axios.put(`${localhost}/api/product/update/${categoryId}`, formData, {
                 headers:{
                     "Authorization":localStorage.getItem("token")
                 }
             })
-            dispatch(updateCategory(response.data));
-            toggle()
-            alert("Successfully updated!");
+            dispatch(updateProduct(response.data.data));
+            toast.success('Product Updated Succesfully')
+            handleCloseAll()
+            console.log(response.data.data)
         }catch(err){
+            setServerErrors(err.response.data.message)
+            toast.error("Failed to Update Product")
             alert(err)
             console.log(err)
         }
     }
 }
-const updateCategory = (products)=>{
+const updateProduct = (product)=>{
     return{
         type: 'UPDATE_PRODUCT',
-        payload: products
+        payload: product
     }
 }
 
-export const startDeleteCategory = (id)=>{
+export const startDeleteProduct = (productId, handleCloseAll)=>{
     return async (dispatch)=>{
         try{
-            const response = await axios.delete(`${localhost}/api/product/delete/${id}`,{
+            const response = await axios.delete(`${localhost}/api/product/delete/${productId}`,{
                 headers: {
                     "Authorization": localStorage.getItem("token")
                 }
             })
-            dispatch(deleteCategory(response.data))
-            alert('successfully deleted')
-            console.log(response.data)
+            dispatch(deleteProduct(response.data.data))
+            toast.success(response.data.message)
+            handleCloseAll()
+            console.log(response.data.data)
         }catch(err){
             console.log(err);
-            alert(err)
+            toast.error("Failed to Delete Product")
         }
     }
 }
-const deleteCategory = (products)=>{
+const deleteProduct = (product)=>{
     return{
-        type:"DELETE_PRODUCT",
-        payload: products
+        type: "DELETE_PRODUCT",
+        payload: product
     }
 }

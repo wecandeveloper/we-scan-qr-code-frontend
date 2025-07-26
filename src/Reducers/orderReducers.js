@@ -19,12 +19,12 @@ export default function ordersReducers(state = initialState, action) {
             return {...state, selected: action.payload }
         }
         case "CANCEL_ORDER": {
-            const orderIdToCancel = action.payload; // expecting _id
+            const orderIdToCancel = action.payload._id; // expecting _id
             return {
                 ...state,
                 data: state.data.map(order =>
                     order._id === orderIdToCancel
-                        ? { ...order, status: "Cancelled" }
+                        ? { ...order, status: "Canceled" }
                         : order
                 )
             };
