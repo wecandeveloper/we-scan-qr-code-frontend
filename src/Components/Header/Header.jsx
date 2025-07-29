@@ -1,6 +1,7 @@
 import { useAuth } from "../../Context/AuthContext";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
@@ -29,8 +30,9 @@ import { PiIceCreamBold } from "react-icons/pi";
 import { RiDrinksFill } from "react-icons/ri";
 import { BiSolidCookie, BiSolidOffer } from "react-icons/bi";
 import { TbLogin, TbLogout } from "react-icons/tb";
+import { SiCakephp } from "react-icons/si";
 import { startGetMyCart } from "../../Actions/cartActions";
-import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 const categoriesIcon = [
@@ -40,6 +42,7 @@ const categoriesIcon = [
     <RiDrinksFill />,
     <GiWrappedSweet />,
     <GiKetchup />,
+    <SiCakephp />,
     <BiSolidCookie />,
 ]
 
@@ -114,7 +117,9 @@ export default function Header() {
         handleDashboardMenuChange,
         openDashboardModal,
         openDashboardModalFunc,
-        closeDashboardModalFunc
+        closeDashboardModalFunc,
+        searchProduct,
+        setSearchProduct,
     } = useAuth()
     const isLoggedIn = Boolean(user && user._id);
 
@@ -151,9 +156,25 @@ export default function Header() {
                 <div className="logo-div">
                     <a href="/"><img src={logo} alt="Logo" className="logo"/></a>
                 </div>
-                <div className="search-div">
-                    <IoIosSearch className="search-icon"/>
-                    <input type="text" placeholder="What are you looking for...?"/>
+                <div className="search-div-section">
+                    <div className="search-div">
+                        <IoIosSearch className="search-icon"/>
+                        <input 
+                            type="text" 
+                            placeholder="What are you looking for...?"
+                            value={searchProduct}
+                            onChange={(e) => setSearchProduct(e.target.value)}
+                        />
+                    </div>
+                    <div className="btn btn-search" onClick={() => {
+                        if(!searchProduct) {
+                            toast.warning("Please enter something to search")
+                        } else {
+                            navigate("/collections")
+                        }
+                    }}>
+                        Search
+                    </div>
                 </div>
                 <div className="login-div">
                     <div className="account-div" onClick={() => { 

@@ -62,7 +62,7 @@ export default function CustomerOrder() {
     const getFilteredOrders = () => {
         const now = new Date();
 
-        const filtered = orders.filter((order) => {
+        const filtered = orders?.filter((order) => {
             const orderDate = new Date(order.createdAt);
 
             // Filter by status

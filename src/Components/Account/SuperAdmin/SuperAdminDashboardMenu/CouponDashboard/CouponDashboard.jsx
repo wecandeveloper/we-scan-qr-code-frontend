@@ -605,7 +605,7 @@ export default function CouponDashboard() {
                         </div>
                         <div className="footer-details">
                             Showing {(currentPage - 1) * showNo + 1}-
-                            {Math.min(currentPage * showNo, totalFilteredItems)} of {totalFilteredItems} Products
+                            {Math.min(currentPage * showNo, totalFilteredItems)} of {totalFilteredItems} Coupons
                         </div>
                         <div className="sort-show">
                             <label htmlFor="show-select">Show:</label>

@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
     const [ selectedDashboardMenu, setSelectedDashboardMenu ] = useState("")
     const [ selectedCategory, setSelectedCategory ] = useState("")
     const [ openDashboardModal, setOpenDashboardModal ] = useState(false)
+    const [ searchProduct, setSearchProduct ] = useState("")
 
     const handleLogin = (user) => {
         setUser(user)
@@ -68,7 +69,9 @@ export const AuthProvider = ({ children }) => {
                 handleDashboardMenuChange,
                 openDashboardModal,
                 openDashboardModalFunc,
-                closeDashboardModalFunc
+                closeDashboardModalFunc,
+                searchProduct,
+                setSearchProduct
             }}>
             { children }
         </AuthContext.Provider>

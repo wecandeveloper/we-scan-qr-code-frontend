@@ -433,7 +433,7 @@ export default function CategoryDashboard() {
                         </div>
                         <div className="footer-details">
                             Showing {(currentPage - 1) * showNo + 1}-
-                            {Math.min(currentPage * showNo, totalFilteredItems)} of {totalFilteredItems} Products
+                            {Math.min(currentPage * showNo, totalFilteredItems)} of {totalFilteredItems} Product Categories
                         </div>
                         <div className="sort-show">
                             <label htmlFor="show-select">Show:</label>
@@ -557,14 +557,18 @@ export default function CategoryDashboard() {
                                     {isEditCategory ? (
                                         categoryId ? (
                                             <div className="action-div">
-                                                <button className="btn edit-btn" onClick={handleAddCategory}>Save <MdSaveAs size={20}/></button>
+                                                <button className="btn edit-btn" 
+                                                        onClick={handleAddCategory}
+                                                    > Save <MdSaveAs size={20}/></button>
                                                 <button className="btn delete-btn" onClick={() => {
                                                     setShowConfirmCancel(true)
                                                 }}>Cancel <BiSolidTrash /></button>
                                             </div>
                                         ) : (
                                             <div className="action-div">
-                                                <button className="btn edit-btn" onClick={handleAddCategory}>Add <MdSaveAs size={20}/></button>
+                                                <button className="btn edit-btn" 
+                                                        onClick={handleAddCategory}
+                                                    >Add <MdSaveAs size={20}/></button>
                                                 <button className="btn delete-btn" onClick={() => {
                                                     setShowConfirmCancel(true)
                                                 }}>Cancel <BiSolidTrash /></button>

@@ -20,6 +20,9 @@ import ProductDashboard from "../SuperAdminDashboardMenu/ProductDashboard/Produc
 import CouponDashboard from "../SuperAdminDashboardMenu/CouponDashboard/CouponDashboard";
 import ProfileDashboard from "../SuperAdminDashboardMenu/ProfileDashboard/ProfileDashboard";
 import PasswordDashboard from "../SuperAdminDashboardMenu/PasswordDashboard/PasswordDashboard";
+import OrderDashboard from "../SuperAdminDashboardMenu/OrderDashboard/OrderDashboard";
+import PaymentDashboard from "../SuperAdminDashboardMenu/PaymentDashboard/PaymentDashboard";
+import CustomerListDashboard from "../SuperAdminDashboardMenu/CustomerListDashboard/CustomerListDashboard";
 
 const dashboardMenu = [
     {
@@ -56,39 +59,46 @@ const dashboardMenu = [
             },
         ]
     },
-    // {
-    //     id: 2,
-    //     section: "Sales & Orders",
-    //     menu: [
-    //         { 
-    //             id: 5,
-    //             dashboardMenu: "all-orders", 
-    //             name: "All Orders", 
-    //             link: "/all-orders",
-    //             component: ""
-    //         },
-    //         { 
-    //             id: 6,
-    //             dashboardMenu: "payments", 
-    //             name: "Payments", 
-    //             link: "/payments",
-    //             component: ""
-    //         },
-    //     ]
-    // },
-    // {
-    //     id: 3,
-    //     section: "User Management",
-    //     menu: [
-    //         { 
-    //             id: 7,
-    //             dashboardMenu: "user-list", 
-    //             name: "User List", 
-    //             link: "/user-list",
-    //             component: ""
-    //         },
-    //     ]
-    // },
+    {
+        id: 2,
+        section: "Sales & Orders",
+        menu: [
+            { 
+                id: 5,
+                dashboardMenu: "all-orders", 
+                name: "All Orders", 
+                link: "/all-orders",
+                component: <OrderDashboard/>
+            },
+            { 
+                id: 6,
+                dashboardMenu: "payments", 
+                name: "Payments", 
+                link: "/payments",
+                component: <PaymentDashboard/>
+            },
+        ]
+    },
+    {
+        id: 3,
+        section: "User Management",
+        menu: [
+            { 
+                id: 7,
+                dashboardMenu: "user-list", 
+                name: "User List", 
+                link: "/user-list",
+                component: <CustomerListDashboard/>
+            },
+            // { 
+            //     id: 7,
+            //     dashboardMenu: "store-admin-list", 
+            //     name: "Store Admin List", 
+            //     link: "/store-admin-list",
+            //     component: ""
+            // },
+        ]
+    },
     {
         id: 4,
         section: "Account Settings",
@@ -127,6 +137,10 @@ export default function SuperAdminDashboardHome() {
 
     const orders = useSelector((state) => {
         return state.orders.data
+    })
+
+    const payments = useSelector((state) => {
+        return state.payments.data
     })
 
     const [ openDashboardMenu, setOpenDashboardMenu ] = useState(true)
@@ -217,35 +231,35 @@ export default function SuperAdminDashboardHome() {
                                 <div className="icon"><LuCandy /></div>
                                 <div className="overview-details">
                                     <h1>Category</h1>
-                                    <p>{categories.length}</p>
+                                    <p>{categories?.length || 0}</p>
                                 </div>
                             </div>
                             <div className="dashboard-overview-card">
                                 <div className="icon"><BiSolidCookie /></div>
                                 <div className="overview-details">
                                     <h1>Products</h1>
-                                    <p>{products.length}</p>
+                                    <p>{products?.length || 0}</p>
                                 </div>
                             </div>
                             <div className="dashboard-overview-card">
                                 <div className="icon"><BiSolidOffer /></div>
                                 <div className="overview-details">
                                     <h1>Coupons</h1>
-                                    <p>{coupons.length}</p>
+                                    <p>{coupons?.length || 0}</p>
                                 </div>
                             </div>
                             <div className="dashboard-overview-card">
                                 <div className="icon"><TbTruckDelivery /></div>
                                 <div className="overview-details">
                                     <h1>Orders</h1>
-                                    <p>{orders.length}</p>
+                                    <p>{orders?.length || 0}</p>
                                 </div>
                             </div>
                             <div className="dashboard-overview-card">
                                 <div className="icon"><GrMoney /></div>
                                 <div className="overview-details">
                                     <h1>Payments</h1>
-                                    <p>AED 1000</p>
+                                    <p>AED {payments?.reduce((acc, curr) => acc + curr?.amount, 0) || 0}</p>
                                 </div>
                             </div>
                         </div>

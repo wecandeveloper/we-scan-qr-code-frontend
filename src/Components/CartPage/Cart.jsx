@@ -424,29 +424,34 @@ export default function Cart() {
     };
 
     const handleCheckout = async () => {
-        if (!isLoggedIn) {
-            toast.warning("please Log In to proceed to Checkout")
+        if(cartItems.length === 0) {
+            toast.error("Cart is Empty")
         } else {
-            if(originalAmount < 100) {
-                toast.warning("A minimum order of AED 100 is required to proceed. Add a few more snacks to unlock your checkout.")
+            if (!isLoggedIn) {
+                toast.warning("please Log In to proceed to Checkout")
             } else {
-                try {
-                    const response = await axios.post(`${localhost}/api/payment/`, {}, {
-                        headers: {
-                            Authorization: localStorage.getItem('token'),
-                        },
-                    })
-                    console.log(response)
-                    //Store the transaction id in local storage
-                    localStorage.setItem('stripeId', response.data.data.sessionId)
-                    
-                    //Redirecting the user to the chekout page of stripe
-                    window.location = response.data.data.paymentURL; 
-                } catch (error) {
-                    console.log(error)
+                if(originalAmount < 100) {
+                    toast.warning("A minimum order of AED 100 is required to proceed. Add a few more snacks to unlock your checkout.")
+                } else {
+                    try {
+                        const response = await axios.post(`${localhost}/api/payment/`, {}, {
+                            headers: {
+                                Authorization: localStorage.getItem('token'),
+                            },
+                        })
+                        console.log(response)
+                        //Store the transaction id in local storage
+                        localStorage.setItem('stripeId', response.data.data.sessionId)
+                        
+                        //Redirecting the user to the chekout page of stripe
+                        window.location = response.data.data.paymentURL; 
+                    } catch (error) {
+                        console.log(error)
+                    }
                 }
             }
         }
+        
     }
 
     return (

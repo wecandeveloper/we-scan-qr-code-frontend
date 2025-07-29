@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
-import { TextField, Button, Box, Alert } from '@mui/material';
+import { TextField, Button, Box, Alert, InputAdornment, IconButton } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -15,6 +15,7 @@ import { useAuth } from "../../Context/AuthContext";
 import { useDispatch, useSelector } from "react-redux";
 import { startCreateCart, startValidateCoupon } from "../../Actions/cartActions";
 import { Navigate, useNavigate } from "react-router-dom";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 export default function LoginRegister({ setShowModal }) {
     const dispatch = useDispatch()
@@ -26,6 +27,7 @@ export default function LoginRegister({ setShowModal }) {
     const [ isLoading, setIsLoading ] = useState(false);
     const [ couponError, setCouponError ] = useState(false)
     const [ couponSuccess, setCouponSuccess ] = useState(false)
+    const [ showPassword, setShowPassword ] = useState(false);
 
     const cart = useSelector(state => {
         return state.cart.data
@@ -237,34 +239,6 @@ export default function LoginRegister({ setShowModal }) {
         }
     };
 
-    // useEffect(() => {
-    //         const guestCartData = JSON.parse(localStorage.getItem("guestCart")) || { lineItems: [] };
-    
-    //         if (!isLoggedIn) {
-    //             // Case: Guest User
-    //             setGuestCart(guestCartData);
-    //         } else {
-    //             // Case: Logged-in User
-    //             dispatch(startGetMyCart()); // Always fetch server-side cart
-    
-    //             const hasGuestItems = guestCartData.lineItems.length > 0;
-    //             const hasServerItems = cart?.lineItems?.length > 0;
-    
-    //             if (hasGuestItems && !hasServerItems) {
-    //                 console.log("Hii")
-    //                 const newCart = {
-    //                     lineItems: guestCartData.lineItems.map((lineItem) => ({
-    //                         productId: lineItem.productId._id,
-    //                         quantity: lineItem.quantity
-    //                     }))
-    //                 };
-    //                 console.log("newCart", newCart)
-    //                 dispatch(startCreateCart(newCart)); // Migrate guest cart to user cart
-    //                 // localStorage.removeItem("guestCart"); // Clean up
-    //             }
-    //         }
-    //     }, [isLoggedIn]);
-
     return (
         <div className="modal-overlay">
             <div className="modal-content">
@@ -428,10 +402,20 @@ export default function LoginRegister({ setShowModal }) {
                             <TextField
                                 label="Password"
                                 variant="outlined"
+                                type={showPassword ? 'text' : 'password'}
                                 value={loginFormData.password}
                                 onChange={handleLoginChange('password')}
                                 fullWidth
                                 className="form-field"
+                                InputProps={{
+                                    endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                                        {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                    ),
+                                }}
                             />
                             {(formErrors.password) &&
                                 <CustomAlert 

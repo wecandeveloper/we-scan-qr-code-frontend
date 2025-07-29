@@ -125,7 +125,7 @@ const cancelOrder = (order) => {
     }
 }
 
-export const startChangeOrderStatus = (orderId, status) => {
+export const startChangeOrderStatus = (orderId, status, handleCloseAll) => {
     return async (dispatch) => {
         try {
             const orderResponse = await axios.put(`${localhost}/api/order/changeStatus/${orderId}`, status, {
@@ -133,9 +133,10 @@ export const startChangeOrderStatus = (orderId, status) => {
                     'Authorization' : localStorage.getItem('token')
                 }
             })
-            dispatch(changeOrderStatus(orderResponse.data))
+            dispatch(changeOrderStatus(orderResponse.data.data))
             toast.success("Order Status Changed Successfully")
-            console.log(orderResponse.data)
+            handleCloseAll()
+            console.log(orderResponse.data.data)
         } catch(err) {
             console.log(err)
             alert(err.message)
@@ -147,5 +148,30 @@ const changeOrderStatus = (order) => {
     return {
         type : "CHANGE_ORDER_STATUS",
         payload : order
+    }
+}
+
+export const startDeleteOrder = (orderId, handleCloseAll) => {
+    return async (dispatch)=>{
+        try{
+            const response = await axios.delete(`${localhost}/api/order/delete/${orderId}`,{
+                headers: {
+                    "Authorization": localStorage.getItem("token")
+                }
+            })
+            dispatch(deleteOrder(response.data.data))
+            toast.success(response.data.message)
+            handleCloseAll()
+            console.log(response.data.data)
+        }catch(err){
+            console.log(err);
+            alert(err)
+        }
+    }
+}
+const deleteOrder = (order)=>{
+    return{
+        type: "DELETE_ORDER",
+        payload: order
     }
 }

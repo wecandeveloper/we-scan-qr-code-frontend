@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 
 export default function Products() {
     const dispatch = useDispatch();
-    const { user, setGlobalGuestCart } = useAuth()
+    const { user, setGlobalGuestCart, searchProduct, setSearchProduct } = useAuth()
     const isLoggedIn = Boolean(user && user._id);
     const categories = useSelector((state) => {
         return state.categories.data;
@@ -52,6 +52,9 @@ export default function Products() {
 
         // Apply category and price filters
         let filteredArray = products.filter((ele) => {
+            if(searchProduct && !slugify(ele.name).toLowerCase().includes(slugify(searchProduct).toLowerCase())) {
+                return false;
+            }
             if (selectedCategory?.name && !ele.categoryId.name.includes(selectedCategory.name)) {
                 return false;
             }
@@ -148,6 +151,7 @@ export default function Products() {
         handleCategoryChange("")
         setOfferProducts(false)
         setAvailableProducts(false)
+        setSearchProduct("")
     }
 
     const handleAddToCart = (product) => {

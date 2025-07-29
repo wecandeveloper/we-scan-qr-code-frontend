@@ -4,7 +4,7 @@ const initialState = {
     selected: null
 }
 
-export default function ordersReducers(state = initialState, action) {
+export default function orderReducers(state = initialState, action) {
     switch (action.type) {
         case "ADD_ORDER" :{
             return { ...state, data : [...state.data, action.payload] }
@@ -30,7 +30,20 @@ export default function ordersReducers(state = initialState, action) {
             };
         }
         case "CHANGE_ORDER_STATUS" : {
-            return { ...state, data : state.data.filter(order => order._id !== action.payload._id) }
+            const orderIdToCancel = action.payload._id; // expecting _id
+            return {
+                ...state,
+                data: state.data.map(order =>
+                    order._id === orderIdToCancel
+                        ? { ...order, status: action.payload.status }
+                        : order
+                )
+            };
+        }
+        case "DELETE_ORDER" : {
+            return { ...state, data : state.data.filter((ele) => {
+                return ele._id !== action.payload._id
+            })}
         }
         default : {
             return{ ...state }
