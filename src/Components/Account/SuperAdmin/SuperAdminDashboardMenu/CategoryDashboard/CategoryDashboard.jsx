@@ -150,7 +150,7 @@ export default function CategoryDashboard() {
     };
 
     // Filtered and sorted array based on selected filters and sort option
-    const getProcessedProducts = () => {
+    const getProcessedCategories = () => {
         // Apply category and price filters
         let filteredArray = categories.filter((ele) => {
             if (searchText.trim() && !ele.name.toLowerCase().includes(searchText.toLowerCase())) {
@@ -185,7 +185,7 @@ export default function CategoryDashboard() {
         return filteredArray.slice(startIndex, endIndex);
     };
 
-    // console.log("filtered Products", getProcessedProducts())
+    // console.log("filtered Products", getProcessedCategories())
 
     const totalFilteredItems = categories.filter((ele) => {
         if (searchText.trim() && !ele.name.toLowerCase().includes(searchText.toLowerCase())) {
@@ -366,44 +366,57 @@ export default function CategoryDashboard() {
                     <table className="category-table">
                         <thead>
                             <tr>
+                                <th>SI No</th>
                                 <th>Name</th>
                                 <th>Description</th>
                                 <th>Image</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {getProcessedProducts().map((category) => (
-                                <tr key={category._id}>
-                                    <td>{category.name}</td>
-                                    <td>{category.description || "—"}</td>
-                                    <td>
-                                        {category.image ? (
-                                        <img src={category.image} alt={category.name} className="category-img" />
-                                        ) : (
-                                        "No Image"
-                                        )}
-                                    </td>
-                                    <td>
-                                        <div className="action-div">
-                                            <button className="view-btn" onClick={() => {
-                                                setIsViewEditSectionOpen(true)
-                                                setCategoryId(category._id)
-                                                }}><MdRemoveRedEye /></button>
-                                            <button className="edit-btn" onClick={() => {
-                                                setIsViewEditSectionOpen(true)
-                                                setIsEditCategory(true)
-                                                setCategoryId(category._id)
-                                                }}><MdEditSquare /></button>
-                                            <button className="delete-btn" onClick={() => {
-                                                setShowConfirmDeleteCategory(true)
-                                                setCategoryId(category._id)
-                                            }}><BiSolidTrash /></button>
-                                        </div>
+                        {getProcessedCategories().length > 0 ? (
+                            <tbody>
+                                {getProcessedCategories().map((category, index) => (
+                                    <tr key={category._id}>
+                                        <td>{index + 1}</td>
+                                        <td>{category.name}</td>
+                                        <td>{category.description || "—"}</td>
+                                        <td>
+                                            {category.image ? (
+                                            <img src={category.image} alt={category.name} className="category-img" />
+                                            ) : (
+                                            "No Image"
+                                            )}
+                                        </td>
+                                        <td>
+                                            <div className="action-div">
+                                                <button className="view-btn" onClick={() => {
+                                                    setIsViewEditSectionOpen(true)
+                                                    setCategoryId(category._id)
+                                                    }}><MdRemoveRedEye /></button>
+                                                <button className="edit-btn" onClick={() => {
+                                                    setIsViewEditSectionOpen(true)
+                                                    setIsEditCategory(true)
+                                                    setCategoryId(category._id)
+                                                    }}><MdEditSquare /></button>
+                                                <button className="delete-btn" onClick={() => {
+                                                    setShowConfirmDeleteCategory(true)
+                                                    setCategoryId(category._id)
+                                                }}><BiSolidTrash /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        ) : (
+                            <tbody>
+                                <tr>
+                                    <td colSpan="5" style={{ textAlign: "center" }}>
+                                        <p className="no-order-text">No Product Categories Data Found</p>
                                     </td>
                                 </tr>
-                            ))}
-                        </tbody>
+                            </tbody>
+                        )}
+                        
                     </table>
                     <div className="table-footer">
                         <div className="footer-pagination">

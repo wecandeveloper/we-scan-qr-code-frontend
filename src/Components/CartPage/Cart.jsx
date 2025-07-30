@@ -15,6 +15,7 @@ import ConfirmToast from "../../Designs/ConfirmToast/ConfirmToast";
 import CustomAlert from "../../Designs/CustomAlert";
 import axios from "axios";
 import { localhost } from "../../Api/apis";
+import { Box, CircularProgress } from "@mui/material";
 
 export default function Cart() {
     const dispatch = useDispatch()
@@ -38,7 +39,8 @@ export default function Cart() {
     const [ couponCode, setCouponCode ] = useState("")
     const [ couponError, setCouponError ] = useState(false)
     const [ couponSuccess, setCouponSuccess ] = useState(false)
-    const [ isshippingFree, setIsShippingFree ] = useState(false)
+    const [ isLoading, setIsLoading ] = useState(false)
+    const [ isApplyCouponLoading, setIsApplyCouponLoading ] = useState(false)
 
     // console.log(guestCart)
 
@@ -56,7 +58,8 @@ export default function Cart() {
             // } else {
             //     setGuestCart(guestCartData);
             // }
-            (async () => {
+        }
+        (async () => {
                 try {
                     const coupons = await axios.get(`${localhost}/api/coupon/list`)
                     // console.log(coupons.data.data)
@@ -65,12 +68,6 @@ export default function Cart() {
                     console.log(err)
                 }
             })()
-        }
-        if(originalAmount >= 200) {
-            setIsShippingFree(true)
-        } else {
-            setIsShippingFree(false)
-        }
     }, [isLoggedIn, cart]);
 
     useEffect(()=>{
@@ -113,6 +110,7 @@ export default function Cart() {
     // console.log(appliedCoupon)
     const originalAmount = isLoggedIn ? cart?.originalAmount || 0 : guestCart?.originalAmount || 0;
     const discountAmount = isLoggedIn ? cart?.discountAmount || 0 : guestCart?.discountAmount || 0;
+    const shippingCharge = isLoggedIn ? cart?.shippingCharge || 0 : guestCart?.shippingCharge || 0;
     const totalAmount = isLoggedIn ? cart?.totalAmount || 0 : guestCart?.totalAmount || 0;
 
     // console.log(guestCart)
@@ -234,74 +232,103 @@ export default function Cart() {
             // } 
             else {
                 if(isLoggedIn) {
+                    setIsApplyCouponLoading(true)
                     if(!cart.appliedCoupon) {
                         setCouponError("")
                         dispatch(startValidateCoupon(couponCode, setCouponSuccess, setCouponError))
+                        setIsApplyCouponLoading(false)
                         setCouponCode("")
                     } else {
-                        setCouponError("")
-                        setCouponSuccess("Coupon already applied")
-                        toast.warning("Coupon already applied")
+                        console.log(coupons)
+                        if(appliedCoupon.code === couponCode) {
+                            setCouponError("")
+                            setCouponSuccess("Coupon already applied")
+                            toast.warning("Coupon already applied")
+                            setIsApplyCouponLoading(false)
+                        } else if(coupons.find(coupon => coupon.code === couponCode)) {
+                            setCouponError("");
+                            setCouponSuccess(`Only One Coupon can be claimed for ${cartItems.length > 1 ? "these" : "this"} Items`);
+                            toast.warning(`Only One Coupon can be claimed for ${cartItems.length > 1 ? "these" : "this"} Items`);
+                            setIsApplyCouponLoading(false)
+                        } else {
+                            setCouponSuccess("")
+                            setCouponError("Invalid Coupon")
+                            toast.error("Invalid Coupon")
+                            setIsApplyCouponLoading(false)
+                        }
                     }
                 } else {
+                    setIsApplyCouponLoading(true)
                     if (guestCart?.appliedCoupon) {
                         console.log(guestCart?.appliedCoupon)
                         if(appliedCoupon.code === couponCode) {
                             setCouponError("")
                             setCouponSuccess("Coupon already applied")
                             toast.warning("Coupon already applied")
-                        } else {
+                            setIsApplyCouponLoading(false)
+                        } else if(coupons.find(coupon => coupon.code === couponCode)) {
                             setCouponError("");
                             setCouponSuccess(`Only One Coupon can be claimed for ${cartItems.length > 1 ? "these" : "this"} Items`);
                             toast.warning(`Only One Coupon can be claimed for ${cartItems.length > 1 ? "these" : "this"} Items`);
+                            setIsApplyCouponLoading(false)
                             return;
+                        } else {
+                            console.log("")
+                            setCouponSuccess("")
+                            setCouponError("Invalid Coupon")
+                            toast.error("Invalid Coupon")
+                            setIsApplyCouponLoading(false)
                         }
-                    }
-
-                    console.log(coupons)
-                    const coupon = coupons.find(ele => ele.code === couponCode.toUpperCase())
-                    console.log(coupon)
-                    if(coupon) {
-                        setCouponError("")
-                        // Calculate originalAmount from lineItems
-                        const originalAmount = guestCart.lineItems.reduce((sum, item) => {
-                            return sum + item.price * item.quantity;
-                        }, 0);
-
-                        let discountAmount = 0;
-                        let discountPercentage = 0;
-
-                        if (coupon.type === "percentage") {
-                            discountPercentage = coupon.value; // assuming 10 for 10%
-                            discountAmount = (originalAmount * discountPercentage) / 100;
-                        } else if (coupon.type === "fixed") {
-                            discountAmount = coupon.value;
-                        }
-
-                        const totalAmount = originalAmount - discountAmount;
-
-                        const updatedGuestCart = {
-                            ...guestCart,
-                            appliedCoupon: {
-                                name: coupon.name,
-                                type: coupon.type,
-                                code: couponCode.toUpperCase(),
-                                value: coupon.value,
-                            },
-                            discountAmount,
-                            discountPercentage,
-                            totalAmount,
-                            originalAmount,
-                        };
-                        localStorage.setItem("guestCart", JSON.stringify(updatedGuestCart));
-                        setGuestCart(updatedGuestCart); // if you're using a state
-                        setCouponCode("")
-                        setCouponSuccess("Coupon applied");
-                        toast.success("Coupon applied successfully");
-                        // console.log("valid Coupon")
                     } else {
-                        console.log("")
-                        setCouponError("Invalid Coupon")
+                        console.log(coupons)
+                        const coupon = coupons.find(ele => ele.code === couponCode)
+                        console.log(coupon)
+                        if(coupon) {
+                            // setCouponError("")
+                            // Calculate originalAmount from lineItems
+                            const originalAmount = guestCart.lineItems.reduce((sum, item) => {
+                                return sum + item.price * item.quantity;
+                            }, 0);
+
+                            let discountAmount = 0;
+                            let discountPercentage = 0;
+
+                            if (coupon.type === "percentage") {
+                                discountPercentage = coupon.value; // assuming 10 for 10%
+                                discountAmount = (originalAmount * discountPercentage) / 100;
+                            } else if (coupon.type === "fixed") {
+                                discountAmount = coupon.value;
+                            }
+
+                            const totalAmount = originalAmount - discountAmount;
+
+                            const updatedGuestCart = {
+                                ...guestCart,
+                                appliedCoupon: {
+                                    name: coupon.name,
+                                    type: coupon.type,
+                                    code: couponCode.toUpperCase(),
+                                    value: coupon.value,
+                                },
+                                discountAmount,
+                                discountPercentage,
+                                totalAmount,
+                                originalAmount,
+                            };
+                            localStorage.setItem("guestCart", JSON.stringify(updatedGuestCart));
+                            setGuestCart(updatedGuestCart); // if you're using a state
+                            setCouponCode("")
+                            setCouponSuccess("Coupon applied");
+                            toast.success("Coupon applied successfully");
+                            setIsApplyCouponLoading(false)
+                            // console.log("valid Coupon")
+                        } else {
+                            console.log("")
+                            setCouponSuccess("")
+                            setCouponError("Invalid Coupon")
+                            toast.error("Invalid Coupon")
+                            setIsApplyCouponLoading(false)
+                        }
                     }
                 }
             }
@@ -358,6 +385,7 @@ export default function Cart() {
 
     const confirmRemoveLineItem = () => {
         // your delete logic here
+        setCouponCode("")
         if(isLoggedIn) {
             if(cartItems.length === 1) {
                 setCouponCode("")
@@ -424,6 +452,7 @@ export default function Cart() {
     };
 
     const handleCheckout = async () => {
+        // console.log(cart)
         if(cartItems.length === 0) {
             toast.error("Cart is Empty")
         } else {
@@ -433,6 +462,7 @@ export default function Cart() {
                 if(originalAmount < 100) {
                     toast.warning("A minimum order of AED 100 is required to proceed. Add a few more snacks to unlock your checkout.")
                 } else {
+                    setIsLoading(true)
                     try {
                         const response = await axios.post(`${localhost}/api/payment/`, {}, {
                             headers: {
@@ -444,14 +474,16 @@ export default function Cart() {
                         localStorage.setItem('stripeId', response.data.data.sessionId)
                         
                         //Redirecting the user to the chekout page of stripe
-                        window.location = response.data.data.paymentURL; 
+                        window.location = response.data.data.paymentURL;
+                        setIsLoading(false)
                     } catch (error) {
                         console.log(error)
+                        setIsLoading(false)
+                        toast.error("Failed to process payment")
                     }
                 }
             }
         }
-        
     }
 
     return (
@@ -577,7 +609,14 @@ export default function Cart() {
                                     className="apply-btn"
                                     onClick={handleApplyCoupon}
                                 >
-                                    Apply</motion.div>
+                                    {isApplyCouponLoading ? 
+                                        <Box sx={{ display: 'flex' }}>
+                                            <CircularProgress color="inherit" size={20}/>
+                                        </Box>   
+                                    : 
+                                        "Apply"
+                                    }
+                                    </motion.div>
                             </div>
                         </div>
                         {(couponError && ! couponSuccess) &&
@@ -627,12 +666,13 @@ export default function Cart() {
                         </div>
                         <div className="amount-div">
                             <p className="amount">Shipping Fee</p>
-                            <p className="amount free">{isshippingFree && <span className="shipping-free">AED 20</span>} {isshippingFree ? "Free" : "AED 20"}</p>
+                            {/* <div className="amount free">AED {shippingCharge}</div> */}
+                            <div className="amount free">{(shippingCharge === 0) && <span className="shipping-free"> AED 20 </span>} <span>{shippingCharge === 0 ? "Free" : `AED ${shippingCharge}`}</span></div>
                         </div>
                         <hr className="hr"/>
                         <div className="amount-div">
                             <p className="amount">Total Amount Incl. VAT</p>
-                            <p className="amount">AED {totalAmount + (isshippingFree ? 0 : 20)}</p>
+                            <p className="amount">AED {totalAmount}</p>
                         </div>
                         <motion.div
                             whileTap={{ scale: 0.95 }}
@@ -643,7 +683,13 @@ export default function Cart() {
                                 handleCheckout();
                             }}
                             className="amount-bg-div">
-                            <p className="amount">Proceed to Checkout</p>
+                                {isLoading ? 
+                                    <Box sx={{ display: 'flex' }}>
+                                        <CircularProgress color="inherit" size={20}/>
+                                    </Box>
+                                :
+                                    <p className="amount">Proceed to Checkout</p>
+                                }
                             {/* <p className="amount">Final Amount</p> */}
                             {/* <p className="amount">AED {totalAmount}.00</p> */}
                         </motion.div>

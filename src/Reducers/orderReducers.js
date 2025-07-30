@@ -46,7 +46,7 @@ export default function orderReducers(state = initialState, action) {
             })}
         }
         default : {
-            return{ ...state }
+            return { ...state }
         }
     }
 }

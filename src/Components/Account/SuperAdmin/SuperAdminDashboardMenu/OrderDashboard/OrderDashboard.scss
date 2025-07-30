@@ -580,6 +580,12 @@
                 }
             }
 
+            .cancel-dlt-div {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
             .btn {
                 display: flex;
                 flex-direction: row;

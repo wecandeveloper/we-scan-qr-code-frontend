@@ -29,7 +29,7 @@ import { BiSolidTrash } from "react-icons/bi"
 import CustomAlert from "../../../../../Designs/CustomAlert"
 import { toast } from "react-toastify"
 import { IoClose } from "react-icons/io5";
-import { startChangeOrderStatus, startDeleteOrder, startGetAllOrders } from "../../../../../Actions/orderActions";
+import { startCancelOrder, startChangeOrderStatus, startDeleteOrder, startGetAllOrders } from "../../../../../Actions/orderActions";
 import { useAuth } from "../../../../../Context/AuthContext";
 
 const VisuallyHiddenInput = styled('input')({
@@ -109,6 +109,7 @@ export default function OrderDashboard() {
     const [ order, setOrder ] = useState({})
     const [ orderStatus, setOrderStatus ] = useState("")
 
+    const [ showConfirmCancelOrder, setShowConfirmCancelOrder ] = useState(false)
     const [ showConfirmDeleteOrder, setShowConfirmDeleteOrder ] = useState(false)
     const [ showConfirmChangeOrderStatus, setShowConfirmChangeOrderStatus ] = useState(false)
     const [ showConfirmCancel, setShowConfirmCancel ] = useState(false)
@@ -131,7 +132,7 @@ export default function OrderDashboard() {
     console.log(order)
 
     // Filtered and sorted array based on selected filters and sort option
-    const getProcessedProducts = () => {
+    const getProcessedOrders = () => {
         // Apply category and price filters
         let filteredArray = orders?.filter((ele) => {
             if (searchText.trim() && !ele._id.toLowerCase().includes(searchText.toLowerCase())) {
@@ -181,25 +182,15 @@ export default function OrderDashboard() {
         return filteredArray?.slice(startIndex, endIndex);
     };
 
-    // console.log("filtered Products", getProcessedProducts())
+    // console.log("filtered Products", getProcessedOrders())
 
-    const totalFilteredItems = orders?.filter((ele) => {
+    const totalFilteredItems = (orders ?? [])?.filter((ele) => {
         if (searchText.trim() && !ele._id.toLowerCase().includes(searchText.toLowerCase())) {
             return false;
         }
-        // if (selectedCategory?.name && !ele.orderId.name.includes(selectedCategory.name)) {
-        //     return false;
-        // }
-
-        // if (offerProducts && !ele.offerPrice > 0) {
-        //     return false;
-        // }
-
-        // if(availableProducts && !ele.stock > 0) {
-        //         return false;
-        //     }
-        return true; // Include the item if it passes the filters
+        return true;
     }).length;
+
 
     const getShowOptions = () => {
         const options = [];
@@ -221,12 +212,13 @@ export default function OrderDashboard() {
         }
 
         // Always include "All"
-        options.push(orders?.length);
+        options.push(orders?.length || 0);
 
         return options;
     };
 
-    const totalPages = Math.ceil(totalFilteredItems / showNo);
+    const totalPages = Math.ceil(totalFilteredItems / (showNo || 1)) || 1;
+
 
     const pageNumbers = [];
     for (let i = 1; i <= totalPages; i++) {
@@ -251,6 +243,10 @@ export default function OrderDashboard() {
     const handlePageClick = (page) => {
         setCurrentPage(page);
     };
+
+    const confirmCancelOrder = () => {
+        dispatch(startCancelOrder(orderId, handleCloseAll))
+    }
 
     const confirmDeleteOrder = () => {
         console.log(orderId)
@@ -327,31 +323,41 @@ export default function OrderDashboard() {
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {getProcessedProducts()?.map((product) => (
-                                <tr key={product._id}>
-                                    <td>{product._id}</td>
-                                    <td>{product.lineItems.length}</td>
-                                    <td>{product.totalAmount}</td>
-                                    <td>{`${product.customerId.firstName} ${product.customerId.lastName}`}</td>
-                                    <td>{product.customerId.email.address}</td>
-                                    <td>{product.status}</td>
-                                    
-                                    <td>
-                                        <div className="action-div">
-                                            <button className="view-btn" onClick={() => {
-                                                setIsViewSectionOpen(true)
-                                                setOrderId(product._id)
-                                                }}><MdRemoveRedEye /></button>
-                                            <button className="delete-btn" onClick={() => {
-                                                setShowConfirmDeleteOrder(true)
-                                                setOrderId(product._id)
-                                            }}><BiSolidTrash /></button>
-                                        </div>
+                        {getProcessedOrders()?.length > 0 ? (
+                            <tbody>
+                                {getProcessedOrders()?.map((product) => (
+                                    <tr key={product._id}>
+                                        <td>{product._id}</td>
+                                        <td>{product.lineItems.length}</td>
+                                        <td>{product.totalAmount}</td>
+                                        <td>{`${product.customerId.firstName} ${product.customerId.lastName}`}</td>
+                                        <td>{product.customerId.email.address}</td>
+                                        <td>{product.status}</td>
+                                        <td>
+                                            <div className="action-div">
+                                                <button className="view-btn" onClick={() => {
+                                                    setIsViewSectionOpen(true)
+                                                    setOrderId(product._id)
+                                                    }}><MdRemoveRedEye /></button>
+                                                <button className="delete-btn" onClick={() => {
+                                                    setShowConfirmDeleteOrder(true)
+                                                    setOrderId(product._id)
+                                                }}><BiSolidTrash /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        ) : (
+                            <tbody>
+                                <tr>
+                                    <td colSpan="8" style={{ textAlign: "center" }}>
+                                        <p className="no-order-text">No Orders Data Found</p>
                                     </td>
                                 </tr>
-                            ))}
-                        </tbody>
+                            </tbody>
+                        )}
+                        
                     </table>
                     <div className="table-footer">
                         <div className="footer-pagination">
@@ -472,7 +478,6 @@ export default function OrderDashboard() {
                                                         <MenuItem value="Placed">Placed</MenuItem>
                                                         <MenuItem value="Dispatched">Dispatched</MenuItem>
                                                         <MenuItem value="Delivered">Delivered</MenuItem>
-                                                        <MenuItem value="Canceled">Canceled</MenuItem>
                                                 </Select>
                                             </FormControl>
                                             {(alertMessage) &&
@@ -487,18 +492,30 @@ export default function OrderDashboard() {
                                             }}>Change<MdEditSquare /></button>
                                             </div>
                                         </div>
-                                        <button className="btn delete-btn" onClick={() => {
-                                            setShowConfirmDeleteOrder(true)
-                                        }}>Delete <BiSolidTrash /></button>
+                                        <div className="cancel-dlt-div">
+                                            <button className="btn cancel-btn" onClick={() => {
+                                                setShowConfirmCancelOrder(true)
+                                            }}>Cancel Order<BiSolidTrash /></button>
+                                            <button className="btn delete-btn" onClick={() => {
+                                                setShowConfirmDeleteOrder(true)
+                                            }}>Delete <BiSolidTrash /></button>
+                                        </div>
                                     </div>
                                 </div>
                         </motion.div>
                     </>
                 )}
             </AnimatePresence>
+            {showConfirmCancelOrder && (
+                <ConfirmToast
+                    message="Are you sure you want to Cancel this Order?"
+                    onConfirm={confirmCancelOrder}
+                    onCancel={() => {setShowConfirmCancelOrder(false)}}
+                />
+            )}
             {showConfirmDeleteOrder && (
                 <ConfirmToast
-                    message="Are you sure you want to Delete this Category?"
+                    message="Are you sure you want to Delete this Order?"
                     onConfirm={confirmDeleteOrder}
                     onCancel={() => {setShowConfirmDeleteOrder(false)}}
                 />

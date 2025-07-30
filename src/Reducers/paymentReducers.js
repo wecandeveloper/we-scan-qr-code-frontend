@@ -18,7 +18,7 @@ export default function paymentReducers(state = initialState, action) {
             })}
         }
         default : {
-            return{ ...state }
+            return { ...state }
         }
     }
 }

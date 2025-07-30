@@ -299,18 +299,6 @@ export default function ProductDashboard() {
             if (searchText.trim() && !ele.name.toLowerCase().includes(searchText.toLowerCase())) {
                 return false;
             }
-            // if (selectedCategory?.name && !ele.productId.name.includes(selectedCategory.name)) {
-            //     return false;
-            // }
-
-            // if (offerProducts && !ele.offerPrice > 0) {
-            //     return false; 
-            // }
-
-            // if(availableProducts && !ele.stock > 0) {
-            //     return false;
-            // }
-
             return true; // Include the item if it passes the filters
         });
 
@@ -337,6 +325,13 @@ export default function ProductDashboard() {
                 } else {
                     return 0;
                 }
+            } else if (sortBy === "Offered") {
+                const aOffered = a.offerPrice > 0 || a.discountPercentage > 0;
+                const bOffered = b.offerPrice > 0 || b.discountPercentage > 0;
+
+                if (aOffered && !bOffered) return -1;
+                if (!aOffered && bOffered) return 1;
+                return 0;
             }
             return 0; // Default to no sorting
         });
@@ -353,17 +348,6 @@ export default function ProductDashboard() {
         if (searchText.trim() && !ele.name.toLowerCase().includes(searchText.toLowerCase())) {
             return false;
         }
-        // if (selectedCategory?.name && !ele.productId.name.includes(selectedCategory.name)) {
-        //     return false;
-        // }
-
-        // if (offerProducts && !ele.offerPrice > 0) {
-        //     return false;
-        // }
-
-        // if(availableProducts && !ele.stock > 0) {
-        //         return false;
-        //     }
         return true; // Include the item if it passes the filters
     }).length;
 
@@ -642,6 +626,7 @@ export default function ProductDashboard() {
                                             <option value="Price:L-H">Price: L-H</option>
                                             <option value="Price:H-L">Price: H-L</option>
                                             <option value="Available">Available</option>
+                                            <option value="Offered">Offered</option>
                                         </select>
                                         <RiExpandUpDownFill/>
                                     </div>
@@ -660,6 +645,7 @@ export default function ProductDashboard() {
                     <table className="product-table">
                         <thead>
                             <tr>
+                                <th>SI No</th>
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Price</th>
@@ -670,46 +656,57 @@ export default function ProductDashboard() {
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {getProcessedProducts().map((product) => (
-                                <tr key={product._id}>
-                                    <td>{product.name}</td>
-                                    <td>{
-                                        typeof product.categoryId === 'object'
-                                            ? product.categoryId?.name
-                                            : categories.find(cat => cat._id === product.categoryId)?.name || '—'
-                                    }</td>
-                                    <td>{product.price}</td>
-                                    <td>{product.stock || 0}</td>
-                                    <td>{product.discountPercentage}</td>
-                                    <td>{product.offerPrice}</td>
-                                    <td>
-                                        {product.images[0] ? (
-                                        <img src={product.images[0]} alt={product.name} className="product-img" />
-                                        ) : (
-                                        "No Image"
-                                        )}
-                                    </td>
-                                    <td>
-                                        <div className="action-div">
-                                            <button className="view-btn" onClick={() => {
-                                                setIsViewEditSectionOpen(true)
-                                                setProductId(product._id)
-                                                }}><MdRemoveRedEye /></button>
-                                            <button className="edit-btn" onClick={() => {
-                                                setIsViewEditSectionOpen(true)
-                                                setIsEditProduct(true)
-                                                setProductId(product._id)
-                                                }}><MdEditSquare /></button>
-                                            <button className="delete-btn" onClick={() => {
-                                                setShowConfirmDeleteProduct(true)
-                                                setProductId(product._id)
-                                            }}><BiSolidTrash /></button>
-                                        </div>
+                        {getProcessedProducts().length > 0 ? (
+                            <tbody>
+                                {getProcessedProducts().map((product, index) => (
+                                    <tr key={product._id}>
+                                        <td>{index + 1}</td>
+                                        <td>{product.name}</td>
+                                        <td>{
+                                            typeof product.categoryId === 'object'
+                                                ? product.categoryId?.name
+                                                : categories.find(cat => cat._id === product.categoryId)?.name || '—'
+                                        }</td>
+                                        <td>{product.price}</td>
+                                        <td>{product.stock || 0}</td>
+                                        <td>{product.discountPercentage}</td>
+                                        <td>{product.offerPrice}</td>
+                                        <td>
+                                            {product.images[0] ? (
+                                            <img src={product.images[0]} alt={product.name} className="product-img" />
+                                            ) : (
+                                            "No Image"
+                                            )}
+                                        </td>
+                                        <td>
+                                            <div className="action-div">
+                                                <button className="view-btn" onClick={() => {
+                                                    setIsViewEditSectionOpen(true)
+                                                    setProductId(product._id)
+                                                    }}><MdRemoveRedEye /></button>
+                                                <button className="edit-btn" onClick={() => {
+                                                    setIsViewEditSectionOpen(true)
+                                                    setIsEditProduct(true)
+                                                    setProductId(product._id)
+                                                    }}><MdEditSquare /></button>
+                                                <button className="delete-btn" onClick={() => {
+                                                    setShowConfirmDeleteProduct(true)
+                                                    setProductId(product._id)
+                                                }}><BiSolidTrash /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        ) : (
+                            <tbody>
+                                <tr>
+                                    <td colSpan="9" style={{ textAlign: "center" }}>
+                                        <p className="no-order-text">No Product Data Found</p>
                                     </td>
                                 </tr>
-                            ))}
-                        </tbody>
+                            </tbody>
+                        )}
                     </table>
                     <div className="table-footer">
                         <div className="footer-pagination">
@@ -943,7 +940,7 @@ export default function ProductDashboard() {
                                                         className="form-field small"
                                                     />
                                                     <TextField
-                                                        label="Date of Birth"
+                                                        label="Discount Expiry Date"
                                                         type="date"
                                                         variant="outlined"
                                                         value={formatDateToYYYYMMDD(productForm.discountExpiry)}  // make sure this is in 'YYYY-MM-DD' format

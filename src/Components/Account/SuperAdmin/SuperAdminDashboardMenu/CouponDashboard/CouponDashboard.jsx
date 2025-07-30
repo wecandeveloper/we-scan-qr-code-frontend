@@ -208,8 +208,8 @@ export default function CouponDashboard() {
                 type: coupon.type,
                 value: coupon.value,
                 maxDiscount: coupon.maxDiscount,
-                minOrderAmount: coupon.maxDiscount,
-                usageLimit: coupon.maxDiscount,
+                minOrderAmount: coupon.minOrderAmount,
+                usageLimit: coupon.usageLimit,
                 usedCount: coupon.usedCount,
                 isActive: coupon.isActive,
                 validFrom: coupon.validFrom,
@@ -245,7 +245,7 @@ export default function CouponDashboard() {
     };
 
     // Filtered and sorted array based on selected filters and sort option
-    const getProcessedProducts = () => {
+    const getProcessedCoupons = () => {
         // Apply category and price filters
         let filteredArray = coupons.filter((ele) => {
             if (searchText.trim() && !ele.name.toLowerCase().includes(searchText.toLowerCase())) {
@@ -295,7 +295,7 @@ export default function CouponDashboard() {
         return filteredArray.slice(startIndex, endIndex);
     };
 
-    // console.log("filtered Products", getProcessedProducts())
+    // console.log("filtered Products", getProcessedCoupons())
 
     const totalFilteredItems = coupons.filter((ele) => {
         if (searchText.trim() && !ele.name.toLowerCase().includes(searchText.toLowerCase())) {
@@ -538,44 +538,57 @@ export default function CouponDashboard() {
                     <table className="coupon-table">
                         <thead>
                             <tr>
+                                <th>SI No</th>
                                 <th>Name</th>
                                 <th>Code</th>
                                 <th>Coupon Type</th>
                                 <th>Discount</th>
-                                <th>Valid From</th>
-                                <th>Valid Till</th>
+                                <th>Active</th>
+                                {/* <th>Valid From</th>
+                                <th>Valid Till</th> */}
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {getProcessedProducts().map((category) => (
-                                <tr key={category._id}>
-                                    <td>{category.name}</td>
-                                    <td>{category.code}</td>
-                                    <td>{category.type === "percentage" ? "Percentage" :  "Fixed"}</td>
-                                    <td>{category.value} {category.type === 'percentage' ? '%' : 'AED'}</td>
-                                    <td>{formatDateToDDMMYYYY(category.validFrom)}</td>
-                                    <td>{formatDateToDDMMYYYY(category.validTill)}</td>
-                                    <td>
-                                        <div className="action-div">
-                                            <button className="view-btn" onClick={() => {
-                                                setIsViewEditSectionOpen(true)
-                                                setCouponId(category._id)
-                                                }}><MdRemoveRedEye /></button>
-                                            <button className="edit-btn" onClick={() => {
-                                                setIsViewEditSectionOpen(true)
-                                                setIsEditCoupon(true)
-                                                setCouponId(category._id)
-                                                }}><MdEditSquare /></button>
-                                            <button className="delete-btn" onClick={() => {
-                                                setShowConfirmDeleteCategory(true)
-                                                setCouponId(category._id)
-                                            }}><BiSolidTrash /></button>
-                                        </div>
+                        {getProcessedCoupons().length > 0 ? (
+                            <tbody>
+                                {getProcessedCoupons().map((category, index) => (
+                                    <tr key={category._id}>
+                                        <td>{index + 1}</td>
+                                        <td>{category.name}</td>
+                                        <td>{category.code}</td>
+                                        <td>{category.type === "percentage" ? "Percentage" :  "Fixed"}</td>
+                                        <td>{category.value} {category.type === 'percentage' ? '%' : 'AED'}</td>
+                                        <td>{category.isActive ? "Yes" : "No"}</td>
+                                        <td>
+                                            <div className="action-div">
+                                                <button className="view-btn" onClick={() => {
+                                                    setIsViewEditSectionOpen(true)
+                                                    setCouponId(category._id)
+                                                    }}><MdRemoveRedEye /></button>
+                                                <button className="edit-btn" onClick={() => {
+                                                    setIsViewEditSectionOpen(true)
+                                                    setIsEditCoupon(true)
+                                                    setCouponId(category._id)
+                                                    }}><MdEditSquare /></button>
+                                                <button className="delete-btn" onClick={() => {
+                                                    setShowConfirmDeleteCategory(true)
+                                                    setCouponId(category._id)
+                                                }}><BiSolidTrash /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        ) : (
+                            <tbody>
+                                <tr>
+                                    <td colSpan="9" style={{ textAlign: "center" }}>
+                                        <p className="no-order-text">No Coupon Data Found</p>
                                     </td>
                                 </tr>
-                            ))}
-                        </tbody>
+                            </tbody>
+                        )}
+                        
                     </table>
                     <div className="table-footer">
                         <div className="footer-pagination">

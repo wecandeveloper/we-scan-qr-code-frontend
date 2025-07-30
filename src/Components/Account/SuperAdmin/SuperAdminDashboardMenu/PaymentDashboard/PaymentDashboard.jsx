@@ -76,7 +76,7 @@ function formatDeliveryDate(isoString) {
   const formattedHour = hours % 12 || 12;
   const formattedMinutes = minutes.toString().padStart(2, '0');
 
-  return `Order placed on ${dayName}, ${getOrdinalSuffix(day)} ${month}, ${formattedHour}:${formattedMinutes} ${ampm}`;
+  return `Payment made on ${dayName},<br/> ${getOrdinalSuffix(day)} ${month}, ${formattedHour}:${formattedMinutes} ${ampm}`;
 }
 
 export default function PaymentDashboard() {
@@ -133,7 +133,7 @@ export default function PaymentDashboard() {
     console.log(payment)
 
     // Filtered and sorted array based on selected filters and sort option
-    const getProcessedProducts = () => {
+    const getProcessedPayments = () => {
         // Apply category and price filters
         let filteredArray = payments.filter((ele) => {
             if (searchText.trim() && !ele.transactionID.toLowerCase().includes(searchText.toLowerCase())) {
@@ -182,7 +182,7 @@ export default function PaymentDashboard() {
         return filteredArray.slice(startIndex, endIndex);
     };
 
-    // console.log("filtered Products", getProcessedProducts())
+    // console.log("filtered Products", getProcessedPayments())
 
     const totalFilteredItems = payments.filter((ele) => {
         if (searchText.trim() && !ele.transactionID.toLowerCase().includes(searchText.toLowerCase())) {
@@ -253,7 +253,7 @@ export default function PaymentDashboard() {
         setCurrentPage(page);
     };
 
-    const confirmDeleteOrder = () => {
+    const confirmDeletePayment = () => {
         console.log(paymentId)
         dispatch(startDeletePayment(paymentId, handleCloseAll))
     }
@@ -318,33 +318,44 @@ export default function PaymentDashboard() {
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {getProcessedProducts().map((product, index) => (
-                                <tr key={product._id}>
-                                    <td>{index + 1}</td>
-                                    <td>{product.transactionID}</td>
-                                    <td>{product?.cartId?.lineItems?.length}</td>
-                                    <td>{product?.amount}</td>
-                                    <td>{`${product.customerId.firstName} ${product.customerId.lastName}`}</td>
-                                    <td>{product.customerId.email.address}</td>
-                                    {/* <td>{product.paymentType}</td> */}
-                                    <td>{product.paymentStatus}</td>
-                                    
-                                    <td>
-                                        <div className="action-div">
-                                            <button className="view-btn" onClick={() => {
-                                                setIsViewSectionOpen(true)
-                                                setPaymentId(product._id)
-                                                }}><MdRemoveRedEye /></button>
-                                            <button className="delete-btn" onClick={() => {
-                                                setShowConfirmDeletePayment(true)
-                                                setPaymentId(product._id)
-                                            }}><BiSolidTrash /></button>
-                                        </div>
+                        {getProcessedPayments().length > 0 ? (
+                            <tbody>
+                                {getProcessedPayments().map((product, index) => (
+                                    <tr key={product._id}>
+                                        <td>{index + 1}</td>
+                                        <td>{product.transactionID}</td>
+                                        <td>{product?.lineItems?.length}</td>
+                                        <td>{product?.totalAmount}</td>
+                                        <td>{`${product.customerId.firstName} ${product.customerId.lastName}`}</td>
+                                        <td>{product.customerId.email.address}</td>
+                                        {/* <td>{product.paymentType}</td> */}
+                                        <td>{product.paymentStatus}</td>
+                                        
+                                        <td>
+                                            <div className="action-div">
+                                                <button className="view-btn" onClick={() => {
+                                                    setIsViewSectionOpen(true)
+                                                    setPaymentId(product._id)
+                                                    }}><MdRemoveRedEye /></button>
+                                                <button className="delete-btn" onClick={() => {
+                                                    setShowConfirmDeletePayment(true)
+                                                    setPaymentId(product._id)
+                                                }}><BiSolidTrash /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        ) : (
+                            <tbody>
+                                <tr>
+                                    <td colSpan="8" style={{ textAlign: "center" }}>
+                                        <p className="no-order-text">No Payment Data Found</p>
                                     </td>
                                 </tr>
-                            ))}
-                        </tbody>
+                            </tbody>
+                        )}
+                        
                     </table>
                     <div className="table-footer">
                         <div className="footer-pagination">
@@ -411,11 +422,11 @@ export default function PaymentDashboard() {
                                             <div className="payment-details-head">
                                                 <div className="payment-price-div">
                                                     <h1 className="payment-id">Transaction ID:<br/> {payment.transactionID}</h1>
-                                                    <div className="payment-price">Total Amount: AED {payment.amount}</div>
+                                                    <div className="payment-price">Total Amount: AED {payment.totalAmount}</div>
                                                 </div>
                                                 <div className="payment-status">
                                                     <p>Charged to:<br/> {`${payment?.customerId?.firstName} ${payment?.customerId?.lastName}`}</p>
-                                                    <p>Payment Date<br/> {formatDeliveryDate(payment.createdAt)}</p>
+                                                    <p>Payment Date<br/> <span dangerouslySetInnerHTML={{ __html: formatDeliveryDate(payment.createdAt) }} /></p>
                                                 </div>
                                             </div>
                                             <div className="check-out-details">
@@ -430,15 +441,16 @@ export default function PaymentDashboard() {
                                                             <div className="customer-phone"> Phone: {payment.customerId?.phone.countryCode} {payment.customerId?.phone.number}</div>
                                                         </div>
                                                     </div>
-                                                    <div className="right">
-                                                        <h1>Customer Address</h1>
-                                                        <div className="details">
-                                                            <div className="customer-name"> Name: {customerAddress?.name}</div>
-                                                            <div className="customer-name"> Phone: {customerAddress?.phone?.countryCode} {customerAddress?.phone?.number}</div>
-                                                            <div className="customer-email"> Address: {customerAddress?.addressNo},<br/> {customerAddress?.street},<br/> {customerAddress?.city}, {customerAddress?.state}</div>
+                                                    {customerAddress &&
+                                                        <div className="right">
+                                                            <h1>Customer Address</h1>
+                                                            <div className="details">
+                                                                <div className="customer-name"> Name: {customerAddress?.name}</div>
+                                                                <div className="customer-name"> Phone: {customerAddress?.phone?.countryCode} {customerAddress?.phone?.number}</div>
+                                                                <div className="customer-email"> Address: {customerAddress?.addressNo},<br/> {customerAddress?.street},<br/> {customerAddress?.city}, {customerAddress?.state}</div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    
+                                                    }
                                                 </div>
                                                 <table className="lineItems-table">
                                                     <thead>
@@ -451,15 +463,31 @@ export default function PaymentDashboard() {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {payment?.cartId?.lineItems?.map((product) => (
+                                                        {payment?.lineItems?.map((product) => (
                                                             <tr key={product._id}>
                                                                 <td>{product.productId.name}</td>
                                                                 <td>{product.productId.categoryId.name}</td>
                                                                 <td>{product?.quantity}</td>
-                                                                <td>{product.productId.offerPrice ? product.productId.offerPrice : product.productId.price} AED</td>
-                                                                <td>{product?.quantity * (product.productId.offerPrice ? product.productId.offerPrice : product.productId.price)} AED</td>
+                                                                <td style={{ textAlign: 'right' }}>AED {product.price}</td>
+                                                                <td style={{ textAlign: 'right' }}>AED {product?.quantity * (product.price)}</td>
                                                             </tr>
                                                         ))}
+                                                        <tr className="total-row">
+                                                            <td colSpan="4" style={{ textAlign: 'left' }}>Sub Total</td>
+                                                            <td style={{ textAlign: 'right' }}>AED {payment?.originalAmount}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colSpan="4" style={{ textAlign: 'left' }}>Shipping Charge</td>
+                                                            <td style={{ textAlign: 'right' }}>AED {payment?.shippingCharge}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colSpan="4" style={{ textAlign: 'left' }}>Coupon Discount</td>
+                                                            <td style={{ textAlign: 'right' }}>- AED {payment?.discountAmount}</td>
+                                                        </tr>
+                                                        <tr className="total-row">
+                                                            <td colSpan="4" style={{ textAlign: 'left' }}><strong>Total Amount</strong></td>
+                                                            <td style={{ textAlign: 'right' }}><strong>AED {payment?.totalAmount}</strong></td>
+                                                        </tr>
                                                     </tbody>
                                                 </table>
                                                 {/* <div className="lineItems-grid">
@@ -499,8 +527,8 @@ export default function PaymentDashboard() {
             </AnimatePresence>
             {showConfirmDeletePayment && (
                 <ConfirmToast
-                    message="Are you sure you want to Delete this Category?"
-                    onConfirm={confirmDeleteOrder}
+                    message="Are you sure you want to Delete this Payment?"
+                    onConfirm={confirmDeletePayment}
                     onCancel={() => {setShowConfirmDeletePayment(false)}}
                 />
             )}

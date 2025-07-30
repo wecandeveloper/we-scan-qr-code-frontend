@@ -148,10 +148,9 @@ export default function CustomerOrder() {
                             <RiExpandUpDownFill />
                             </div>
                         </div>
-                        </div>
-
+                    </div>
                 </div>
-                {getFilteredOrders()?.length !== 0 ? (
+                {getFilteredOrders()?.length > 0 ? (
                     <div className="customer-order-grid">
                         {getFilteredOrders()?.map((order) => {
                             return (

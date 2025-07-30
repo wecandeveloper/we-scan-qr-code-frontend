@@ -38,7 +38,7 @@ export const startGetMyCart = () => {
             dispatch(getMyCart(response.data.data))
         }catch(err){
             console.log(err)
-            toast.error(err.response.data.message)
+            // toast.error(err.response.data.message)
         }
     }
 }
@@ -177,11 +177,13 @@ export const startValidateCoupon = (couponCode, setCouponSuccess, setCouponError
                 originalAmount: response.data.originalAmount,
             }));
             setCouponSuccess("Coupon applied successfully")
+            setCouponError("")
             toast.success(response.data.message);
         } catch (err) {
             console.log(err);
             toast.error(err.response?.data?.message || "Failed to apply coupon")
             setCouponError(err.response?.data?.message || "Failed to apply coupon")
+            setCouponSuccess("")
         }
     };
 };

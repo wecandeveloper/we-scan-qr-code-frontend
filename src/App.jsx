@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import AppLoader from './Components/AppLoader/AppLoader';
 import AppRouter from './Components/AppRouter/AppRouter';
@@ -21,6 +21,7 @@ import AdminHeader from './Components/Header/AdminHeader/AdminHeader';
 export default function App() {
   const location = useLocation();
   const dispatch = useDispatch();
+  const calledRef = useRef(false)
   const [pageLoading, setPageLoading] = useState(true); // True initially for pre-loader
 
   const { user, handleLogin, handleCategoryChange, handleDashboardMenuChange } =useAuth()
@@ -86,36 +87,46 @@ export default function App() {
     }
   }, []);
 
-  useEffect(()=>{
-    (async()=>{
-      try{
-        const params = new URLSearchParams(window.location.search);
-        const sessionId = params.get("session_id");
-        const stripeId = localStorage.getItem('stripeId')
-        if(sessionId && stripeId && sessionId === stripeId) {
-          console.log("same")
-          const response = await axios.get(`${localhost}/api/payment/session/${stripeId}`, {
-            headers:{
-                  'Authorization' : localStorage.getItem('token')
-              }
-          })
-          console.log(response)
+  useEffect(() => {
+  if (calledRef.current) return; // avoid duplicate
+  calledRef.current = true;
 
-          const response2 = await axios.post(`${localhost}/api/payment/session/${stripeId}/success`, {paymentStatus: "Successful"}, {
-              headers:{
-                  'Authorization' : localStorage.getItem('token')
-              }
-          })
-          console.log(response2)
-          const paymentId = response2.data.data._id
-          dispatch(startCreateOrder(paymentId))
-        }
-        localStorage.removeItem('stripeId')
-      }catch(err){
-          console.log(err)
+  (async () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get("session_id");
+      const stripeId = localStorage.getItem("stripeId");
+
+      if (sessionId && stripeId && sessionId === stripeId) {
+        console.log("same");
+
+        const response = await axios.get(`${localhost}/api/payment/session/${stripeId}`, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        });
+        console.log(response);
+
+        const response2 = await axios.post(
+          `${localhost}/api/payment/session/${stripeId}/success`,
+          { paymentStatus: "Successful" },
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+        console.log(response2);
+        const paymentId = response2.data.data._id;
+        dispatch(startCreateOrder(paymentId));
       }
-    })()
-  },[])
+
+      localStorage.removeItem("stripeId");
+    } catch (err) {
+      console.log(err);
+    }
+  })();
+  }, []);
 
   return (
     <>

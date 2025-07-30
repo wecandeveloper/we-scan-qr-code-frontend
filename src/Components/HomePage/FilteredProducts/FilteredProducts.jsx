@@ -26,7 +26,7 @@ export default function FilteredProducts({title}) {
         return state.products.selected
     })
 
-    console.log(product)
+    console.log(products)
 
     const getProcessedProducts = () => {
         let filteredArray = products.filter((ele) => {
@@ -164,56 +164,62 @@ export default function FilteredProducts({title}) {
                     <h1>{title}</h1>
                     <a href="/collections"><div className="btn">Show All</div></a>
                 </div>
-                <div className="product-grid">
-                    {getProcessedProducts().map((product) => {
-                        return (
-                            <div 
-                                key={product._id}
-                                className="product-card"
-                                onClick={() => {
-                                    navigate(`/products/${slugify(product.name)}`, {
-                                    state: { productId: product._id },
-                                    });
-                                }}
-                                >
-                                <div className="img-div">
-                                    <img className="product-image" src={product.images[1]}/>
-                                    <motion.div 
-                                        whileTap={{ scale: 0.96 }}
-                                        whileHover={{ scale: 1.01 }}
-                                        transition={{ type: "spring", stiffness: 300 }}
-                                        onClick={(e) => {
-                                            e.stopPropagation(); 
-                                            handleAddToCart(product);
-                                        }}
-                                        className="cart-div">
-                                        <FiShoppingCart className="cart-icon"/>
-                                    </motion.div>
-                                    {/* <FaHeart className="wishlist-btn"/> */}
-                                </div>
-                                <div className="product-details">
-                                    <h1 className="product-name">{product.name}</h1>
-                                    <div className="price-div">
-                                        {product.offerPrice != 0 && 
-                                            <span className="offer-price">
-                                                AED {product.offerPrice}
+                {getProcessedProducts().length > 0 ? (
+                    <div className="product-grid">
+                        {getProcessedProducts().map((product) => {
+                            return (
+                                <div 
+                                    key={product._id}
+                                    className="product-card"
+                                    onClick={() => {
+                                        navigate(`/products/${slugify(product.name)}`, {
+                                        state: { productId: product._id },
+                                        });
+                                    }}
+                                    >
+                                    <div className="img-div">
+                                        <img className="product-image" src={product.images[1]}/>
+                                        <motion.div 
+                                            whileTap={{ scale: 0.96 }}
+                                            whileHover={{ scale: 1.01 }}
+                                            transition={{ type: "spring", stiffness: 300 }}
+                                            onClick={(e) => {
+                                                e.stopPropagation(); 
+                                                handleAddToCart(product);
+                                            }}
+                                            className="cart-div">
+                                            <FiShoppingCart className="cart-icon"/>
+                                        </motion.div>
+                                        {/* <FaHeart className="wishlist-btn"/> */}
+                                    </div>
+                                    <div className="product-details">
+                                        <h1 className="product-name">{product.name}</h1>
+                                        <div className="price-div">
+                                            {product.offerPrice != 0 && 
+                                                <span className="offer-price">
+                                                    AED {product.offerPrice}
+                                                </span>
+                                            }
+                                            <span className={`product-price ${product.offerPrice != 0 ? "strike" : ""}`}>
+                                                AED {product.price}
                                             </span>
-                                        }
-                                        <span className={`product-price ${product.offerPrice != 0 ? "strike" : ""}`}>
-                                            AED {product.price}
-                                        </span>
+                                        </div>
                                     </div>
+                                    {product.discountPercentage > 0 && (
+                                        <div className="offer-percentage-div">
+                                            {/* <MdLocalOffer className="icon"/> */}
+                                            <span className="offer">{product.discountPercentage}% off</span>
+                                        </div>
+                                    )}
                                 </div>
-                                {product.discountPercentage > 0 && (
-                                    <div className="offer-percentage-div">
-                                        {/* <MdLocalOffer className="icon"/> */}
-                                        <span className="offer">{product.discountPercentage}% off</span>
-                                    </div>
-                                )}
-                            </div>
-                        )
-                    })}
-                </div>
+                            )
+                        })}
+                    </div>
+                ) : (
+                    <div className="no-products-found">
+                        <h1>No {title} found</h1>
+                    </div>
+                )}
             </div>
         </section>
     )
