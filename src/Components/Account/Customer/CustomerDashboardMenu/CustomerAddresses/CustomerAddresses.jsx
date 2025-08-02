@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAuth } from '../../../../../Context/AuthContext';
 import './CustomerAddresses.scss'
 import { useEffect, useState } from 'react';
-import { startCreateAddress, startDeleteAddress, startGetAddresses, startGetOneAddress, startSetDefaultAddress, startUpdateAddress } from '../../../../../Actions/AddressActions';
+import { startCreateAddress, startDeleteAddress, startGetMyAddresses, startGetOneAddress, startSetDefaultAddress, startUpdateAddress } from '../../../../../Actions/AddressActions';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import { TextField } from "@mui/material"
@@ -93,7 +93,7 @@ export default function CustomerAddresses() {
     });
 
     useEffect(() => {
-        dispatch(startGetAddresses());
+        dispatch(startGetMyAddresses());
     }, [dispatch]);
 
     useEffect(() => {
@@ -209,9 +209,14 @@ export default function CustomerAddresses() {
                                                 }}
                                                 >Edit</div>
                                             <div 
-                                                className="delete-btn"
-                                                onClick={() => {handleDeleteAddress(address._id)}}
-                                                >Delete</div>
+                                                className={`delete-btn ${address.isDefault ? 'disabled' : ''}`}
+                                                onClick={() => {
+                                                    // if (!address.isDefault) 
+                                                        handleDeleteAddress(address._id);
+                                                }}
+                                                >
+                                                Delete
+                                            </div>
                                             <div className="set-default-div">
                                                 <div className="label">Set as Default</div>
                                                 <label className="switch">
@@ -246,71 +251,73 @@ export default function CustomerAddresses() {
                             </div>
                         )
                     })}
-                    <div className="addresses-grid">
-                        <h1 className="address-head">{`Other Address${addresses.length < 1 ? "es" : ""} (${addresses.length - 1})`}</h1>
-                        <hr className='hr'/>
-                        {addresses.length !== 0 ? (
-                            addresses.filter(ele => !ele.isDefault).map((address) => {
-                                return (
-                                    <div key={address._id} className="address-card">
-                                        <div className="address-card-head">
-                                            <h2 className="address-type">{address.type}</h2>
-                                            <div className="address-actions">
-                                                <div 
-                                                    className="edit-btn" 
-                                                    onClick={() => {
-                                                        handleAddressFormModal()
-                                                        setAddressId(address._id)
-                                                        console.log((address._id))
-                                                    }}
-                                                    >Edit</div>
-                                                <div 
-                                                    className="delete-btn"
-                                                    onClick={() => {handleDeleteAddress(address._id)}}
-                                                    >Delete</div>
-                                                <div className="set-default-div">
-                                                    <div className="label">Set as Default</div>
-                                                    <label className="switch">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={address.isDefault}
-                                                            onChange={() => handleChangeDefaultAddress(address._id)}
-                                                        />
-                                                        <span className="slider round"></span>
-                                                    </label>
+                    { addresses.length < 1 && (
+                        <div className="addresses-grid">
+                            <h1 className="address-head">{`Other Address${addresses.length < 1 ? "es" : ""}`}</h1>
+                            <hr className='hr'/>
+                            {addresses.length !== 0 ? (
+                                addresses.filter(ele => !ele.isDefault).map((address) => {
+                                    return (
+                                        <div key={address._id} className="address-card">
+                                            <div className="address-card-head">
+                                                <h2 className="address-type">{address.type}</h2>
+                                                <div className="address-actions">
+                                                    <div 
+                                                        className="edit-btn" 
+                                                        onClick={() => {
+                                                            handleAddressFormModal()
+                                                            setAddressId(address._id)
+                                                            console.log((address._id))
+                                                        }}
+                                                        >Edit</div>
+                                                    <div 
+                                                        className="delete-btn"
+                                                        onClick={() => {handleDeleteAddress(address._id)}}
+                                                        >Delete</div>
+                                                    <div className="set-default-div">
+                                                        <div className="label">Set as Default</div>
+                                                        <label className="switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={address.isDefault}
+                                                                onChange={() => handleChangeDefaultAddress(address._id)}
+                                                            />
+                                                            <span className="slider round"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="address-card-details">
+                                                <div className="card-row">
+                                                    <div className="head">Name</div>
+                                                    <div className="value">{address.name}</div>
+                                                </div>
+                                                <div className="card-row">
+                                                    <div className="head">Address</div>
+                                                    <div className="value">
+                                                        {address.addressNo}, {address.street}<br/>
+                                                        {address.city}, {address.state}, {address.pincode}
+                                                    </div>
+                                                </div>
+                                                <div className="card-row">
+                                                    <div className="head">Phone</div>
+                                                    <div className="value">{address.phone.countryCode} {address.phone.number}</div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="address-card-details">
-                                            <div className="card-row">
-                                                <div className="head">Name</div>
-                                                <div className="value">{address.name}</div>
-                                            </div>
-                                            <div className="card-row">
-                                                <div className="head">Address</div>
-                                                <div className="value">
-                                                    {address.addressNo}, {address.street}<br/>
-                                                    {address.city}, {address.state}, {address.pincode}
-                                                </div>
-                                            </div>
-                                            <div className="card-row">
-                                                <div className="head">Phone</div>
-                                                <div className="value">{address.phone.countryCode} {address.phone.number}</div>
-                                            </div>
-                                        </div>
+                                    )
+                                })
+                            ): (
+                                <div className="no-address-div">
+                                    <div className="no-address-text">No addresses found, add a <span onClick={() => {
+                                        handleAddressFormModal()
+                                        setAddressId("")
+                                    }}>new Address</span>
                                     </div>
-                                )
-                            })
-                        ): (
-                            <div className="no-address-div">
-                                <div className="no-address-text">No addresses found, add a <span onClick={() => {
-                                    handleAddressFormModal()
-                                    setAddressId("")
-                                }}>new Address</span>
                                 </div>
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="address-form-modal">

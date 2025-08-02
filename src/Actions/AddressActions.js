@@ -3,7 +3,7 @@ import {render, localhost} from "../Api/apis"
 import { toast } from "react-toastify";
 
 
-export const startGetAddresses = () => {
+export const startGetMyAddresses = () => {
     return async (dispatch) => {
         try {
             const response = await axios.get(`${localhost}/api/address/myAddresses`, {
@@ -12,7 +12,7 @@ export const startGetAddresses = () => {
                 }
             })
             dispatch(setAddresses(response.data.data))
-            console.log(response.data.data)
+            // console.log(response.data.data)
         } catch(err) {
             console.log(err)
             // alert(err.message)

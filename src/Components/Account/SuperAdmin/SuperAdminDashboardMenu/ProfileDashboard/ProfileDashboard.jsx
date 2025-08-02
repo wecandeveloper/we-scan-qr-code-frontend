@@ -149,8 +149,8 @@ export default function ProfileDashboard() {
         try {
             const response = await axios.put(`${localhost}/api/user/update`, data, {
                 headers: {
-                    'Authorization': localStorage.getItem('token'),
-                    'Content-Type': 'multipart/form-data'
+                    'Authorization': localStorage.getItem('token')
+                    // 'Content-Type': 'multipart/form-data'
                 }
             });
             const user = response.data.data;
@@ -166,7 +166,7 @@ export default function ProfileDashboard() {
 
     return (
         <section>
-            <div className="customer-profile-section">
+            <div className="admin-profile-section">
                 <div className="head-div">
                     <div className="head">
                         <h2>My Profile</h2>
@@ -199,7 +199,7 @@ export default function ProfileDashboard() {
                                         fullWidth
                                         className="form-field"
                                     />
-                                    {formData.email.isVerfied ? 
+                                    {formData.email.isVerified ? 
                                     <div className="btn-dark verified-btn"><img src={checkIcon} alt="" /> Verified</div> : 
                                     <div className="btn-dark">Verify</div> }
                                 </div>
@@ -248,7 +248,7 @@ export default function ProfileDashboard() {
                                             width: '100%',
                                         }}
                                     />
-                                    {formData.phone.isVerfied ? 
+                                    {formData.phone.isVerified ? 
                                     <div className="btn-dark verified-btn"><img src={checkIcon} alt="" /> Verified</div> : 
                                     <div className="btn-dark">Verify</div> }
                                 </div>

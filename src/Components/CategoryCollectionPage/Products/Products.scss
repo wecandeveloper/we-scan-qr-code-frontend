@@ -10,7 +10,7 @@
     padding: 50px;
 
     .product-filter-div {
-        width: 20%;
+        width: 300px;
         background: #F8F8F9;
         // border: 1px solid #ddd;
         // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -79,11 +79,87 @@
                 }
             }
 
-            // .close-filter {
-            //     // display: none;
-            //     // max-height: 0;
-            //     // transition: max-height 0.5s ease-out;
-            // }
+            .range-inputs {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+                margin-top: 20px;
+
+                .input-div {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 5px;
+                }
+
+                input {
+                    width: 100%;
+                    padding: 4px 8px;
+                    font-size: 0.85rem;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+            }
+
+            .range-container {
+                position: relative;
+                height: 20px;
+                margin-top: 20px;
+
+                input[type="range"].thumb {
+                    -webkit-appearance: none;
+                    width: 100%;
+                    position: absolute;
+                    pointer-events: none;
+                    height: 0;
+                    top: 0;
+                }
+
+                input[type="range"].thumb::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    height: 12px;
+                    width: 12px;
+                    border-radius: 50%;
+                    background: #470531;
+                    cursor: pointer;
+                    pointer-events: all; /* Makes the thumb draggable */
+                    margin-top: 11px;
+                    position: relative;
+                    z-index: 3;
+                }
+
+                input[type="range"].thumb::-moz-range-thumb {
+                    height: 12px;
+                    width: 12px;
+                    border-radius: 50%;
+                    background: #470531;
+                    cursor: pointer;
+                    pointer-events: all;
+                    position: relative;
+                    z-index: 3;
+                }
+
+                .range-track {
+                    position: absolute;
+                    top: 4px;
+                    left: 0;
+                    right: 0;
+                    height: 4px;
+                    background-color: #ddd;
+                    border-radius: 2px;
+                    z-index: 1;
+                }
+
+                .range-selected {
+                    position: absolute;
+                    top: 0;
+                    height: 100%;
+                    background-color: #470531;
+                    z-index: 2;
+                    border-radius: 2px;
+                }
+            }
         }
 
         .reset-btn {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { TextField, Button, Box, Alert, InputAdornment, IconButton } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -28,6 +28,8 @@ export default function LoginRegister({ setShowModal }) {
     const [ couponError, setCouponError ] = useState(false)
     const [ couponSuccess, setCouponSuccess ] = useState(false)
     const [ showPassword, setShowPassword ] = useState(false);
+    const [ verifyEmail, setVerifyEmail ] = useState(false)
+    const [ otp, setOtp ] = useState("")
 
     const cart = useSelector(state => {
         return state.cart.data
@@ -52,9 +54,10 @@ export default function LoginRegister({ setShowModal }) {
         password: ""
     });
 
-    const [formErrors, setFormErrors] = useState({});
-    const [serverErrors, setServerErrors] = useState([]);
+    const [ formErrors, setFormErrors ] = useState({});
+    const [ serverErrors, setServerErrors ] = useState([]);
     const [ loginServerErrors, setLoginServerErrors ] = useState("");
+    const [ otpError, setOtpError ] = useState("");
 
     const errors = {}
     const loginErrors = {}
@@ -87,6 +90,9 @@ export default function LoginRegister({ setShowModal }) {
         if(loginFormData.password.trim().length === 0) {
             loginErrors.password = "Password is Required"
         }
+        // if(otp.trim().length === 0) {
+        //     setOtpError("Otp is Required")
+        // }
     }
     validateErrors()
 
@@ -124,6 +130,23 @@ export default function LoginRegister({ setShowModal }) {
     //     setLoginData({ ...loginData, [e.target.name]: e.target.value });
     // };
 
+    const handleSendOtp = async () => {
+        try {
+            const response = await axios.post(`${localhost}/api/user/send-mail-otp`, { email: registerFormData.email})
+            console.log(response)
+            const isSent = response.data.isSend
+            if(isSent){
+                toast.success("Otp for Verificaetion has sent. Please check your email for Otp")
+            } else {
+                toast.error("Failed to send otp")
+            }
+        } catch(err) {
+            console.log(err)
+            setOtpError(err.response.data.message)
+            toast.error(err.response.data.message || err.message || `Falied to send Otp`)
+        } 
+    }
+
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         if(Object.keys(errors).length === 0){
@@ -146,17 +169,12 @@ export default function LoginRegister({ setShowModal }) {
             try {
                 const response = await axios.post(`${localhost}/api/user/register`, user)
                 console.log(response)
-                setRegisterFormData({
-                    firstName: "",
-                    lastName: "",
-                    email: { address: "" },
-                    phone: { countryCode: "", number: "" },
-                    password: "",
-                    confirmPassword: ""
-                });
-                setIsLoading(false)
                 toast.success(response.data.message);
-                setShowModal(false)
+                setIsLoading(false)
+                setIsRegister(false)
+                setVerifyEmail(true)
+                handleSendOtp()
+                // setShowModal(false)
             } catch(err) {
                 console.log(err)
                 setFormErrors({})
@@ -164,15 +182,14 @@ export default function LoginRegister({ setShowModal }) {
                     ? err.response.data.message
                     : [];
                 setServerErrors(errors);
-                // console.log(err.response.data.message)
-                // console.log(serverErrors)
+                console.log(err.response.data.message)
+                console.log(serverErrors)
             }
         } else {
             setFormErrors(errors);
             console.log(errors)
             setServerErrors([])
         }
-
     };
 
     const handleLoginSubmit = async (e) => {
@@ -239,14 +256,126 @@ export default function LoginRegister({ setShowModal }) {
         }
     };
 
+    const handleVerifyEmailOtp = async () => {
+        const formData = {
+            // email: "mohammedsinanchinnu07@gmail.com",
+            email: registerFormData.email,
+            otp: Number(otp),
+        }
+        console.log(formData)
+        setIsLoading(true)
+        if(otp.trim().length !== 0) {
+            try {
+                const response = await axios.post(`${localhost}/api/user/verify-mail-otp`, formData)
+                console.log(response)
+                const verified = response.data.email.isVerified
+                if(verified) {
+                    toast.success("Email verified successfully! Please Login")
+                    setIsLoading(false)
+                    setShowModal(false)
+                }
+                console.log(response)
+            } catch(err) {
+                console.log(err)
+                setOtpError(err.response.data.message || "Invalid OTP")
+                toast.error(err.response.data.message || "Invalid OTP")
+                setIsLoading(false)
+            }
+        } else {
+            setOtpError("OTP is Required")
+            setIsLoading(false)
+        }
+    }
+
+    const [cooldown, setCooldown] = useState(0);
+
+    const handleClick = () => {
+        handleSendOtp()
+        setCooldown(60);
+    };
+
+    useEffect(() => {
+        if (cooldown > 0) {
+            const timer = setInterval(() => {
+                setCooldown((prev) => prev - 1);
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+    }, [cooldown]);
+
     return (
         <div className="modal-overlay">
             <div className="modal-content">
                 <button className="close-btn" onClick={() => setShowModal(false)}>
                 <FaTimes />
                 </button>
-                <h2>{isRegister ? "Register" : "Login"}</h2>
-                {isRegister && (
+                <h2>{isLogin ? "Login" : isRegister ? "Register" : "Verify Email"}</h2>
+                {isLogin ? (
+                    <div>
+                        <form
+                            component="form"
+                            onSubmit={handleLoginSubmit}
+                            className="contact-form"
+                            >
+                            <TextField
+                                label="Email or Phone Number"
+                                variant="outlined"
+                                value={loginFormData.username}
+                                onChange={handleLoginChange('username')}
+                                fullWidth
+                                className="form-field"
+                            />
+                            {(formErrors.username) &&
+                                <CustomAlert 
+                                    severity="error" 
+                                    message={formErrors.username}
+                                />
+                            }
+                            <TextField
+                                label="Password"
+                                variant="outlined"
+                                type={showPassword ? 'text' : 'password'}
+                                value={loginFormData.password}
+                                onChange={handleLoginChange('password')}
+                                fullWidth
+                                className="form-field"
+                                InputProps={{
+                                    endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                                        {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            {(formErrors.password) &&
+                                <CustomAlert 
+                                    severity="error" 
+                                    message={formErrors.password}
+                                />
+                            }
+                            {loginServerErrors &&
+                                <CustomAlert 
+                                    severity="error" 
+                                    message={loginServerErrors}
+                                />    
+                            }
+                            <button
+                                type="submit"
+                                className="btn"
+                            >
+                                {isLoading ? 
+                                    <Box sx={{ display: 'flex' }}>
+                                        <CircularProgress color="inherit" size={20}/>
+                                    </Box>
+                                : "Submit"}
+                            </button>
+                        </form>
+                        <p className="goto-links">New User, <span onClick={() => {setIsRegister(true); setIsLogin(false)}}>Register</span></p>
+                    </div>
+                ) : (
+                    isRegister ? (
                     <div>
                     <form
                         component="form"
@@ -377,71 +506,56 @@ export default function LoginRegister({ setShowModal }) {
                     </form>
                     <p className="goto-links">Already Registered, <span onClick={() => {setIsRegister(false); setIsLogin(true)}}>Login</span></p>
                     </div>
-                )}
-                {isLogin && (
-                    <div>
-                        <form
-                            component="form"
-                            onSubmit={handleLoginSubmit}
-                            className="contact-form"
-                            >
+                ) : (
+                    <div className="verify-email-div">
+                        <p>Verify your email address, a verification email has been sent to your email address.</p>
+                        <div className="verify-email">
                             <TextField
-                                label="Email or Phone Number"
+                                label="OTP"
                                 variant="outlined"
-                                value={loginFormData.username}
-                                onChange={handleLoginChange('username')}
+                                value={otp}
+                                onChange={(e) => {setOtp(e.target.value)}}
                                 fullWidth
-                                className="form-field"
+                                className="form-field verify"
                             />
-                            {(formErrors.username) &&
-                                <CustomAlert 
-                                    severity="error" 
-                                    message={formErrors.username}
-                                />
-                            }
-                            <TextField
-                                label="Password"
-                                variant="outlined"
-                                type={showPassword ? 'text' : 'password'}
-                                value={loginFormData.password}
-                                onChange={handleLoginChange('password')}
-                                fullWidth
-                                className="form-field"
-                                InputProps={{
-                                    endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                        {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                    ),
-                                }}
-                            />
-                            {(formErrors.password) &&
-                                <CustomAlert 
-                                    severity="error" 
-                                    message={formErrors.password}
-                                />
-                            }
-                            {loginServerErrors &&
-                                <CustomAlert 
-                                    severity="error" 
-                                    message={loginServerErrors}
-                                />    
-                            }
                             <button
-                                type="submit"
-                                className="btn"
-                            >
-                                {isLoading ? 
-                                    <Box sx={{ display: 'flex' }}>
-                                        <CircularProgress color="inherit" size={20}/>
-                                    </Box>
-                                : "Submit"}
+                                    type="submit"
+                                    className="btn submit"
+                                    onClick={handleVerifyEmailOtp}
+                                >
+                                    {isLoading ? 
+                                        <Box sx={{ display: 'flex' }}>
+                                            <CircularProgress color="inherit" size={20}/>
+                                        </Box>
+                                    : "Submit"}
                             </button>
-                        </form>
-                        <p className="goto-links">New User, <span onClick={() => {setIsRegister(true); setIsLogin(false)}}>Register</span></p>
+                        </div>
+                        <div className="same-line">
+                            {(otpError) &&
+                                <CustomAlert 
+                                    severity="error" 
+                                    message={otpError}
+                                    className="otp-error"
+                                />
+                            }
+                            <div className="otp-container">
+                                <button
+                                    type="button"
+                                    className="btn-resend"
+                                    onClick={handleClick}
+                                    disabled={cooldown > 0}
+                                >
+                                    {cooldown > 0 ? "Please wait..." : "Resend OTP"}
+                                </button>
+                                {cooldown > 0 && (
+                                    <div className="cooldown-text">
+                                        Resend otp in 0:{cooldown < 10 ? `0${cooldown}` : cooldown}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
+                )
                 )}
             </div>
         </div>

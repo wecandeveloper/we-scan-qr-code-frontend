@@ -16,7 +16,7 @@
             flex-direction: column;
         }
 
-        .save-btn {
+        .btn-div {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -26,6 +26,182 @@
     }
 
     .customer-profile-details {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;       
+        
+        .customer-profile-info-div {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            // box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            gap: 20px;
+
+            .profile-info-head {
+                font-size: 25px;
+            }
+
+            .profile-image-div {
+                height: 250px;
+                width: 250px;
+
+                img {
+                    height: 100%;
+                    width: 100%;
+                    object-fit: cover;
+                }
+            }
+
+            .profile-info-details {
+                display: flex;
+                flex-direction: row;
+                gap: 20px;
+                width: 100%;
+
+                .profile-details {
+                    width: 50%;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+
+                    .profile-value {
+                        padding: 15px 15px;
+                        border-radius: 10px;
+                        border : 2px solid #470531;
+                        width: 100%;
+                    }
+                }
+
+                    .same-line {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 10px;
+                        align-items: center;
+                    }
+
+                    .btn-dark {
+                        height: 55px;
+                        width: 100px;
+                    }
+
+                    .verified-btn {
+                        width: 100px;
+                        height: 55px;
+                        margin-left: auto;
+                        background: #EDF7ED;
+                        color: #458845;
+                        border: none;
+                        display: flex;
+                        flex-direction: row;
+                        gap: 5px;
+
+                        img {
+                            width: 20px;
+                        }
+                    }
+            }
+
+            .contact-info {
+                display: flex;
+                flex-direction: row;
+                // justify-content: center;
+                align-items: center;
+                gap: 30px;
+                width: 100%;
+
+                .contact-div {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    width: 100%;
+
+                    .same-line {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 10px;
+                        align-items: center;
+                    }
+
+                    .btn-dark {
+                        height: 55px;
+                        width: 100px;
+                    }
+
+                    .verified-btn {
+                        width: 100px;
+                        height: 55px;
+                        margin-left: auto;
+                        background: #EDF7ED;
+                        color: #458845;
+                        border: none;
+                        display: flex;
+                        flex-direction: row;
+                        gap: 5px;
+
+                        img {
+                            width: 20px;
+                        }
+                    }
+
+                    .form-field {
+                        width: 100%;
+                        // border: 2px solid #470531;
+                        border-radius: 10px;
+
+                        .MuiOutlinedInput-root {
+                            color: #470531;
+                            font-family: "Oswald", sans-serif;
+                            border-radius: 10px;
+                            transition: all 0.3s ease;
+
+                            fieldset {
+                                border-color: #470531;
+                                border-width: 1.5px;
+                                transition: 0.3s;
+                            }
+
+                            &:hover fieldset {
+                                border-color: #470531;
+                                border-width: 2px;
+                            }
+
+                            &.Mui-focused fieldset {
+                                border-color: #470531;
+                                border-width: 2px;
+                            }
+                        }
+
+                        .MuiInputLabel-root {
+                            color: #470531;
+                            font-family: "Oswald", sans-serif;
+                        }
+
+                        .MuiInputLabel-root.Mui-focused {
+                            color: #470531;
+                        }
+
+                        .MuiInputBase-input,
+                        .MuiSelect-select {
+                            color: #470531;
+                            font-family: "Oswald", sans-serif;
+                            text-align: left;
+                        }
+
+                        .start-adornment {
+                            font-family: "Oswald", sans-serif;
+                            color: #470531;
+                            font-weight: 500;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .edit-profile-modal-body {
         margin-top: 30px;
         display: flex;
         flex-direction: column;

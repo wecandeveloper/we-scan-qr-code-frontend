@@ -248,183 +248,397 @@
             }
         }
 
-        .payment-details-div {
+        .address-payment-div {
             width: 30%;
-            height: fit-content;
-            position: relative;
-            background: #fff;
-            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            .address-div {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                background: #fff;
+                padding: 30px;
+                border-radius: 10px;
+
+                .address-card {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 20px;
+                    justify-content: space-between;
+                    align-items: center;
+                    width: 100%;
+                    background: #fafafa;
+                    padding: 10px 15px;
+                    border-radius: 10px;
+                    border: 1px solid #e4e4e4;
+                    cursor: pointer;
+
+                    .address-card-left {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 20px;
+                    }
+
+                    .address-icon {
+                        font-size: 30px;
+                    }
+
+                    .address-icon.right {
+                        font-size: 20px;
+                    }
+                }
+
+                .address-card.none {
+                    .add-address {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            .payment-details-div {
+                height: fit-content;
+                position: relative;
+                background: #fff;
+                padding: 30px;
+                border-radius: 10px;
+                // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+                .hr {
+                    margin-top: 10px;
+                    margin-bottom: 10px;
+                    width: 100%;
+                    background: #470531;
+                    height: 1px;
+                    border: none;
+                }
+
+                .coupon-div {
+                    margin: 20px 0px;
+
+                    .coupon {
+                        margin-top: 20px;
+                        display: flex;
+                        flex-direction: row;
+                        gap: 10px;
+
+                        .form-group {
+                            position: relative;
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            background: #fafafa;
+                            padding: 10px 15px;
+                            border-radius: 10px;
+                            border: 1px solid #e4e4e4;
+                            color: gray;
+                            width: 100%;
+                            height: 100%;
+                        
+                            input, select, textarea {
+                                flex: 1;
+                                border: none;
+                                background: transparent;
+                                font-size: 16px;
+                                outline: none;
+                                padding-right: 10px;
+                                font-family: "Oswald", sans-serif;
+                            }
+                        }
+
+                        .apply-btn {
+                            font-size: 14px;
+                            font-weight: 600;
+                            display: flex;
+                            gap: 5px;
+                            padding: 10px 15px;
+                            background: #470531;
+                            color: white;
+                            border: 2px solid #470531;
+                            border-radius: 10px;
+                            width: 100px;
+                            justify-content: center;
+                            align-items: center;
+                            cursor: pointer;
+                            margin-left: auto;
+                            transition: .3s;
+                    
+                            svg {
+                                font-size: 20px;
+                                font-weight: 600;
+                            }
+                        }
+                        
+                        .apply-btn:hover {
+                            background: white;
+                            color: #470531;
+                        };
+                    }
+                }
+
+                .coupon-error, .coupon-success {
+                    margin-top: -10px;
+                }
+
+                .applied-coupon-div {
+                    margin: 20px 0px;
+
+                    .coupon {
+                        margin-top: 20px;
+                        display: flex;
+                        flex-direction: row;
+                        gap: 10px;
+
+                        .form-group {
+                            position: relative;
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            background: #470531;
+                            color: white;
+                            border: 2px solid #470531;
+                            padding: 10px 15px;
+                            border-radius: 10px;
+                            width: 100%;
+                            height: 100%;
+                        }
+
+                        .remove-btn {
+                            font-size: 14px;
+                            font-weight: 600;
+                            display: flex;
+                            gap: 5px;
+                            padding: 10px 15px;
+                            // background: #470531;
+                            background: white;
+                            color: #470531;
+                            border: 2px solid #470531;
+                            border-radius: 10px;
+                            width: 100px;
+                            justify-content: center;
+                            align-items: center;
+                            cursor: pointer;
+                            margin-left: auto;
+                            transition: .3s;
+                    
+                            svg {
+                                font-size: 20px;
+                                font-weight: 600;
+                            }
+                        }
+                        
+                        .remove-btn:hover {
+                            background: #470531;
+                            color: white;
+                        };
+                    }
+                }
+
+                .amount-div {
+                    margin-top: 20px;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                }
+
+                .shipping-free {
+                    text-decoration: line-through;
+                    color: #eb3424;
+                    font-size: 12px;
+                    margin-bottom: 2px;
+                    margin-right: 5px;
+                }
+
+                .amount-bg-div {
+                    margin-top: 20px;
+                    background: #470531;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 10px;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    border: 2px solid #470531;
+                    transition: .3s all;
+                    cursor: pointer;
+
+                    .amount {
+                        font-weight: 600;
+                        font-size: 18px;
+                    }
+
+                    &:hover {
+                        background: white;
+                        color: #470531;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.delivery-address-modal {
+    display: flex;
+    flex-direction: column;
+    width: 1000px;
+
+    .address-head {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #ccc;
+
+        .head {
+            font-size: 22px;
+        }
+    }
+
+    .address-body {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 10px;
+
+        .address-card {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            padding: 20px;
+            border: 2px solid #ccc;
             border-radius: 10px;
-            // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
 
-            .hr {
-                margin-top: 10px;
-                margin-bottom: 10px;
-                width: 100%;
-                background: #470531;
-                height: 1px;
-                border: none;
-            }
-
-            .coupon-div {
-                margin: 20px 0px;
-
-                .coupon {
-                    margin-top: 20px;
-                    display: flex;
-                    flex-direction: row;
-                    gap: 10px;
-
-                    .form-group {
-                        position: relative;
-                        display: flex;
-                        flex-direction: row;
-                        align-items: center;
-                        background: #fafafa;
-                        padding: 10px 15px;
-                        border-radius: 10px;
-                        border: 1px solid #e4e4e4;
-                        color: gray;
-                        width: 100%;
-                        height: 100%;
-                    
-                        input, select, textarea {
-                            flex: 1;
-                            border: none;
-                            background: transparent;
-                            font-size: 16px;
-                            outline: none;
-                            padding-right: 10px;
-                            font-family: "Oswald", sans-serif;
-                        }
-                    }
-
-                    .apply-btn {
-                        font-size: 14px;
-                        font-weight: 600;
-                        display: flex;
-                        gap: 5px;
-                        padding: 10px 15px;
-                        background: #470531;
-                        color: white;
-                        border: 2px solid #470531;
-                        border-radius: 10px;
-                        width: 100px;
-                        justify-content: center;
-                        align-items: center;
-                        cursor: pointer;
-                        margin-left: auto;
-                        transition: .3s;
-                
-                        svg {
-                            font-size: 20px;
-                            font-weight: 600;
-                        }
-                    }
-                    
-                    .apply-btn:hover {
-                        background: white;
-                        color: #470531;
-                    };
-                }
-            }
-
-            .coupon-error, .coupon-success {
-                margin-top: -10px;
-            }
-
-            .applied-coupon-div {
-                margin: 20px 0px;
-
-                .coupon {
-                    margin-top: 20px;
-                    display: flex;
-                    flex-direction: row;
-                    gap: 10px;
-
-                    .form-group {
-                        position: relative;
-                        display: flex;
-                        flex-direction: row;
-                        align-items: center;
-                        background: #470531;
-                        color: white;
-                        border: 2px solid #470531;
-                        padding: 10px 15px;
-                        border-radius: 10px;
-                        width: 100%;
-                        height: 100%;
-                    }
-
-                    .remove-btn {
-                        font-size: 14px;
-                        font-weight: 600;
-                        display: flex;
-                        gap: 5px;
-                        padding: 10px 15px;
-                        // background: #470531;
-                        background: white;
-                        color: #470531;
-                        border: 2px solid #470531;
-                        border-radius: 10px;
-                        width: 100px;
-                        justify-content: center;
-                        align-items: center;
-                        cursor: pointer;
-                        margin-left: auto;
-                        transition: .3s;
-                
-                        svg {
-                            font-size: 20px;
-                            font-weight: 600;
-                        }
-                    }
-                    
-                    .remove-btn:hover {
-                        background: #470531;
-                        color: white;
-                    };
-                }
-            }
-
-            .amount-div {
-                margin-top: 20px;
+            .address-card-head {
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
+                align-items: center;
+                gap: 50px;
+
+                .address-type-div {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+
+                    .location-icon {
+                        font-size: 20px;
+                    }
+
+                    .address-type {
+                        font-size: 20px;
+                        font-weight: 700;
+                    }
+                }
+
+                .address-actions {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 20px;
+
+                    .edit-btn, .delete-btn {
+                        cursor: pointer;
+                        text-decoration: underline;
+                    }
+
+                    .default-address-div {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 10px;
+
+                        .switch {
+                            position: relative;
+                            display: inline-block;
+                            width: 30px;
+                            height: 20px;
+                            margin-top: 2px;
+                        }
+
+                        .switch input {
+                            opacity: 0;
+                            width: 0;
+                            height: 0;
+                        }
+
+                        .slider {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-color: #ccc;
+                            transition: 0.3s;
+                            border-radius: 24px;
+                        }
+
+                        .slider:before {
+                            position: absolute;
+                            content: "";
+                            height: 14px;
+                            width: 14px;
+                            left: 3px;
+                            bottom: 3px;
+                            background-color: white;
+                            transition: 0.3s;
+                            border-radius: 50%;
+                        }
+
+                        input:checked + .slider {
+                            background-color: #470531; /* Your brand color */
+                        }
+
+                        input:checked + .slider:before {
+                            transform: translateX(10px);
+                        }
+
+                    }
+                }
             }
 
-            .shipping-free {
-                text-decoration: line-through;
-                color: #eb3424;
-                font-size: 12px;
-                margin-bottom: 2px;
-                margin-right: 5px;
-            }
-
-            .amount-bg-div {
-                margin-top: 20px;
-                background: #470531;
-                color: white;
-                padding: 10px 20px;
-                border-radius: 10px;
+            .address-card-details {
                 display: flex;
-                flex-direction: row;
-                justify-content: center;
-                border: 2px solid #470531;
-                transition: .3s all;
-                cursor: pointer;
+                flex-direction: column;
+                gap: 10px;
 
-                .amount {
-                    font-weight: 600;
-                    font-size: 18px;
-                }
+                .card-row {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 20px;
 
-                &:hover {
-                    background: white;
-                    color: #470531;
+                    .head {
+                        width: 100px;
+                        font-weight: bold;
+                    }
                 }
             }
+        }
+
+        .address-card:hover, .address-card:focus, .address-card.selected {
+            border: 2px solid #470531;
+        }
+    }
+
+    .address-footer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-top: 1px solid #ccc;
+
+        .cancel-continue-div {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
         }
     }
 }
@@ -461,47 +675,47 @@
 // Media Query for Mobile Devices
 
 @media (max-width: 1300px) {
-    .cart-details-page {
-        .cart-payment-div {
-            .payment-details-div {
-                width: 50%;
+    // .cart-details-page {
+    //     .cart-payment-div {
+    //         .payment-details-div {
+    //             width: 50%;
 
-                .payment-form-div {
-                    .payment-form {
-                        .sameline {
-                            flex-direction: column;
+    //             .payment-form-div {
+    //                 .payment-form {
+    //                     .sameline {
+    //                         flex-direction: column;
 
-                            .sameline.mobile {
-                                flex-direction: row;
-                            }
-                        }
-                    }
-                }
-            }
+    //                         .sameline.mobile {
+    //                             flex-direction: row;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
 
-            .cart-details-div {
-                width: 50%;
-            }
-        }
-    }
+    //         .cart-details-div {
+    //             width: 50%;
+    //         }
+    //     }
+    // }
 }
 
 @media (max-width: 1200px) {
-    .cart-details-page {
-        .payment-step-div {
-            flex-direction: column;
-            justify-content: center;
-            gap: 30px;
+    // .cart-details-page {
+    //     .payment-step-div {
+    //         flex-direction: column;
+    //         justify-content: center;
+    //         gap: 30px;
 
-            .left {
-                justify-content: center;
-            }
+    //         .left {
+    //             justify-content: center;
+    //         }
 
-            .right {
-                text-align: center;
-            }
-        }
-    }
+    //         .right {
+    //             text-align: center;
+    //         }
+    //     }
+    // }
 }
 
 @media (max-width: 1000px) {

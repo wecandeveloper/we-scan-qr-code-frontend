@@ -31,6 +31,8 @@ import { toast } from "react-toastify"
 import { IoClose } from "react-icons/io5";
 import { startCancelOrder, startChangeOrderStatus, startDeleteOrder, startGetAllOrders } from "../../../../../Actions/orderActions";
 import { useAuth } from "../../../../../Context/AuthContext";
+import axios from "axios";
+import { localhost } from "../../../../../Api/apis";
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -108,6 +110,7 @@ export default function OrderDashboard() {
     const [ orderId, setOrderId ] = useState("")
     const [ order, setOrder ] = useState({})
     const [ orderStatus, setOrderStatus ] = useState("")
+    const [ customerAddress, setCustomerAddress ] = useState("")
 
     const [ showConfirmCancelOrder, setShowConfirmCancelOrder ] = useState(false)
     const [ showConfirmDeleteOrder, setShowConfirmDeleteOrder ] = useState(false)
@@ -126,6 +129,22 @@ export default function OrderDashboard() {
         if (orderId && orders.length > 0) {
             const found = orders.find(ele => ele._id === orderId);
             if (found) setOrder(found);
+            // const customerId = found.customerId._id;
+            // (async () => {
+            //     try {
+            //     const response = await axios.get(`${localhost}/api/address/customerAddress/${found.customerId._id}`, {
+            //         headers: {
+            //             "Authorization": localStorage.getItem("token")
+            //         }
+            //     })
+            //     const data = response.data.data
+            //     console.log(data)
+            //     setCustomerAddress(data)
+            //     } catch (error) {
+            //         console.log(error);
+            //     }
+            // })()
+            // console.log(customerId)
         }
     }, [orderId, orders]);
 
@@ -421,46 +440,62 @@ export default function OrderDashboard() {
                                         <h1 className="order-head">View Order</h1>
                                         <div key={order._id} className="customer-order-card">
                                             {/* {order.status} */}
-                                            <div className="cancel-order-price-div">
+                                            <div className="orderId-price-div">
                                                 <div className="order-price-div">
-                                                    <h2 className="order-price">Order ID: {order._id}</h2>
+                                                    <h1 className="order-price">Order ID:<br/> {order._id}</h1>
                                                     <div>{formatDeliveryDate(order.orderDate)}</div>
                                                     <div className="order-price">Total Amount: AED {order.totalAmount}</div>
                                                 </div>
                                                 <div className="order-status">
-                                                    <p>Order Status :</p> <p>{order.status}</p>
+                                                    <p>Order Status :</p> 
+                                                    <p>{order.status}</p>
                                                 </div>
-                                                {/* <div 
-                                                    className={`cancel-order ${ order.status === "Canceled" ? "cancel" : ""}`}
-                                                    onClick={() => {
-                                                        if (order.status !== "Canceled") {
-                                                            // handleCancelOrder(order._id);
-                                                        }
-                                                    }}
-                                                >
-                                                    {order.status === "Canceled" ? order.status : "Cancel Order"}
-                                                </div> */}
                                             </div>
-                                            <div className="lineItems-grid">
-                                                {order?.lineItems?.map((item) => {
-                                                    return (
-                                                        <div key={item._id} className="lineItems-card">
-                                                            <div className="img-div">
-                                                                <img src={item.productId.images[0]} alt={item.name} />
-                                                            </div>
-                                                            <div className="item-details-div">
-                                                                <div className="item-name-div">
-                                                                    <h1>{item.productId.name}</h1>
-                                                                    <h3>{item.productId.categoryId.name}</h3>
-                                                                </div>
-                                                                <div className="price-qty-div">
-                                                                    <p>Price: AED {item.price * item.quantity}</p>
-                                                                    <p>Qty: {item.quantity}</p>
-                                                                </div>
+                                            <div className="order-details-div">
+                                                <h2>Order Details</h2>
+                                                <div className="customer-details">
+                                                    <div className="left">
+                                                        <h1>Customer details</h1>
+                                                        <div className="details">
+                                                            <div className="customer-name"> First Name: {order.customerId?.firstName}</div>
+                                                            <div className="customer-name"> Last Name: {order.customerId?.lastName}</div>
+                                                            <div className="customer-email"> Email: {order.customerId?.email.address}</div>
+                                                            <div className="customer-phone"> Phone: {order.customerId?.phone.countryCode} {order.customerId?.phone.number}</div>
+                                                        </div>
+                                                    </div>
+                                                    {order.deliveryAddress &&
+                                                        <div className="right">
+                                                            <h1>Customer Address</h1>
+                                                            <div className="details">
+                                                                <div className="customer-name"> Name: {order.deliveryAddress?.name}</div>
+                                                                <div className="customer-name"> Phone: {order.deliveryAddress?.phone?.countryCode} {order.deliveryAddress?.phone?.number}</div>
+                                                                <div className="customer-email"> Address: {order.deliveryAddress?.addressNo},<br/> {order.deliveryAddress?.street},<br/> {order.deliveryAddress?.city}, {order.deliveryAddress?.state}</div>
                                                             </div>
                                                         </div>
-                                                    )
-                                                })}
+                                                    }
+                                                </div>
+                                                <div className="lineItems-grid">
+                                                    <h1 className="linItems-head">Order Items</h1>
+                                                    {order?.lineItems?.map((item) => {
+                                                        return (
+                                                            <div key={item._id} className="lineItems-card">
+                                                                <div className="img-div">
+                                                                    <img src={item.productId.images[0]} alt={item.name} />
+                                                                </div>
+                                                                <div className="item-details-div">
+                                                                    <div className="item-name-div">
+                                                                        <h1>{item.productId.name}</h1>
+                                                                        <h3>{item.productId.categoryId.name}</h3>
+                                                                    </div>
+                                                                    <div className="price-qty-div">
+                                                                        <p>Price: AED {item.price * item.quantity}</p>
+                                                                        <p>Qty: {item.quantity}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

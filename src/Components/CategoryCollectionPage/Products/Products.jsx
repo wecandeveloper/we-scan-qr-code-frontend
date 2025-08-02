@@ -6,7 +6,7 @@ import { RiExpandUpDownFill, RiShareFill } from "react-icons/ri";
 import { FiShoppingCart } from "react-icons/fi";
 import { FaCaretDown, FaCaretLeft, FaCaretRight, FaCaretUp } from "react-icons/fa6";
 import { useAuth } from "../../../Context/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiGrid2H, CiGrid2V, CiGrid41 } from "react-icons/ci";
 import slugify from "slugify";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +32,8 @@ export default function Products() {
     // console.log(products)
 
     const [categoryFilterOpen, setCategoryFilterOpen ] = useState(true)
+    const [priceRange, setPriceRange] = useState([0, 0]); // [min, max]
+    const [inputRange, setInputRange] = useState([0, 0]);
     const [priceFilter, setPriceFilter] = useState("")
     const [priceFilterOpen, setPriceFilterOpen] = useState(true)
     const [otherFilterOpen, setOtherFilterOpen] = useState(true)
@@ -41,15 +43,18 @@ export default function Products() {
     const [showNo, setShowNo] = useState(16)
     const [currentPage, setCurrentPage] = useState(1);
 
+    useEffect(() => {
+    if (products.length > 0) {
+        const prices = products.map(p => p.price);
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        setPriceRange([min, max]);
+        setInputRange([min, max]);
+    }
+    }, [products]);
+
     // Filtered and sorted array based on selected filters and sort option
     const getProcessedProducts = () => {
-         // Find the highest price in the dataset
-        const maxPrice = Math.max(...products.map(ele => ele.price));
-        const priceSegment = maxPrice / 3; // Divide into three segments
-
-        const lowThreshold = priceSegment;
-        const mediumThreshold = priceSegment * 2;
-
         // Apply category and price filters
         let filteredArray = products.filter((ele) => {
             if(searchProduct && !slugify(ele.name).toLowerCase().includes(slugify(searchProduct).toLowerCase())) {
@@ -67,9 +72,9 @@ export default function Products() {
                 return false;
             }
 
-            if (priceFilter === "high" && ele.price <= mediumThreshold) return false;
-            if (priceFilter === "medium" && (ele.price <= lowThreshold || ele.price > mediumThreshold)) return false;
-            if (priceFilter === "low" && ele.price > lowThreshold) return false;
+            if (ele.price < inputRange[0] || ele.price > inputRange[1]) {
+                return false;
+            }
 
             return true; // Include the item if it passes the filters
         });
@@ -315,38 +320,78 @@ export default function Products() {
 
                     {/* Price Filter */}
                     <div className="filter-category">
-                        <div className="filter-header" onClick={() => setPriceFilterOpen(!priceFilterOpen)}>
-                            <span>Price</span>
-                            {!priceFilterOpen ? <FaCaretDown /> : <FaCaretUp/>}
-                        </div>
-                        <motion.ul
-                            id="categories"
-                            initial={false}
-                            animate={{ height: priceFilterOpen ? "auto" : 0 }}
-                            transition={{ duration: 0.5, ease: "easeInOut" }}
-                            className="filter-content"
-                            style={{ overflow: "hidden" }}
-                            >
-                            <li><input 
-                                type="checkbox" 
-                                value="high" 
-                                checked={priceFilter === "high"}
-                                onChange={(e) => setPriceFilter(e.target.value)}
-                            /><span>High</span></li>
-                            <li><input 
-                                type="checkbox" 
-                                value="medium" 
-                                checked={priceFilter === "medium"}
-                                onChange={(e) => setPriceFilter(e.target.value)} 
-                            /><span>Medium</span></li>
-                            <li><input 
-                                type="checkbox" 
-                                value="low" 
-                                checked={priceFilter === "low"}
-                                onChange={(e) => setPriceFilter(e.target.value)} 
-                            /><span>Low</span></li>
-                        </motion.ul>
+                    <div className="filter-header" onClick={() => setPriceFilterOpen(!priceFilterOpen)}>
+                        <span>Price Range</span>
+                        {!priceFilterOpen ? <FaCaretDown /> : <FaCaretUp />}
                     </div>
+
+                    <motion.div
+                        initial={false}
+                        animate={{ height: priceFilterOpen ? "auto" : 0 }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                        className="filter-content price-range-filter"
+                        style={{ overflow: "hidden" }}
+                    >
+                        <div className="range-container">
+                            <input
+                                type="range"
+                                min={priceRange[0]}
+                                max={priceRange[1]}
+                                value={inputRange[0]}
+                                onChange={(e) =>
+                                setInputRange([Math.min(Number(e.target.value), inputRange[1] - 1), inputRange[1]])
+                                }
+                                className="thumb thumb-left"
+                            />
+                            <input
+                                type="range"
+                                min={priceRange[0]}
+                                max={priceRange[1]}
+                                value={inputRange[1]}
+                                onChange={(e) =>
+                                setInputRange([inputRange[0], Math.max(Number(e.target.value), inputRange[0] + 1)])
+                                }
+                                className="thumb thumb-right"
+                            />
+                            <div className="range-track">
+                                <div
+                                className="range-selected"
+                                style={{
+                                    left: `${((inputRange[0] - priceRange[0]) / (priceRange[1] - priceRange[0])) * 100}%`,
+                                    right: `${100 - ((inputRange[1] - priceRange[0]) / (priceRange[1] - priceRange[0])) * 100}%`,
+                                }}
+                                />
+                            </div>
+                        </div>
+                        <div className="range-inputs">
+                            <div className="input-div">
+                                <label htmlFor="inputRange">Min</label>
+                                <input
+                                    type="number"
+                                    value={inputRange[0]}
+                                    min={priceRange[0]}
+                                    max={inputRange[1]}
+                                    onChange={(e) =>
+                                    setInputRange([Number(e.target.value), inputRange[1]])
+                                    }
+                                />
+                            </div>
+                            <div className="input-div">
+                                <label htmlFor="inputRange">Max</label>
+                                <input
+                                    type="number"
+                                    value={inputRange[1]}
+                                    min={inputRange[0]}
+                                    max={priceRange[1]}
+                                    onChange={(e) =>
+                                    setInputRange([inputRange[0], Number(e.target.value)])
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </motion.div>
+                    </div>
+
                     {/* <hr/> */}
 
                     {/* Other Filters */}

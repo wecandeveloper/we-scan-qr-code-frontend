@@ -15,15 +15,37 @@ import ConfirmToast from "../../Designs/ConfirmToast/ConfirmToast";
 import CustomAlert from "../../Designs/CustomAlert";
 import axios from "axios";
 import { localhost } from "../../Api/apis";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Modal } from "@mui/material";
+import { ImLocation2 } from "react-icons/im";
+import { startGetMyAddresses } from "../../Actions/AddressActions";
+import { FaAngleRight } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    // width: 250,
+    bgcolor: 'background.paper',
+    // border: '2px solid #470531',
+    borderRadius: '5px',
+    boxShadow: 24,
+    // p: '20px 30px',
+};
 
 export default function Cart() {
     const dispatch = useDispatch()
-    const { user, setGlobalGuestCart } = useAuth()
+    const navigate = useNavigate()
+    const { user, handleDashboardMenuChange, setGlobalGuestCart } = useAuth()
     const isLoggedIn = Boolean(user && user._id); // or user.token
 
     const cart = useSelector(state => {
         return state.cart.data
+    })
+
+    const addresses = useSelector((state) => {
+        return state.addresses.data
     })
 
     // console.log(cart)
@@ -41,23 +63,29 @@ export default function Cart() {
     const [ couponSuccess, setCouponSuccess ] = useState(false)
     const [ isLoading, setIsLoading ] = useState(false)
     const [ isApplyCouponLoading, setIsApplyCouponLoading ] = useState(false)
+    const [ deliveryAddress, setDeliveryAddress ] = useState(null)
+    const [ openAddressModal, setOpenAddressModal ] = useState(false);
 
-    // console.log(guestCart)
+    // console.log(addresses)
 
     const [ showRemoveCouponConfirm, setShowRemoveCouponConfirm ] = useState(false)
 
     useEffect(() => {
         if (isLoggedIn) {
             dispatch(startGetMyCart());
+            dispatch(startGetMyAddresses())
+            if(!deliveryAddress) {
+                const defaultAddress = addresses.find(address => address.isDefault)
+                // console.log(defaultAddress)
+                if (defaultAddress) {
+                    setDeliveryAddress(defaultAddress)
+                } else {
+                    setDeliveryAddress(addresses[0])
+                }
+            }
         } else {
             const guestCartData = JSON.parse(localStorage.getItem("guestCart")) || [];
             setGuestCart(guestCartData);
-            // if (!guestCartData.lineItems && guestCartData.appliedCoupon) {
-            //     guestCartData.appliedCoupon = null
-            //     setGuestCart(guestCartData);
-            // } else {
-            //     setGuestCart(guestCartData);
-            // }
         }
         (async () => {
                 try {
@@ -68,7 +96,7 @@ export default function Cart() {
                     console.log(err)
                 }
             })()
-    }, [isLoggedIn, cart]);
+    }, [isLoggedIn, cart, dispatch]);
 
     useEffect(()=>{
         (async()=>{
@@ -452,7 +480,7 @@ export default function Cart() {
     };
 
     const handleCheckout = async () => {
-        // console.log(cart)
+        // console.log(deliveryAddress)
         if(cartItems.length === 0) {
             toast.error("Cart is Empty")
         } else {
@@ -464,7 +492,7 @@ export default function Cart() {
                 } else {
                     setIsLoading(true)
                     try {
-                        const response = await axios.post(`${localhost}/api/payment/`, {}, {
+                        const response = await axios.post(`${localhost}/api/payment/`, deliveryAddress, {
                             headers: {
                                 Authorization: localStorage.getItem('token'),
                             },
@@ -485,6 +513,8 @@ export default function Cart() {
             }
         }
     }
+
+    // console.log(addresses)
 
     return (
         <section>
@@ -592,110 +622,246 @@ export default function Cart() {
                             </div>
                         )}
                     </div>
-                    <div className="payment-details-div">
-                        <h1>Final Amount</h1>
-                        <hr className="hr"/>
-                        <div className="coupon-div">
-                            <p>Enter Coupon Code</p>
-                            <div className="coupon">
-                                <div className="form-group">
-                                    <input type="text" name="checkIn" value={couponCode} onChange={(e) => setCouponCode((e.target.value).toUpperCase())} placeholder="Enter Coupon Code"/>
-                                </div>
-                                <motion.div 
-                                    whileTap={{ scale: 0.95 }}
-                                    whileHover={{ scale: 1 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
-                                    style={{ cursor: "pointer" }}
-                                    className="apply-btn"
-                                    onClick={handleApplyCoupon}
+                    <div className="address-payment-div">
+                        <div className="address-div">
+                            <h1>Delivery Address</h1>
+                            {deliveryAddress ?
+                                <div 
+                                    className="address-card" 
+                                    onClick={() => {
+                                        setOpenAddressModal(true)
+                                    }}
                                 >
-                                    {isApplyCouponLoading ? 
+                                    { deliveryAddress &&
+                                        <div className="address-card-left">
+                                            <ImLocation2 className="address-icon"/>
+                                            <div className="address-details">
+                                                <p>Deliver to :- {deliveryAddress.name}</p>
+                                                <div className="value">
+                                                    {deliveryAddress.addressNo}, {deliveryAddress.street}<br/>
+                                                    {deliveryAddress.city}, {deliveryAddress.state}, {deliveryAddress.pincode}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <FaAngleRight className="address-icon right"/>
+                                </div>
+                                : 
+                                <div className="address-card none">
+                                    <p>No Address Found, Please Add a{" "}
+                                        <div onClick={() => {
+                                                if(!isLoggedIn) {
+                                                    toast.warning("Please login to add address")
+                                                } else {
+                                                    handleDashboardMenuChange("my-addresses")
+                                                    navigate("/account/my-addresses")
+                                                }
+                                                
+                                            }}
+                                            className="add-address"
+                                        >new Address</div>
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                        <div className="payment-details-div">
+                            <h1>Final Amount</h1>
+                            <hr className="hr"/>
+                            <div className="coupon-div">
+                                <p>Enter Coupon Code</p>
+                                <div className="coupon">
+                                    <div className="form-group">
+                                        <input type="text" name="checkIn" value={couponCode} onChange={(e) => setCouponCode((e.target.value).toUpperCase())} placeholder="Enter Coupon Code"/>
+                                    </div>
+                                    <motion.div 
+                                        whileTap={{ scale: 0.95 }}
+                                        whileHover={{ scale: 1 }}
+                                        transition={{ type: "spring", stiffness: 300 }}
+                                        style={{ cursor: "pointer" }}
+                                        className="apply-btn"
+                                        onClick={handleApplyCoupon}
+                                    >
+                                        {isApplyCouponLoading ? 
+                                            <Box sx={{ display: 'flex' }}>
+                                                <CircularProgress color="inherit" size={20}/>
+                                            </Box>   
+                                        : 
+                                            "Apply"
+                                        }
+                                        </motion.div>
+                                </div>
+                            </div>
+                            {(couponError && ! couponSuccess) &&
+                                <CustomAlert
+                                    severity="error" 
+                                    message={couponError}
+                                    className="coupon-error"
+                                />
+                            }
+                            {(couponSuccess && ! couponError) &&
+                                <CustomAlert
+                                    severity="success" 
+                                    message={couponSuccess}
+                                    className="coupon-success"
+                                />
+                            }
+                            <hr className="hr"/>
+                            {appliedCoupon && (
+                                <>
+                                    <div className="applied-coupon-div">
+                                        <p>Applied Coupon:</p>
+                                        <div className="coupon">
+                                            <div className="form-group">
+                                                {appliedCoupon?.name} - {appliedCoupon?.value} {appliedCoupon?.type === "percentage" ? "%" : "AED"}
+                                            </div>
+                                            <motion.div 
+                                                whileTap={{ scale: 0.95 }}
+                                                whileHover={{ scale: 1 }}
+                                                transition={{ type: "spring", stiffness: 300 }}
+                                                style={{ cursor: "pointer" }}
+                                                className="remove-btn"
+                                                onClick={handleRemoveCoupon}
+                                            >
+                                                Remove</motion.div>
+                                        </div>
+                                    </div>
+                                    <hr className="hr"/>
+                                </>
+                            )}   
+                            <div className="amount-div">
+                                <p className="amount">Sub Total Amount</p>
+                                <p className="amount">AED {originalAmount}</p>
+                            </div>
+                            <div className="amount-div">
+                                <p className="amount">Coupon Discount</p>
+                                <p className="amount">AED {discountAmount}</p>
+                            </div>
+                            <div className="amount-div">
+                                <p className="amount">Shipping Fee</p>
+                                {/* <div className="amount free">AED {shippingCharge}</div> */}
+                                <div className="amount free">{(shippingCharge === 0) && <span className="shipping-free"> AED 20 </span>} <span>{shippingCharge === 0 ? "Free" : `AED ${shippingCharge}`}</span></div>
+                            </div>
+                            <hr className="hr"/>
+                            <div className="amount-div">
+                                <p className="amount">Total Amount Incl. VAT</p>
+                                <p className="amount">AED {totalAmount}</p>
+                            </div>
+                            <motion.div
+                                whileTap={{ scale: 0.95 }}
+                                whileHover={{ scale: 1 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                                style={{ cursor: "pointer" }}
+                                onClick={() => {
+                                    handleCheckout();
+                                }}
+                                className="amount-bg-div">
+                                    {isLoading ? 
                                         <Box sx={{ display: 'flex' }}>
                                             <CircularProgress color="inherit" size={20}/>
-                                        </Box>   
-                                    : 
-                                        "Apply"
+                                        </Box>
+                                    :
+                                        <p className="amount">Proceed to Checkout</p>
                                     }
-                                    </motion.div>
-                            </div>
+                                {/* <p className="amount">Final Amount</p> */}
+                                {/* <p className="amount">AED {totalAmount}.00</p> */}
+                            </motion.div>
                         </div>
-                        {(couponError && ! couponSuccess) &&
-                            <CustomAlert
-                                severity="error" 
-                                message={couponError}
-                                className="coupon-error"
-                            />
-                        }
-                        {(couponSuccess && ! couponError) &&
-                            <CustomAlert
-                                severity="success" 
-                                message={couponSuccess}
-                                className="coupon-success"
-                            />
-                        }
-                        <hr className="hr"/>
-                        {appliedCoupon && (
-                            <>
-                                <div className="applied-coupon-div">
-                                    <p>Applied Coupon:</p>
-                                    <div className="coupon">
-                                        <div className="form-group">
-                                            {appliedCoupon?.name} - {appliedCoupon?.value} {appliedCoupon?.type === "percentage" ? "%" : "AED"}
-                                        </div>
-                                        <motion.div 
-                                            whileTap={{ scale: 0.95 }}
-                                            whileHover={{ scale: 1 }}
-                                            transition={{ type: "spring", stiffness: 300 }}
-                                            style={{ cursor: "pointer" }}
-                                            className="remove-btn"
-                                            onClick={handleRemoveCoupon}
-                                        >
-                                            Remove</motion.div>
-                                    </div>
-                                </div>
-                                <hr className="hr"/>
-                            </>
-                        )}   
-                        <div className="amount-div">
-                            <p className="amount">Sub Total Amount</p>
-                            <p className="amount">AED {originalAmount}</p>
-                        </div>
-                        <div className="amount-div">
-                            <p className="amount">Coupon Discount</p>
-                            <p className="amount">AED {discountAmount}</p>
-                        </div>
-                        <div className="amount-div">
-                            <p className="amount">Shipping Fee</p>
-                            {/* <div className="amount free">AED {shippingCharge}</div> */}
-                            <div className="amount free">{(shippingCharge === 0) && <span className="shipping-free"> AED 20 </span>} <span>{shippingCharge === 0 ? "Free" : `AED ${shippingCharge}`}</span></div>
-                        </div>
-                        <hr className="hr"/>
-                        <div className="amount-div">
-                            <p className="amount">Total Amount Incl. VAT</p>
-                            <p className="amount">AED {totalAmount}</p>
-                        </div>
-                        <motion.div
-                            whileTap={{ scale: 0.95 }}
-                            whileHover={{ scale: 1 }}
-                            transition={{ type: "spring", stiffness: 300 }}
-                            style={{ cursor: "pointer" }}
-                            onClick={() => {
-                                handleCheckout();
-                            }}
-                            className="amount-bg-div">
-                                {isLoading ? 
-                                    <Box sx={{ display: 'flex' }}>
-                                        <CircularProgress color="inherit" size={20}/>
-                                    </Box>
-                                :
-                                    <p className="amount">Proceed to Checkout</p>
-                                }
-                            {/* <p className="amount">Final Amount</p> */}
-                            {/* <p className="amount">AED {totalAmount}.00</p> */}
-                        </motion.div>
                     </div>
                 </div>
             </div>
+            <Modal 
+                open={openAddressModal}
+                onClose={() => setOpenAddressModal(false)}
+                BackdropProps={{
+                    sx: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)', // darker overlay
+                    },
+                }}
+            >
+                <Box sx={{...style, outline: 'none',}}>
+                    <div className="delivery-address-modal">
+                        <div className="address-head">
+                            <h1 className="head">Select Delivery Address</h1>
+                        </div>
+                        <div className="address-body">
+                            {[...addresses]
+                                .sort((a, b) => {
+                                // Put selected address first
+                                // if (deliveryAddress?._id === a._id) return -1;
+                                // if (deliveryAddress?._id === b._id) return 1;
+
+                                // Then put default address next
+                                if (a.isDefault && !b.isDefault) return -1;
+                                if (!a.isDefault && b.isDefault) return 1;
+
+                                return 0; // maintain original order for others
+                                }).map((address) => {
+                                return (
+                                    <div 
+                                        key={address._id} 
+                                        className={`address-card ${deliveryAddress?._id === address._id && "selected"}`}
+                                        onClick={() => {
+                                            setDeliveryAddress(address)
+                                        }}
+                                    >
+                                        <div className="address-card-head">
+                                            <div className="address-type-div"> 
+                                                <ImLocation2 className="location-icon"/> 
+                                                <p className="address-type">{address.type}</p>
+                                            </div>
+                                            <div className="address-actions">
+                                                <div 
+                                                    className="edit-btn" 
+                                                    onClick={() => {
+                                                        // handleAddressFormModal()
+                                                        // setAddressId(address._id)
+                                                        // console.log((address._id))
+                                                    }}
+                                                >Edit</div>
+                                                <div className="default-address-div">
+                                                    <div className="label">Default</div>
+                                                    <label className="switch">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={address.isDefault}
+                                                            // onChange={() => handleChangeDefaultAddress(address._id)}
+                                                        />
+                                                        <span className="slider round"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="address-card-details">
+                                            <div className="card-row">
+                                                <div className="head">Name</div>
+                                                <div className="value">{address.name}</div>
+                                            </div>
+                                            <div className="card-row">
+                                                <div className="head">Address</div>
+                                                <div className="value">
+                                                    {address.addressNo}, {address.street}<br/>
+                                                    {address.city}, {address.state}, {address.pincode}
+                                                </div>
+                                            </div>
+                                            <div className="card-row">
+                                                <div className="head">Phone</div>
+                                                <div className="value">{address.phone.countryCode} {address.phone.number}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div className="address-footer">
+                            <div className="btn-dark">Add New Address</div>
+                            <div className="cancel-continue-div">
+                                <div className="btn-dark" onClick={() => setOpenAddressModal(false)}>Cancel</div>
+                                <div className="btn-dark" onClick={() => setOpenAddressModal(false)}>Continue</div>
+                            </div>
+                        </div>
+                    </div>
+                </Box>
+            </Modal>
             {showConfirm && (
                 <ConfirmToast
                     message="Are you sure you want to remove this item from your cart?"

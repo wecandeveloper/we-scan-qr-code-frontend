@@ -25,7 +25,7 @@ const setCustomers = (customers) => {
     }
 }
 
-export const startDeleteCustomer = (userId) => {
+export const startDeleteCustomer = (userId, handleCloseAll) => {
     return async (dispatch) => {
         try {
             const response = await axios.delete(`${localhost}/api/user/delete/${userId}`, {
@@ -35,6 +35,7 @@ export const startDeleteCustomer = (userId) => {
             })
             dispatch(deleteCustomer(response.data.data))
             toast.success(response.data.message)
+            handleCloseAll()
         } catch(err) {
             // alert(err.message)
             console.log(err)

@@ -248,7 +248,7 @@ export default function CustomerListDashboard() {
         setCurrentPage(page);
     };
 
-    const confirmDeleteOrder = () => {
+    const confirmToggleBlockUser = () => {
         console.log(customerId)
         if(customer.isBlocked) {
             const body = {
@@ -261,6 +261,10 @@ export default function CustomerListDashboard() {
             }
             dispatch(startToggleBlockUser(customerId, body, handleCloseAll))
         }
+    }
+
+    const confirmDeleteUser = () => {
+        dispatch(startDeleteCustomer(customerId, handleCloseAll))
     }
 
     const hanldeChangePassword = async () => {
@@ -460,9 +464,9 @@ export default function CustomerListDashboard() {
                                                     <span className="head">Email</span>
                                                     <span className="value">
                                                         {customer.email?.address}
-                                                        {customer.email?.verified ? 
+                                                        {customer.email?.isVerified ? 
                                                             <CustomAlert
-                                                                severity="error" 
+                                                                severity="success" 
                                                                 message="Verified"
                                                                 className="error-message"
                                                             /> : 
@@ -478,7 +482,7 @@ export default function CustomerListDashboard() {
                                                     <span className="head">Phone</span>
                                                     <span className="value">
                                                         {customer.phone?.countryCode} {customer.phone?.number}
-                                                        {customer.phone?.verified ? 
+                                                        {customer.phone?.isVerified ? 
                                                             <CustomAlert
                                                                 severity="success" 
                                                                 message="Verified"
@@ -611,14 +615,14 @@ export default function CustomerListDashboard() {
             {showConfirmDeleteCustomer && (
                 <ConfirmToast
                     message="Are you sure you want to Delete this User?"
-                    onConfirm={confirmDeleteOrder}
+                    onConfirm={confirmDeleteUser}
                     onCancel={() => {setShowConfirmDeleteCustomer(false)}}
                 />
             )}
             {showConfirmToggleBlockCustomer && (
                 <ConfirmToast
                     message={`Are you sure you want to ${customer.isBlocked ? "UnBlock" : "Block"} this User?`}
-                    onConfirm={confirmDeleteOrder}
+                    onConfirm={confirmToggleBlockUser}
                     onCancel={() => {setShowConfirmToggleBlockCustomer(false)}}
                 />
             )}
