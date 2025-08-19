@@ -16,7 +16,7 @@ import RestaurantDashboard from "../SuperAdminDashboardMenu/RestaurantDashboard/
 import ProfileDashboard from "../SuperAdminDashboardMenu/ProfileDashboard/ProfileDashboard";
 import PasswordDashboard from "../SuperAdminDashboardMenu/PasswordDashboard/PasswordDashboard";
 import RestaurantAdminListDashboard from "../SuperAdminDashboardMenu/RestaurantAdminListDashboard/RestaurantAdminListDashboard";
-import { startGetAllRestaurant } from "../../../../Actions/RestaurantActions";
+import { startGetAllRestaurant } from "../../../../Actions/restaurantActions";
 
 const dashboardMenu = [
     {
