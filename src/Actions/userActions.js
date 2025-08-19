@@ -65,7 +65,7 @@ export const startToggleBlockUser = (userId, body, handleCloseAll) => {
             console.log(response.data)
         } catch(err) {
             console.log(err)
-            alert(err.message)
+            // alert(err.message)
         }
     }
 }

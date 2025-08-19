@@ -9,7 +9,7 @@
     justify-content: center;
     align-items: center;
     animation: fadeIn 0.3s ease-in-out;
-    z-index: 1000;
+    z-index: 1001;
 
     .modal-content {
         background: white;
@@ -53,7 +53,7 @@
         gap: 15px;
         width: 550px;
         background-color: white; // White form background
-        font-family: "Oswald", sans-serif;
+        font-family: "Montserrat", sans-serif;
 
         .title {
             font-size: 25px;
@@ -101,7 +101,7 @@
 
         .MuiOutlinedInput-root {
             color: #470531;
-            font-family: "Oswald", sans-serif;
+            font-family: "Montserrat", sans-serif;
             border-radius: 10px;
             transition: all 0.3s ease;
 
@@ -124,7 +124,7 @@
 
         .MuiInputLabel-root {
             color: #470531;
-            font-family: "Oswald", sans-serif;
+            font-family: "Montserrat", sans-serif;
         }
 
         .MuiInputLabel-root.Mui-focused {
@@ -134,12 +134,12 @@
         .MuiInputBase-input,
         .MuiSelect-select {
             color: #470531;
-            font-family: "Oswald", sans-serif;
+            font-family: "Montserrat", sans-serif;
             text-align: left;
         }
 
         .start-adornment {
-            font-family: "Oswald", sans-serif;
+            font-family: "Montserrat", sans-serif;
             color: #470531;
             font-weight: 500;
         }
@@ -204,41 +204,39 @@
             gap: 15px;
         }
 
-.otp-container {
-    text-align: center;
+        .otp-container {
+            text-align: center;
 
-    .btn-resend {
-        width: 160px;
-        padding: 10px 20px;
-        background-color: #470531;
-        color: white;
-        border: 2px solid #470531;
-        border-radius: 6px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+            .btn-resend {
+                width: 160px;
+                padding: 10px 20px;
+                background-color: #470531;
+                color: white;
+                border: 2px solid #470531;
+                border-radius: 6px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: all 0.3s ease;
 
-        &:disabled {
-            background-color: #9e4a83;
-            cursor: not-allowed;
-            opacity: 0.8;
+                &:disabled {
+                    background-color: #9e4a83;
+                    cursor: not-allowed;
+                    opacity: 0.8;
+                }
+
+                &:hover:enabled {
+                    background-color: white;
+                    color: #470531;
+                }
+            }
+
+            .cooldown-text {
+                margin-top: 8px;
+                font-size: 14px;
+                color: #470531;
+                font-weight: 500;
+            }
         }
-
-        &:hover:enabled {
-            background-color: white;
-            color: #470531;
-        }
-    }
-
-    .cooldown-text {
-        margin-top: 8px;
-        font-size: 14px;
-        color: #470531;
-        font-weight: 500;
-    }
-}
-
-
 
         @keyframes unfill {
             from {
@@ -264,6 +262,35 @@
         span:hover {
             color: black;
             transition: .3s;
+        }
+    }
+}
+
+@media (max-width: 650px) {
+    .modal-overlay { 
+        .modal-content {
+            width: 80%;
+        }
+
+        .contact-form {
+            width: 100%;
+        }
+    }
+}
+
+@media (max-width: 550px) {
+    .modal-overlay { 
+        .modal-content {
+            width: 90%;
+        }
+
+        .contact-form {
+            width: 100%;
+
+            .sameline {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     }
 }

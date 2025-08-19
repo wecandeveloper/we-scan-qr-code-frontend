@@ -2,21 +2,23 @@ import axios from "axios"
 import {render, localhost} from "../Api/apis"
 import { toast } from "react-toastify"
 
-export const startCreateOrder = (paymentId) => {
+export const startCreateOrder = (formData, setGlobalGuestId, setOpenSelectTableNumberModal, setIsCartSectionOpen) => {
     return async (dispatch) => {
         try {
-            const orderResponse = await axios.post(`${localhost}/api/order/create/${paymentId}`, {}, {
-                headers:{
-                    'Authorization' : localStorage.getItem('token')
-                }
-            })
+            const orderResponse = await axios.post(`${localhost}/api/order/create`, formData, )
             const order = orderResponse.data.data
+            setGlobalGuestId(order.guestId)
+            localStorage.setItem("guestId", order.guestId)
+            localStorage.removeItem("guestCart")
+            setOpenSelectTableNumberModal(false)
+            setIsCartSectionOpen(false)
             dispatch(addOrder(order))
             // console.log(order)
-            toast.success("Payment Successful, Your Order is Placed")
+            toast.success("Your Order Placed Successfully")
         } catch(err) {
             console.log(err)
-            alert(err.message)
+            toast.success("Unable to Place the Order")
+            // alert(err.message)
         }
     }
 }
@@ -28,26 +30,26 @@ const addOrder = (order) => {
     }
 }
 
-export const startGetAllOrders = () => {
+export const startGetRestaurantOrders = () => {
     return async (dispatch) => {
         try {
-            const response = await axios.get(`${localhost}/api/order/list`, {
+            const response = await axios.get(`${localhost}/api/order/listRestaurantOrders`, {
                 headers: {
                     "Authorization": localStorage.getItem("token")
                 }
             })
             // console.log(response.data.data)
-            dispatch(setAllOrders(response.data.data))
+            dispatch(setRestaurantOrders(response.data.data))
         } catch(err) {
             console.log(err)
-            alert(err.message)
+            // alert(err.message)
         }
     }
 }
 
-const setAllOrders = (orders) => {
+const setRestaurantOrders = (orders) => {
     return {
-        type : "SET_ALL_ORDERS",
+        type : "SET_RESTAURANT_ORDERS",
         payload : orders
     }
 }
@@ -64,7 +66,7 @@ export const startGetMyOrders = () => {
             dispatch(setOrders(response.data.data))
         } catch(err) {
             console.log(err)
-            alert(err.message)
+            // alert(err.message)
         }
     }
 }
@@ -88,7 +90,7 @@ export const startGetOneOrder = (orderId) => {
             dispatch(getOneOrder(response.data))
         } catch(err) {
             console.log(err)
-            alert(err.message)
+            // alert(err.message)
         }
     }
 }
@@ -100,23 +102,23 @@ const getOneOrder = (order) => {
     }
 }
 
-export const startCancelOrder = (orderId, handleCloseAll) => {
+export const startCancelOrder = (guestId, orderId, handleCloseAll) => {
     return async (dispatch) => {
         try {
-            const orderResponse = await axios.put(`${localhost}/api/order/cancel/${orderId}`, { status : "Canceled"}, {
+            const orderResponse = await axios.put(`${localhost}/api/order/cancel/${guestId}/${orderId}`, { status : "Cancelled"}, {
                 headers:{
                     'Authorization' : localStorage.getItem('token')
                 }
             })
             dispatch(cancelOrder(orderResponse.data.data))
-            toast.success("Order Canceled Successfully")
+            toast.success("Order Cancelled Successfully")
             console.log(orderResponse.data)
             if(handleCloseAll) {
                 handleCloseAll()
             }
         } catch(err) {
             console.log(err)
-            alert(err.message)
+            // alert(err.message)
         }
     }
 }
@@ -142,7 +144,7 @@ export const startChangeOrderStatus = (orderId, status, handleCloseAll) => {
             console.log(orderResponse.data.data)
         } catch(err) {
             console.log(err)
-            alert(err.message)
+            // alert(err.message)
         }
     }
 }
@@ -168,7 +170,7 @@ export const startDeleteOrder = (orderId, handleCloseAll) => {
             console.log(response.data.data)
         }catch(err){
             console.log(err);
-            alert(err)
+            // alert(err)
         }
     }
 }

@@ -36,7 +36,7 @@ const UploadButton = styled(Button)(({ theme }) => ({
     backgroundColor: "#470531",
     border: "1.5px solid #470531",
     color: '#fff',
-    fontFamily: "Oswald",
+    fontFamily: "Montserrat",
     width: '250px', // reduced width
     padding: '6px 10px',
     textTransform: 'none',

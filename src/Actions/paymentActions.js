@@ -14,7 +14,7 @@ export const startGetAllPayments = () => {
             dispatch(setAllPayments(response.data.data))
         } catch(err) {
             console.log(err)
-            alert(err.message)
+            // alert(err.message)
         }
     }
 }
@@ -38,7 +38,7 @@ export const startGetOnePayment = (paymentId) => {
             dispatch(getOnePayment(response.data))
         } catch(err) {
             console.log(err)
-            alert(err.message)
+            // alert(err.message)
         }
     }
 }
@@ -64,7 +64,7 @@ export const startDeletePayment = (paymentId, handleCloseAll) => {
             console.log(response.data.data)
         }catch(err){
             console.log(err);
-            alert(err)
+            // alert(err)
         }
     }
 }

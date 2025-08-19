@@ -9,7 +9,7 @@ export default function orderReducers(state = initialState, action) {
         case "ADD_ORDER" :{
             return { ...state, data : [...state.data, action.payload] }
         }
-        case "SET_ALL_ORDERS" : {
+        case "SET_RESTAURANT_ORDERS" : {
             return { ...state, data : action.payload }
         }
         case "SET_MY_ORDERS" : {
@@ -24,7 +24,7 @@ export default function orderReducers(state = initialState, action) {
                 ...state,
                 data: state.data.map(order =>
                     order._id === orderIdToCancel
-                        ? { ...order, status: "Canceled" }
+                        ? { ...order, status: "Cancelled" }
                         : order
                 )
             };

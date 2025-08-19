@@ -10,7 +10,7 @@ export const startGetCoupon = () => {
             dispatch(getCoupon(response.data.data))
             // console.log(response.data.data)
         }catch(err){
-            alert(err)
+            // alert(err)
             console.log(err)
         }
     }
@@ -63,7 +63,7 @@ export const startUpdateCoupon = (formData, couponId, setServerErrors, handleClo
         }catch(err){
             setServerErrors(err.response.data.message)
             toast.error("Failed to Update Coupon")
-            alert(err)
+            // alert(err)
             console.log(err)
         }
     }
@@ -89,7 +89,7 @@ export const startDeleteCoupon = (couponId, handleCloseAll)=>{
             console.log(response.data.data)
         }catch(err){
             console.log(err);
-            alert(err)
+            // alert(err)
         }
     }
 }

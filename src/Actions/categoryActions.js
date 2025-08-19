@@ -3,14 +3,14 @@ import axios from 'axios'
 import {render, localhost} from "../Api/apis"
 import { toast } from 'react-toastify'
 
-export const startGetCategory = () => {
+export const startGetCategories = (restaurantSlug) => {
     return async(dispatch)=>{
         try{
-            const response = await axios.get(`${localhost}/api/category/list`)
+            const response = await axios.get(`${localhost}/api/category/listByRestaurant/${restaurantSlug}`)
             dispatch(getCategory(response.data.data))
             // console.log(response.data.data)
         }catch(err){
-            alert(err)
+            // alert(err)
             console.log(err)
         }
     }
@@ -36,7 +36,7 @@ export const startCreateCategory = (formData, setServerErrors, handleCloseAll)=>
             console.log(response.data.data)
         }catch(err){
             console.log(err)
-            toast.error("Failed to Add category")
+            toast.error(err.response.data.message)
             setServerErrors(err.response.data.message)
         }
     }
@@ -62,8 +62,8 @@ export const startUpdateCategory = (formData, categoryId, setServerErrors, handl
             console.log(response.data.data)
         }catch(err){
             setServerErrors(err.response.data.message)
-            toast.error("Failed to Update category")
-            alert(err)
+            toast.error(err.response.data.message)
+            // alert(err)
             console.log(err)
         }
     }
@@ -89,7 +89,7 @@ export const startDeleteCategory = (categoryId, handleCloseAll)=>{
             console.log(response.data.data)
         }catch(err){
             console.log(err);
-            alert(err)
+            // alert(err)
         }
     }
 }

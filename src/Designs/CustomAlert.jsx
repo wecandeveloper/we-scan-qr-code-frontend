@@ -3,12 +3,12 @@ import { Alert, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 const StyledAlert = styled(Alert)(({ theme }) => ({
-  fontFamily: '"Oswald", sans-serif',
+  fontFamily: '"Montserrat", sans-serif',
   width: '100%',
   borderRadius: "10px",
   fontSize: '16px',
   '& .MuiAlert-message': {
-    fontFamily: '"Oswald", sans-serif',
+    fontFamily: '"Montserrat", sans-serif',
   },
 }));
 

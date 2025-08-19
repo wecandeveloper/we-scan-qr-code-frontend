@@ -6,8 +6,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { BsArrowRight } from "react-icons/bs"
 
-import image1 from "../../../Assets/Banners/banner-1.png"
-import image2 from "../../../Assets/Banners/banner-2.jpeg"
+import image1 from "../../../Assets/Banners/banner-3.png"
+// import image2 from "../../../Assets/Banners/banner-2.jpeg"
 import icon1 from "../../../Assets/Icons/free-delivery.png"
 import icon2 from "../../../Assets/Icons/refundable.png"
 import icon3 from "../../../Assets/Icons/secure.png"
@@ -21,11 +21,11 @@ const slides = [
         title: "Sweeten Your Day with Every Bite",
         subtitle: "Explore candies, chocolates, sauces & more at Crunchie Carvings",
     },
-    {
-        image: image2,
-        title: "Cool Treats & Irresistible Delights",
-        subtitle: "From ice creams to sweets, your favorite flavors are here",
-    }
+    // {
+    //     image: image2,
+    //     title: "Cool Treats & Irresistible Delights",
+    //     subtitle: "From ice creams to sweets, your favorite flavors are here",
+    // }
 ];
 
 const stats = [
@@ -73,22 +73,22 @@ export default function HomeHero() {
                         {slides.map((slide, i) => (
                         <SwiperSlide key={i}>
                             <div className="img-div">
-                            <div className="overlay"></div>
+                            {/* <div className="overlay"></div> */}
                             <img src={slide.image} alt={`slide-${i}`} />
-                            <div className="hero-content">
+                            {/* <div className="hero-content">
                                 <h2 className="title">{slide.title}</h2>
                                 <p className="subtitle">{slide.subtitle}</p>
                                 <a href="#categories"><div className="button">
                                 Order Now <FaArrowRightLong />
                                 </div></a>
-                            </div>
+                            </div> */}
                             </div>
                         </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
 
-                <div className="company-stats">
+                {/* <div className="company-stats">
                     {stats.map((ele) => {
                         return (
                             <div key={ele.id} className="stats">
@@ -100,7 +100,7 @@ export default function HomeHero() {
                             </div>
                         )
                     }) }
-                </div>
+                </div> */}
             </div>
         </section>
     )

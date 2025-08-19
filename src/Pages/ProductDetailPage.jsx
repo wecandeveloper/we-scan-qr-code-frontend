@@ -1,13 +1,12 @@
 import { Fragment } from "react";
-import Cart from "../Components/CartPage/Cart";
-import FilteredProducts from "../Components/HomePage/FilteredProducts/FilteredProducts";
-import ProductDetails from "../Components/ProductPage/ProductDetails/ProductDetails";
+import ProductDetails from "../Components/RestaurantLayout/RestaurantProductDetailPage/ProductDetails/ProductDetails.jsx"
+import FilteredProducts from "../Components/RestaurantLayout/RestaurantHomePage/FilteredProducts/FilteredProducts.jsx";
 
 export default function ProductDetailPage() {
     return (
         <Fragment>
             <ProductDetails/>
-            <FilteredProducts 
+            <FilteredProducts
                 title = "Related Products"
             />
         </Fragment>

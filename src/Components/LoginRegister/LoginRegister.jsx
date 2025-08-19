@@ -96,9 +96,21 @@ export default function LoginRegister({ setShowModal }) {
     }
     validateErrors()
 
-    // const handleRegisterChange = (e) => {
-    //     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // };
+    const [cooldown, setCooldown] = useState(0);
+
+    const handleClick = () => {
+        handleSendOtp()
+        setCooldown(60);
+    };
+
+    useEffect(() => {
+        if (cooldown > 0) {
+            const timer = setInterval(() => {
+                setCooldown((prev) => prev - 1);
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+    }, [cooldown]);
 
     const handleRegisterChange = (field) => (event) => {
         const inputValue = event.target.value;
@@ -126,27 +138,6 @@ export default function LoginRegister({ setShowModal }) {
         setLoginFormData((prev) => ({ ...prev, [field]: inputValue }));
     };
 
-    // const handleLoginChange = (e) => {
-    //     setLoginData({ ...loginData, [e.target.name]: e.target.value });
-    // };
-
-    const handleSendOtp = async () => {
-        try {
-            const response = await axios.post(`${localhost}/api/user/send-mail-otp`, { email: registerFormData.email})
-            console.log(response)
-            const isSent = response.data.isSend
-            if(isSent){
-                toast.success("Otp for Verificaetion has sent. Please check your email for Otp")
-            } else {
-                toast.error("Failed to send otp")
-            }
-        } catch(err) {
-            console.log(err)
-            setOtpError(err.response.data.message)
-            toast.error(err.response.data.message || err.message || `Falied to send Otp`)
-        } 
-    }
-
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         if(Object.keys(errors).length === 0){
@@ -161,18 +152,16 @@ export default function LoginRegister({ setShowModal }) {
                 },
                 phone,
                 password,
-                role: "customer"
+                role: "restaurantAdmin"
             }
 
-            console.log(user)
+            // console.log(user)
 
             try {
                 const response = await axios.post(`${localhost}/api/user/register`, user)
                 console.log(response)
                 toast.success(response.data.message);
-                setIsLoading(false)
                 setIsRegister(false)
-                setVerifyEmail(true)
                 handleSendOtp()
                 // setShowModal(false)
             } catch(err) {
@@ -184,6 +173,8 @@ export default function LoginRegister({ setShowModal }) {
                 setServerErrors(errors);
                 console.log(err.response.data.message)
                 console.log(serverErrors)
+            } finally {
+                setIsLoading(false)
             }
         } else {
             setFormErrors(errors);
@@ -191,6 +182,54 @@ export default function LoginRegister({ setShowModal }) {
             setServerErrors([])
         }
     };
+
+    const handleSendOtp = async () => {
+        try {
+            const response = await axios.post(`${localhost}/api/user/send-mail-otp`, { email: registerFormData.email})
+            console.log(response)
+            const isSent = response.data.isSent
+            if(isSent){
+                toast.success("Otp for Verificaetion has sent. Please check your email for Otp")
+            } else {
+                toast.error("Failed to send otp")
+            }
+        } catch(err) {
+            console.log(err)
+            setOtpError(err.response.data.message)
+            toast.error(err.response.data.message || err.message || `Falied to send Otp`)
+        } 
+    }
+
+    const handleVerifyEmailOtp = async () => {
+        const formData = {
+            // email: "mohammedsinanchinnu07@gmail.com",
+            email: registerFormData.email,
+            otp: Number(otp),
+        }
+        console.log(formData)
+        setIsLoading(true)
+        if(otp.trim().length !== 0) {
+            try {
+                const response = await axios.post(`${localhost}/api/user/verify-mail-otp`, formData)
+                console.log(response)
+                const verified = response.data.email.isVerified
+                if(verified) {
+                    toast.success("Email verified successfully! Please Login")
+                    setIsLoading(false)
+                    setShowModal(false)
+                }
+                console.log(response)
+            } catch(err) {
+                console.log(err)
+                setOtpError(err.response.data.message || "Invalid OTP")
+                toast.error(err.response.data.message || "Invalid OTP")
+                setIsLoading(false)
+            }
+        } else {
+            setOtpError("OTP is Required")
+            setIsLoading(false)
+        }
+    }
 
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
@@ -237,11 +276,8 @@ export default function LoginRegister({ setShowModal }) {
                     localStorage.removeItem("guestCart"); // Cleanup guest cart
                     toast.success("Guest cart transferred successfully!");
                 }
-                if(userData.role === "superAdmin") {
+                if(userData.role === "superAdmin" || userData.role === "restaurantAdmin") {
                     navigate("/admin/dashboard")
-                } else if (userData.role === "customer") {
-                    navigate("/account")
-                    handleDashboardMenuChange("my-orders")
                 }
             } catch (err) {
                 setFormErrors({})
@@ -256,58 +292,11 @@ export default function LoginRegister({ setShowModal }) {
         }
     };
 
-    const handleVerifyEmailOtp = async () => {
-        const formData = {
-            // email: "mohammedsinanchinnu07@gmail.com",
-            email: registerFormData.email,
-            otp: Number(otp),
-        }
-        console.log(formData)
-        setIsLoading(true)
-        if(otp.trim().length !== 0) {
-            try {
-                const response = await axios.post(`${localhost}/api/user/verify-mail-otp`, formData)
-                console.log(response)
-                const verified = response.data.email.isVerified
-                if(verified) {
-                    toast.success("Email verified successfully! Please Login")
-                    setIsLoading(false)
-                    setShowModal(false)
-                }
-                console.log(response)
-            } catch(err) {
-                console.log(err)
-                setOtpError(err.response.data.message || "Invalid OTP")
-                toast.error(err.response.data.message || "Invalid OTP")
-                setIsLoading(false)
-            }
-        } else {
-            setOtpError("OTP is Required")
-            setIsLoading(false)
-        }
-    }
-
-    const [cooldown, setCooldown] = useState(0);
-
-    const handleClick = () => {
-        handleSendOtp()
-        setCooldown(60);
-    };
-
-    useEffect(() => {
-        if (cooldown > 0) {
-            const timer = setInterval(() => {
-                setCooldown((prev) => prev - 1);
-            }, 1000);
-            return () => clearInterval(timer);
-        }
-    }, [cooldown]);
-
     return (
         <div className="modal-overlay">
             <div className="modal-content">
                 <button className="close-btn" onClick={() => setShowModal(false)}>
-                <FaTimes />
+                    <FaTimes />
                 </button>
                 <h2>{isLogin ? "Login" : isRegister ? "Register" : "Verify Email"}</h2>
                 {isLogin ? (
@@ -429,7 +418,7 @@ export default function LoginRegister({ setShowModal }) {
                                     required: true,
                                     autoFocus: true,
                                     style: {
-                                    fontFamily: '"Oswald", sans-serif',
+                                    fontFamily: '"Montserrat", sans-serif',
                                     color: '#470531',
                                     borderRadius: 10,
                                     border: '1.5px solid #470531',
@@ -501,7 +490,11 @@ export default function LoginRegister({ setShowModal }) {
                             type="submit"
                             className="btn"
                         >
-                            Submit
+                            {isLoading ? 
+                                <Box sx={{ display: 'flex' }}>
+                                    <CircularProgress color="inherit" size={20}/>
+                                </Box>
+                            : "Submit"}
                         </button>
                     </form>
                     <p className="goto-links">Already Registered, <span onClick={() => {setIsRegister(false); setIsLogin(true)}}>Login</span></p>

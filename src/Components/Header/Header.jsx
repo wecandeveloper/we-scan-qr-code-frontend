@@ -13,7 +13,7 @@ import Modal from '@mui/material/Modal';
 
 import "./Header.scss"
 
-import logo from "../../Assets/Logo/crunchie-cravings-logo.png"
+import logo from "../../Assets/Logo/we-scan-logo.png"
 import HamburgerButton from "../../Designs/HamburgerButton/HamburgerButton"
 import LoginRegister from "../LoginRegister/LoginRegister";
 import defaultProfilePic from "../../Assets/Common/account-icon.png"
@@ -86,7 +86,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
     color: '#470531',
     border: `2px solid #470531`,
     fontWeight: 'bold',
-    fontFamily: '"Oswald", sans-serif',
+    fontFamily: '"Montserrat", sans-serif',
   },
 }));
 
@@ -151,7 +151,7 @@ export default function Header() {
     }, [isLoggedIn]);
 
     return (
-        <nav>
+        <nav className="nav">
             <div className="navbar">
                 <div className="logo-div">
                     <a href="/"><img src={logo} alt="Logo" className="logo"/></a>
@@ -178,7 +178,7 @@ export default function Header() {
                 </div>
                 <div className="login-div">
                     <div className="account-div" onClick={() => { 
-                        user?.role === "superAdmin" ? navigate("/admin/dashboard") : user ? openDashboardModalFunc() : setShowModal(!showModal) 
+                        (user?.role === "superAdmin" || user?.role === "restaurantAdmin") ? navigate("/admin/dashboard") : user ? openDashboardModalFunc() : setShowModal(!showModal) 
                         }}>
                         <p className="username">
                             {user?.role === "superAdmin" ? "Admin" : user ? `Hala, ${user.firstName}` : "LogIn"}

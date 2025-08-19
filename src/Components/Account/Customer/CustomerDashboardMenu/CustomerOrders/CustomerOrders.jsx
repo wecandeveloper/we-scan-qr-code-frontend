@@ -128,7 +128,7 @@ export default function CustomerOrder() {
                             <select id="status-filter" value={orderStatus} onChange={(e) => setOrderStatus(e.target.value)}>
                                 <option value="">All</option>
                                 <option value="Placed">Placed</option>
-                                <option value="Canceled">Canceled</option>
+                                <option value="Cancelled">Cancelled</option>
                                 <option value="Dispatched">Dispatched</option>
                                 <option value="Delivered">Delivered</option>
                             </select>
@@ -165,14 +165,14 @@ export default function CustomerOrder() {
                                             <p>Order Status :</p> <p>{order.status}</p>
                                         </div>
                                         <div 
-                                            className={`cancel-order ${ order.status === "Canceled" ? "cancel" : ""}`}
+                                            className={`cancel-order ${ order.status === "Cancelled" ? "cancel" : ""}`}
                                             onClick={() => {
-                                                if (order.status !== "Canceled") {
+                                                if (order.status !== "Cancelled") {
                                                     handleCancelOrder(order._id);
                                                 }
                                             }}
                                         >
-                                            {order.status === "Canceled" ? order.status : "Cancel Order"}
+                                            {order.status === "Cancelled" ? order.status : "Cancel Order"}
                                         </div>
                                     </div>
                                     <div className="lineItems-grid">

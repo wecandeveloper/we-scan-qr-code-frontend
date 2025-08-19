@@ -415,7 +415,7 @@ export default function CustomerAddresses() {
                                         required: true,
                                         autoFocus: true,
                                         style: {
-                                        fontFamily: '"Oswald", sans-serif',
+                                        fontFamily: '"Montserrat", sans-serif',
                                         color: '#470531',
                                         borderRadius: 10,
                                         border: '1.5px solid #470531',

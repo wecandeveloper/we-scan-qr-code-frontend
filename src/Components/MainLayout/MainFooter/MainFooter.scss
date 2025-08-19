@@ -1,0 +1,53 @@
+.footer {
+    position: fixed;
+    background: #FE931D;
+    padding: 20px 50px;
+    width: 100%;
+    margin-top: 50px;
+    bottom: 0;
+
+    .footer-section {
+        display: flex;
+        flex-direction: row;
+        gap: 50px;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+
+        .social-links {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            transition: .3s all;
+
+            svg {
+                font-size: 25px;
+                transition: .3s all;
+                cursor: pointer;
+
+                &:hover {
+                    color: white;
+                }
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            transition: .5s all;
+            cursor: pointer;
+
+            p {
+                transition: .3s all;
+            }
+
+            p:hover {
+                color: #fff5e4;
+                transition: .5;
+            }
+        }
+    }
+}

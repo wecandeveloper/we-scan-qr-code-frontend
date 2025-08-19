@@ -1,13 +1,11 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import AppLoader from './Components/AppLoader/AppLoader';
 import AppRouter from './Components/AppRouter/AppRouter';
 import routes from './Routes/routes';
-import Header from './Components/Header/Header';
-import { startGetCategory } from './Actions/categoryActions';
+import { startGetCategories } from './Actions/categoryActions';
 import { useDispatch } from 'react-redux';
 import { startGetAllProducts } from './Actions/productActions';
-import Footer from './Components/Footer/Footer';
 import { useAuth } from './Context/AuthContext';
 
 import { ToastContainer } from 'react-toastify';
@@ -15,17 +13,35 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { localhost } from './Api/apis';
 import { startCreateOrder } from './Actions/orderActions';
-import AdminHeader from './Components/Header/AdminHeader/AdminHeader';
+import { startGetOneRestaurant } from './Actions/restaurantActions';
 // import Footer from './Components/Footer/Footer';
 
 export default function App() {
   const location = useLocation();
+  const path = location.pathname;
+  const { restaurantSlug } = useParams();
+
+  // detect if route is restaurant-specific
+  const isRestaurantRoute = path.startsWith("/restaurant/");
+
+  // detect if admin
+  const isAdminRoute = path.startsWith("/admin/");
+
+  // main site routes (home, collections, etc.)
+  const isMainRoute = !isRestaurantRoute && !isAdminRoute;
+
   const dispatch = useDispatch();
   const calledRef = useRef(false)
   const [pageLoading, setPageLoading] = useState(true); // True initially for pre-loader
 
   const { user, handleLogin, handleCategoryChange, handleDashboardMenuChange } =useAuth()
   const isLoggedIn = Boolean(user && user._id);
+
+  useEffect(() => {
+      if(restaurantSlug) {
+          dispatch(startGetOneRestaurant(restaurantSlug));
+      }
+  }, [restaurantSlug, dispatch]);
 
   useEffect(() => {
     setPageLoading(true);
@@ -49,7 +65,7 @@ export default function App() {
       }
     }
 
-    const storedDashboardMenu = localStorage.getItem("dashboardMenu");
+  const storedDashboardMenu = localStorage.getItem("dashboardMenu");
     if (storedDashboardMenu && storedDashboardMenu !== "undefined") {
       try {
         const parsedDashboardMenu = JSON.parse(storedDashboardMenu);
@@ -59,8 +75,6 @@ export default function App() {
         localStorage.removeItem("dashboardMenu");
       }
     }
-    dispatch(startGetCategory());
-    dispatch(startGetAllProducts());
   }, [dispatch]);
 
   useEffect(() => {
@@ -88,69 +102,65 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-  if (calledRef.current) return; // avoid duplicate
-  calledRef.current = true;
+    if (calledRef.current) return; // avoid duplicate
+    calledRef.current = true;
 
-  (async () => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const sessionId = params.get("session_id");
-      const stripeId = localStorage.getItem("stripeId");
+    (async () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const sessionId = params.get("session_id");
+        const stripeId = localStorage.getItem("stripeId");
 
-      if (sessionId && stripeId && sessionId === stripeId) {
-        console.log("same");
+        if (sessionId && stripeId && sessionId === stripeId) {
+          console.log("same");
 
-        const response = await axios.get(`${localhost}/api/payment/session/${stripeId}`, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        });
-        console.log(response);
-
-        const response2 = await axios.post(
-          `${localhost}/api/payment/session/${stripeId}/success`,
-          { paymentStatus: "Successful" },
-          {
+          const response = await axios.get(`${localhost}/api/payment/session/${stripeId}`, {
             headers: {
               Authorization: localStorage.getItem("token"),
             },
-          }
-        );
-        console.log(response2);
-        const paymentId = response2.data.data._id;
-        dispatch(startCreateOrder(paymentId));
-      }
+          });
+          console.log(response);
 
-      localStorage.removeItem("stripeId");
-    } catch (err) {
-      console.log(err);
-    }
-  })();
+          const response2 = await axios.post(
+            `${localhost}/api/payment/session/${stripeId}/success`,
+            { paymentStatus: "Successful" },
+            {
+              headers: {
+                Authorization: localStorage.getItem("token"),
+              },
+            }
+          );
+          console.log(response2);
+          const paymentId = response2.data.data._id;
+          dispatch(startCreateOrder(paymentId));
+        }
+
+        localStorage.removeItem("stripeId");
+      } catch (err) {
+        console.log(err);
+      }
+    })();
   }, []);
 
   return (
-    <>
-      <AppLoader isVisible={pageLoading} />
-        {!pageLoading && (
-          <div className="app">
-          <Fragment>
-            <ToastContainer 
-              position="top-right"
-              autoClose={3000}
-              hideProgressBar={false}
-              newestOnTop={true}
-              closeOnClick
-              pauseOnHover
-              draggable
-              toastClassName="custom-toast"
-              bodyClassName="custom-toast-body"
-            />
-            {location.pathname === "/admin/dashboard" ? <AdminHeader/> : <Header />}
-            <AppRouter routes={routes} />
-            {location.pathname !== "/admin/dashboard" && <Footer />}
-          </Fragment>
-          </div>
-        )}
-    </>
+    <Fragment>
+      <AppLoader isVisible={false} />
+      <div className="app">
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          pauseOnHover
+          draggable
+          toastClassName="custom-toast"
+          bodyClassName="custom-toast-body"
+        />
+
+        {/* Main Router */}
+        <AppRouter routes={routes} />
+      </div>
+    </Fragment>
   );
 }

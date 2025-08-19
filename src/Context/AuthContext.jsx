@@ -1,6 +1,8 @@
-import { createContext, useContext, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { Navigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { startGetOneRestaurant } from "../Actions/restaurantActions";
 
 const AuthContext = createContext()
 
@@ -10,20 +12,25 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [ user, setUser ] = useState(null)
+    const [ restaurant, setRestaurant ] = useState(null)
+    const [ restaurantId, setRestaurantId ] = useState(null)
+    const { restaurantSlug } = useParams();
+    const [ globalGuestId, setGlobalGuestId ] = useState("")
     const [ globalGuestCart, setGlobalGuestCart ] = useState(null)
     const [ selectedDashboardMenu, setSelectedDashboardMenu ] = useState("")
     const [ selectedCategory, setSelectedCategory ] = useState("")
     const [ openDashboardModal, setOpenDashboardModal ] = useState(false)
     const [ searchProduct, setSearchProduct ] = useState("")
-
-    const handleLogin = (user) => {
-        setUser(user)
-    }
-
     const openDashboardModalFunc = () => setOpenDashboardModal(true);
     const closeDashboardModalFunc = () => setOpenDashboardModal(false);
 
-    // console.log(user)
+    const handleLogin = (user) => {
+        setUser(user)
+        if(user.restaurantId) {
+            setRestaurantId(user.restaurantId)
+            localStorage.setItem("restaurantId", user.restaurantId )
+        }
+    }
 
     const handleLogout = () => {
         toast.success("Successfully Logged Out")
@@ -31,13 +38,14 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("token")
         handleDashboardMenuChange("")
         localStorage.removeItem("dashboardMenu")
-        Navigate("/")
-
+        localStorage.removeItem("restaurantId")
+        setGlobalGuestId("")
+        localStorage.removeItem("globalGuestId")
     }
 
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
-
+        
         if (category) {
             localStorage.setItem("category", JSON.stringify(category));
         } else {
@@ -58,11 +66,18 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider 
             value = {{ 
                 user, 
-                setUser, 
+                setUser,
+                restaurant, 
+                setRestaurant,
+                restaurantId,
+                setRestaurantId,
+                restaurantSlug,
                 handleLogin, 
                 handleLogout,
                 selectedCategory,
                 handleCategoryChange,
+                globalGuestId,
+                setGlobalGuestId,
                 globalGuestCart,
                 setGlobalGuestCart,
                 selectedDashboardMenu,

@@ -9,11 +9,13 @@ import addressesReducers from "../Reducers/addressReducers"
 import couponReducers from "../Reducers/couponReducers"
 import paymentReducers from "../Reducers/paymentReducers"
 import userReducers from "../Reducers/userReducers"
+import restaurantReducers from "../Reducers/restaurantReducers"
 
 const configureStore = () => {
     const store = createStore(combineReducers({
         // reducers
         users: userReducers,
+        restaurants: restaurantReducers,
         categories: categoryReducers,
         products: productReducers,
         cart: cartReducers,

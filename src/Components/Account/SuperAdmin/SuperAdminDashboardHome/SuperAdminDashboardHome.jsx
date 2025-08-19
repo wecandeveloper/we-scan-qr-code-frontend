@@ -4,30 +4,24 @@ import { useNavigate } from "react-router-dom";
 
 import "./SuperAdminDashboardHome.scss"
 
-import { TbLogout, TbTruckDelivery } from "react-icons/tb";
+import { TbLogout } from "react-icons/tb";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
 import { MdSpaceDashboard } from "react-icons/md";
 import { HiBuildingStorefront } from "react-icons/hi2";
-import { LuCandy } from "react-icons/lu";
-import { BiSolidCookie, BiSolidOffer } from "react-icons/bi";
 import { GrMoney } from "react-icons/gr";
 import { useDispatch, useSelector } from "react-redux";
-import { startGetAllOrders } from "../../../../Actions/orderActions";
 import axios from "axios";
 import { localhost } from "../../../../Api/apis";
-import CategoryDashboard from "../SuperAdminDashboardMenu/CategoryDashboard/CategoryDashboard";
-import ProductDashboard from "../SuperAdminDashboardMenu/ProductDashboard/ProductDashboard";
-import CouponDashboard from "../SuperAdminDashboardMenu/CouponDashboard/CouponDashboard";
+import RestaurantDashboard from "../SuperAdminDashboardMenu/RestaurantDashboard/RestaurantDashboard";
 import ProfileDashboard from "../SuperAdminDashboardMenu/ProfileDashboard/ProfileDashboard";
 import PasswordDashboard from "../SuperAdminDashboardMenu/PasswordDashboard/PasswordDashboard";
-import OrderDashboard from "../SuperAdminDashboardMenu/OrderDashboard/OrderDashboard";
-import PaymentDashboard from "../SuperAdminDashboardMenu/PaymentDashboard/PaymentDashboard";
-import CustomerListDashboard from "../SuperAdminDashboardMenu/CustomerListDashboard/CustomerListDashboard";
+import RestaurantAdminListDashboard from "../SuperAdminDashboardMenu/RestaurantAdminListDashboard/RestaurantAdminListDashboard";
+import { startGetAllRestaurant } from "../../../../Actions/RestaurantActions";
 
 const dashboardMenu = [
     {
         id: 1,
-        section: "Store Management",
+        section: "Restaurant Management",
         menu: [
             // { 
             //     id: 1,
@@ -38,44 +32,10 @@ const dashboardMenu = [
             // },
             { 
                 id: 2,
-                dashboardMenu: "product-categories", 
-                name: "Product Categories", 
-                link: "/product-categories",
-                component: <CategoryDashboard/>
-            },
-            { 
-                id: 3, 
-                dashboardMenu: "product-items", 
-                name: "Product Items", 
-                link: "/product-items",
-                component: <ProductDashboard/>
-            },
-            { 
-                id: 4, 
-                dashboardMenu: "coupons", 
-                name: "Coupons", 
-                link: "/coupons",
-                component: <CouponDashboard/>
-            },
-        ]
-    },
-    {
-        id: 2,
-        section: "Sales & Orders",
-        menu: [
-            { 
-                id: 5,
-                dashboardMenu: "all-orders", 
-                name: "All Orders", 
-                link: "/all-orders",
-                component: <OrderDashboard/>
-            },
-            { 
-                id: 6,
-                dashboardMenu: "payments", 
-                name: "Payments", 
-                link: "/payments",
-                component: <PaymentDashboard/>
+                dashboardMenu: "restaurants", 
+                name: "Restaurants", 
+                link: "/restaurants",
+                component: <RestaurantDashboard/>
             },
         ]
     },
@@ -88,7 +48,7 @@ const dashboardMenu = [
                 dashboardMenu: "user-list", 
                 name: "User List", 
                 link: "/user-list",
-                component: <CustomerListDashboard/>
+                component: <RestaurantAdminListDashboard/>
             },
             // { 
             //     id: 7,
@@ -122,42 +82,20 @@ const dashboardMenu = [
 ];
 
 export default function SuperAdminDashboardHome() {
-    const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { user, handleLogout, selectedDashboardMenu, handleDashboardMenuChange } = useAuth()
-    const [ coupons, setCoupons ] = useState([])
+    const { handleLogout, selectedDashboardMenu, handleDashboardMenuChange } = useAuth()
 
-    const categories = useSelector((state) => {
-        return state.categories.data
-    })
-
-    const products = useSelector((state) => {
-        return state.products.data
-    })
-
-    const orders = useSelector((state) => {
-        return state.orders.data
-    })
-
-    const payments = useSelector((state) => {
-        return state.payments.data
+    const restaurants = useSelector((state) => {
+        return state.restaurants.data
     })
 
     const [ openDashboardMenu, setOpenDashboardMenu ] = useState(true)
     console.log(selectedDashboardMenu)
 
     useEffect(() => {
-        (async () => {
-            await dispatch(startGetAllOrders())
-            try {
-                const coupons = await axios.get(`${localhost}/api/coupon/list`)
-                // console.log(coupons.data.data)
-                setCoupons(coupons.data.data)
-            } catch (err) {
-                console.log(err)
-            }
-        }) ()
+        dispatch(startGetAllRestaurant())
     }, [dispatch])
+
     return (
         <section className="superadmin-dashboard">
             <div className="super-admin-dashboard-home-section">
@@ -223,43 +161,15 @@ export default function SuperAdminDashboardHome() {
                             <div className="dashboard-overview-card">
                                 <div className="icon"><HiBuildingStorefront /></div>
                                 <div className="overview-details">
-                                    <h1>Store</h1>
-                                    <p>1</p>
-                                </div>
-                            </div>
-                            <div className="dashboard-overview-card">
-                                <div className="icon"><LuCandy /></div>
-                                <div className="overview-details">
-                                    <h1>Category</h1>
-                                    <p>{categories?.length || 0}</p>
-                                </div>
-                            </div>
-                            <div className="dashboard-overview-card">
-                                <div className="icon"><BiSolidCookie /></div>
-                                <div className="overview-details">
-                                    <h1>Products</h1>
-                                    <p>{products?.length || 0}</p>
-                                </div>
-                            </div>
-                            <div className="dashboard-overview-card">
-                                <div className="icon"><BiSolidOffer /></div>
-                                <div className="overview-details">
-                                    <h1>Coupons</h1>
-                                    <p>{coupons?.length || 0}</p>
-                                </div>
-                            </div>
-                            <div className="dashboard-overview-card">
-                                <div className="icon"><TbTruckDelivery /></div>
-                                <div className="overview-details">
-                                    <h1>Orders</h1>
-                                    <p>{orders?.length || 0}</p>
+                                    <h1>Restuarant</h1>
+                                    <p>{restaurants.length}</p>
                                 </div>
                             </div>
                             <div className="dashboard-overview-card">
                                 <div className="icon"><GrMoney /></div>
                                 <div className="overview-details">
-                                    <h1>Payments</h1>
-                                    <p>AED {payments?.reduce((acc, curr) => acc + curr?.amount, 0) || 0}</p>
+                                    <h1>Sales</h1>
+                                    <p>AED 0.00</p>
                                 </div>
                             </div>
                         </div>

@@ -3,14 +3,14 @@ import axios from 'axios'
 import {render, localhost} from "../Api/apis"
 import { toast } from 'react-toastify'
 
-export const startGetAllProducts = () => {
+export const startGetAllProducts = (restaurantSlug) => {
     return async(dispatch)=>{
         try{
-            const response = await axios.get(`${localhost}/api/product/list`)
+            const response = await axios.get(`${localhost}/api/product/listByRestaurant/${restaurantSlug}`)
             dispatch(getAllProducts(response.data.data))
             // console.log("products", response.data.data)
         }catch(err){
-            alert(err)
+            // alert(err)
             console.log(err)
         }
     }
@@ -30,7 +30,7 @@ export const startGetOneProduct = (productId) => {
             dispatch(getOneProduct(response.data.data))
             console.log("product", response.data.data)
         }catch(err){
-            alert(err)
+            // alert(err)
             console.log(err)
         }
     }
@@ -84,7 +84,7 @@ export const startUpdateProduct = (formData, categoryId, setServerErrors, handle
         }catch(err){
             setServerErrors(err.response.data.message)
             toast.error("Failed to Update Product")
-            alert(err)
+            // alert(err)
             console.log(err)
         }
     }

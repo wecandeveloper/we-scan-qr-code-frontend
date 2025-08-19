@@ -6,7 +6,7 @@ import { RiInstagramFill } from "react-icons/ri";
 
 export default function Footer() {
     return (
-        <footer>
+        <footer className="footer">
             <div className="footer-section">
                 <div className="copy-right-div">
                     <p>Copyright © 2020 Crunchie Carvings, All rights reserved</p>

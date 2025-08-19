@@ -1,0 +1,78 @@
+.restaurant-layout .childrens {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+button {
+    font-family: "Montserrat", sans-serif;
+}
+
+.btn-dark {
+    border-radius: 30px;
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+    border: 2px solid #D22228;
+    color: #D22228;
+    background: transparent;
+    transition: .3s all;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+
+    svg {
+        font-size: 20px;
+    }
+
+    &:hover {
+        background: #D22228;
+        color: white;
+    }
+}
+
+.common-padding {
+    padding: 70px 50px 0px 50px
+}
+
+.main-heading {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 1200px) {
+    // .restaurant-layout {
+    //     margin-bottom: 50px;
+    // }
+}
+
+@media (max-width: 768px) {
+    .main-heading {
+        font-size: 25px;
+    }
+}
+
+@media (max-width: 600px) {
+    .common-padding {
+        padding: 50px 30px 0px 30px;
+    }
+}
+
+@media (max-width: 500px) {
+    .common-padding {
+        padding: 50px 20px 0px 20px;
+    }
+
+    .main-heading {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0px;
+    }
+}
