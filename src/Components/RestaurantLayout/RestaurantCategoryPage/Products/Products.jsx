@@ -1,19 +1,22 @@
-import "./Products.scss"
+import { useEffect, useState } from "react";
+import slugify from "slugify";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 
-import { RiExpandUpDownFill, RiShareFill } from "react-icons/ri";
-import { FiShoppingCart } from "react-icons/fi";
-import { FaCaretDown, FaCaretLeft, FaCaretRight, FaCaretUp } from "react-icons/fa6";
+import "./Products.scss"
+
 import { useAuth } from "../../../../Context/AuthContext";
-import { useEffect, useState } from "react";
-import { CiGrid2H, CiGrid2V, CiGrid41 } from "react-icons/ci";
-import slugify from "slugify";
-import { useNavigate } from "react-router-dom";
-import { startCreateCart } from "../../../../Actions/cartActions";
-import { toast } from "react-toastify";
 import { startGetCategories } from "../../../../Actions/categoryActions";
 import { startGetAllProducts } from "../../../../Actions/productActions";
+
+import { PiSmileySadDuotone } from "react-icons/pi";
+import { FiShoppingCart } from "react-icons/fi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+
+import allItems from "../../../../Assets/Common/all-items.webp"
+import { Box, CircularProgress } from "@mui/material";
 
 export default function Products() {
     const dispatch = useDispatch();
@@ -39,8 +42,8 @@ export default function Products() {
         return state.products.data;
     })
 
-    const categories = useSelector((state) => {
-        return state.categories.data;
+    const { data: categories, loading } = useSelector((state) => {
+        return state.categories;
     })
     
     const restaurant = useSelector((state) => {
@@ -61,14 +64,6 @@ export default function Products() {
         }
     }, [restaurant, dispatch]);
 
-    // 2. Handle first category when categories update
-    // useEffect(() => {
-    //     if (categories.length > 0) {
-    //         handleCategoryChange(categories[0]);
-    //     }
-    // }, [categories, handleCategoryChange]);
-
-    // Filtered and sorted array based on selected filters and sort option
     const getProcessedProducts = () => {
         // Apply category and price filters
         
@@ -124,25 +119,6 @@ export default function Products() {
     for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
     }
-
-    const handleShow = (e) => {
-        setShowNo(Number(e.target.value));
-        setCurrentPage(1); // Reset to first page when showNo changes
-    };
-
-    // Handle Prev and Next clicks
-    const handlePrev = () => {
-        setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
-    };
-
-    const handleNext = () => {
-        setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
-    };
-
-    // Handle clicking a specific page number
-    const handlePageClick = (page) => {
-        setCurrentPage(page);
-    };
 
     const handleReset = () => {
         handleCategoryChange("")
@@ -223,22 +199,45 @@ export default function Products() {
                     <h1>Our Menu</h1>
                     {/* <p>Visit our shop to see amazing products</p> */}
                 </div>
-                <div className="category-grid">
-                    {categories.map((category) => {
-                        return (
-                            
-                            <div key={category._id} className="category-card"
-                                onClick={() => {
-                                handleCategoryChange(category)
-                            }}>
-                                <div className="img-div">
-                                    <img src={category.image} alt="" className="category-image"/>
-                                </div>
-                                <h1 className="category-name">{category.name}</h1>
+                {loading ? (
+                    <div className="loading-div">
+                        <Box sx={{ display: 'flex' }}>
+                            <CircularProgress color="inherit" size={40}/>
+                        </Box>
+                        <p>Loading categories...</p>
+                    </div>
+                ) : categories.length === 0 ? (
+                    <div className="no-categories-div">
+                        <PiSmileySadDuotone />
+                        <p>No categories found</p>
+                    </div>
+                ) : (
+                    <div className="category-grid">
+                        <div className="category-card"
+                            onClick={() => {
+                            handleCategoryChange("")
+                        }}>
+                            <div className="img-div">
+                                <img src={allItems} alt="" className="category-image"/>
                             </div>
-                        )
-                    })}
-                </div>
+                            <h1 className="category-name">All Items</h1>
+                        </div>
+                        {categories.map((category) => {
+                            return (
+                                <div key={category._id} className="category-card"
+                                    onClick={() => {
+                                    handleCategoryChange(category)
+                                }}>
+                                    <div className="img-div">
+                                        <img src={category.image} alt="" className="category-image"/>
+                                    </div>
+                                    <h1 className="category-name">{category.name}</h1>
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
+
                 {selectedCategory ? 
                     <div className="head-div"><h1>{selectedCategory.name}</h1></div> 
                 :   <div className="head-div"><h1>All Items</h1></div>
@@ -280,6 +279,7 @@ export default function Products() {
                     </div> */}
                     {getProcessedProducts().length === 0 ? (
                         <div className="product-grid-zero">
+                            <PiSmileySadDuotone />
                             <p>No Record Found,  <span className="reset-btn" onClick={handleReset}>Show All</span></p>
                         </div>
                     ) : (

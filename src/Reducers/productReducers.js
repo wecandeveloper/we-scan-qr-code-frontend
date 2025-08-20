@@ -6,8 +6,14 @@ const initialState = {
 
 export default function productReducers(state = initialState, action){
     switch (action.type) {
+        case 'GET_PRODUCTS_REQUEST': {
+            return { ...state, loading: true };
+        }
         case 'GET_ALL_PRODUCTS': {
-            return {...state, data: action.payload }
+            return { ...state, data: action.payload, loading: false };
+        }
+        case 'GET_PRODUCTS_FAIL': {
+            return { ...state, loading: false, serverErrors: action.payload || [] };
         }
         case 'GET_ONE_PRODUCT': {
             return {...state, selected: action.payload }

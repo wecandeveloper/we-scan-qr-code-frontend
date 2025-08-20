@@ -4,24 +4,29 @@ import {render, localhost} from "../Api/apis"
 import { toast } from 'react-toastify'
 
 export const startGetCategories = (restaurantSlug) => {
-    return async(dispatch)=>{
-        try{
-            const response = await axios.get(`${localhost}/api/category/listByRestaurant/${restaurantSlug}`)
-            dispatch(getCategory(response.data.data))
-            // console.log(response.data.data)
-        }catch(err){
-            // alert(err)
-            console.log(err)
-        }
-    }
-}
+    return async (dispatch) => {
+        try {
+            dispatch({ type: "GET_CATEGORIES_REQUEST" });
 
-const getCategory = (category)=>{
+            const response = await axios.get(
+                `${localhost}/api/category/listByRestaurant/${restaurantSlug}`
+            );
+
+            dispatch(getCategory(response.data.data));
+        } catch (err) {
+            dispatch({ type: "GET_CATEGORIES_FAIL", payload: err.response?.data || [] });
+            console.log(err);
+        }
+    };
+};
+
+const getCategory = (category) => {
     return {
-        type:"GET_CATEGORY",
-        payload:category
-    }
-}
+        type: "GET_CATEGORY",
+        payload: category,
+    };
+};
+
 export const startCreateCategory = (formData, setServerErrors, handleCloseAll)=>{
     return async (dispatch)=>{
         try{

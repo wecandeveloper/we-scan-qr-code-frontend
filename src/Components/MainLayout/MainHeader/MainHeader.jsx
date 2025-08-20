@@ -148,10 +148,10 @@ export default function MainHeader() {
                     <a href="/"><img src={logo} alt="Logo" className="logo"/></a>
                 </div>
                 <div className="btn-div">
-                    <div className="btn-contact">
+                    <div className="btn-dark">
                         Contact Us
                     </div>
-                    <div className="btn-contact" onClick={() => setShowModal(true)}>
+                    <div className="btn-dark" onClick={() => setShowModal(true)}>
                         <MdAccountCircle /><span>Log In</span>
                     </div>
                 </div>  

@@ -1,6 +1,6 @@
 const initialState = {
     data: [],
-    selected: {},
+    selected: null,
     serverErrors: []
 }
 

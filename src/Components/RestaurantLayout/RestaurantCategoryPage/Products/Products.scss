@@ -160,9 +160,18 @@
         }
 
         .product-grid-zero {
+            margin-top: 30px;
+            padding-bottom: 30px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            gap: 20px;
+
+            svg {
+                font-size: 80px;
+                color: #eb3424;
+            }
 
             .reset-btn {
                 appearance: none;
@@ -170,11 +179,12 @@
                 background: none;
                 font-size: 16px;
                 text-decoration: underline;
+                color: #eb3424;
                 cursor: pointer;
             }
 
             .reset-btn:hover {
-                color: #470531;
+                color: black;
             }
         }
 
@@ -394,6 +404,24 @@
                     cursor: not-allowed;
                 }
             }
+        }
+    }
+
+    .loading-div, .no-categories-div {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        margin-bottom: 20px;
+
+        svg {
+            font-size: 50px;
+            color: #eb3424;
         }
     }
 }

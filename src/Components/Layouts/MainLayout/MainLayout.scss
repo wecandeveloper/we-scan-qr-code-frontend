@@ -1,0 +1,29 @@
+.main-layout {
+    .btn-dark {
+        width: 120px;
+        height: 45px;
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 30px;
+        padding: 10px 10px;
+        border: 2px solid #FE931D;
+        color: #FE931D;
+        transition: .3s;
+        font-size: 14px;
+        cursor: pointer;
+
+        svg {
+            font-size: 23px;
+        }
+
+        &:hover {
+            background: #FE931D;
+            color: white;
+            transition: .3s;
+            border: 2px solid #FE931D;
+        }
+    }
+}

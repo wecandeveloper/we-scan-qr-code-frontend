@@ -38,7 +38,7 @@ export default function FilteredProducts({title}) {
 
     useEffect(() => {
         if (restaurant) {
-            dispatch(startGetAllProducts(restaurant.slug));
+            dispatch(startGetAllProducts(restaurant?.slug));
         }
     }, [restaurant, dispatch]);
 
@@ -139,11 +139,11 @@ export default function FilteredProducts({title}) {
         <section id="sales">
             <div className={`filtered-products-section common-padding 
                 ${title === "Offer Items" || title === "Related Items" ? "margin-bottom" : ""} 
-                ${location.pathname === `/restaurant/${restaurant.slug}/offer-items` ? "margin-top" : ""}
+                ${location.pathname === `/restaurant/${restaurant?.slug}/offer-items` ? "margin-top" : ""}
             `}>
                 <div className="head-div">
                     <h1 className="main-heading">{title}</h1>
-                    <a href={`/restaurant/${restaurant.slug}/collections`}><div className="btn-dark">Show All</div></a>
+                    <a href={`/restaurant/${restaurant?.slug}/collections`}><div className="btn-dark">Show All</div></a>
                 </div>
                 {getProcessedProducts().length > 0 ? (
                     <div className="product-grid">
@@ -153,7 +153,7 @@ export default function FilteredProducts({title}) {
                                     key={product._id}
                                     className="product-card"
                                     onClick={() => {
-                                        navigate(`/restaurant/${restaurant.slug}/products/${slugify(product.name)}`, {
+                                        navigate(`/restaurant/${restaurant?.slug}/products/${slugify(product.name)}`, {
                                         state: { productId: product._id },
                                         });
                                     }}

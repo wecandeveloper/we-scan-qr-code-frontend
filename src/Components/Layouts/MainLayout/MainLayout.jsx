@@ -1,4 +1,6 @@
 // layouts/MainLayout.js
+
+import "./MainLayout.scss"
 import MainHeader from "../../MainLayout/MainHeader/MainHeader";
 import MainFooter from "../../MainLayout/MainFooter/MainFooter";
 

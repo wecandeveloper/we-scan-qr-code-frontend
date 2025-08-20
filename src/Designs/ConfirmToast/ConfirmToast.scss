@@ -45,10 +45,8 @@
   gap: 12px;
 }
 
-.yes-btn,
-.no-btn {
+.yes-btn, .no-btn {
   padding: 6px 16px;
-  border: none;
   border-radius: 8px;
   font-family: "Montserrat", sans-serif;
   cursor: pointer;
@@ -107,4 +105,18 @@
     to {
         width: 0%;
     }
+}
+
+@media (max-width: 600px) {
+  .message {
+    font-size: 14px;
+  }
+
+  .yes-btn, .no-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: "Montserrat", sans-serif;
+    cursor: pointer;
+    font-size: 12px;
+  }
 }

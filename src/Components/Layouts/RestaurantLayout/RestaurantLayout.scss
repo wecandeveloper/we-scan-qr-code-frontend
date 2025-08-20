@@ -9,6 +9,17 @@
     margin-right: auto;
 }
 
+.invalid-restaurant {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 50px;
+    text-align: center;
+    gap: 20px;
+}
+
 .childrens {
     flex: 1; // Pushes the footer to the bottom if content is small
 }

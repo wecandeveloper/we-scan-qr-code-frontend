@@ -4,17 +4,21 @@ import {render, localhost} from "../Api/apis"
 import { toast } from 'react-toastify'
 
 export const startGetAllProducts = (restaurantSlug) => {
-    return async(dispatch)=>{
-        try{
-            const response = await axios.get(`${localhost}/api/product/listByRestaurant/${restaurantSlug}`)
-            dispatch(getAllProducts(response.data.data))
-            // console.log("products", response.data.data)
-        }catch(err){
-            // alert(err)
-            console.log(err)
+    return async (dispatch) => {
+        try {
+            dispatch({ type: "GET_PRODUCTS_REQUEST" });
+
+            const response = await axios.get(
+                `${localhost}/api/product/listByRestaurant/${restaurantSlug}`
+            );
+
+            dispatch(getAllProducts(response.data.data));
+        } catch (err) {
+            dispatch({ type: "GET_PRODUCTS_FAIL", payload: err.response?.data || [] });
+            console.log(err);
         }
-    }
-}
+    };
+};
 
 const getAllProducts = (products)=>{
     return {
