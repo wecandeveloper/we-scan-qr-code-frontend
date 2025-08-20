@@ -112,7 +112,7 @@
                 .price-div {
                     display: flex;
                     flex-direction: row;
-                    // justify-content: center;
+                    justify-content: center;
                     align-items: flex-end;
                     gap: 10px;
                     font-size: 16px;
@@ -250,6 +250,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        text-align: center;
         background: #fff;
         padding: 30px;
         border-radius: 10px;
@@ -433,30 +434,38 @@
                         align-items: center;
                         gap: 5px;
                     }
+
                     .qty-div {
-                        display: flex;
-                        flex-direction: row;
-                        align-items: center;
-                        justify-content: space-between;
+                        justify-content: center;
                         padding: 5px 10px;
-                        gap: 3px;
+                        gap: 10px;
                         width: 80px;
                         background: transparent;
                         color: black;
                         border: none;
-                        border-radius: 10px;
-                        transition: .5s;
 
                         svg {
                             cursor: pointer;
                             border: 1px solid #eb3424;
                             border-radius: 50%;
                             padding: 2px;
+                            font-size: 15px;
+                        }
+
+                        .qty {
+                            font-size: 14px;
+                            font-weight: 600;
+                            margin-top: -3px;
+                        }
+
+                        svg:hover {
+                            background: transparent;
+                            color: #eb3424;
                         }
 
                         &:hover {
                             background: transparent;
-                            color: #eb3424;
+                            color: black;
                         }
                     }
                 }
@@ -504,41 +513,17 @@
                 }
 
                 .price-qty-div {
-                    gap: 5px;
-
                     .price-div {
                         font-size: 13px;
                     }
-                    .qty-div {
-                        display: flex;
-                        flex-direction: row;
-                        align-items: center;
-                        justify-content: space-between;
-                        padding: 5px 10px;
-                        gap: 3px;
-                        width: 80px;
-                        background: transparent;
-                        color: black;
-                        border: none;
-                        border-radius: 10px;
-                        transition: .5s;
-
-                        svg {
-                            font-size: 15px;
-                        }
-
-                        .qty {
-                            font-size: 14px;
-                            font-weight: 600;
-                            margin-top: -3px;
-                        }
-
-                        &:hover {
-                            background: transparent;
-                            color: #eb3424;
-                        }
-                    }
                 }
+            }
+        }
+
+        .cart-details.empty {
+            img {
+                width: 100%;
+                height: auto;
             }
         }
     }

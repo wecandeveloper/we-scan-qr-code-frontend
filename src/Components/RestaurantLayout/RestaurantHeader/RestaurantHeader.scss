@@ -162,7 +162,7 @@
         z-index: 1001;
     }
 
-    .caseStudy-detail-section {
+    .cartOrder-detail-section {
         position: fixed;
         top: 0;
         right: 0;
@@ -171,7 +171,7 @@
         overflow-y: auto;
         height: 100%;
 
-        .caseStudy-details {
+        .cartOrder-details {
             position: relative;
             display: flex;
             flex-direction: column;
@@ -264,8 +264,8 @@
 
 @media (max-width: 700px) {
     .restaurant-nav {
-        .caseStudy-detail-section {
-            .caseStudy-details {
+        .cartOrder-detail-section {
+            .cartOrder-details {
                 width: 100%;
             }
         }

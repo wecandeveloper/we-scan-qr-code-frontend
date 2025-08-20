@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
+import { useAuth } from "../../../Context/AuthContext";
 
 import "./RestaurantHeader.scss"
 
@@ -12,12 +14,12 @@ import { RiMenu2Line } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
 import { VscChromeClose } from "react-icons/vsc";
 import { TiHome } from "react-icons/ti";
+import { BiSolidShoppingBagAlt } from "react-icons/bi";
 
 import logo from "../../../Assets/Logo/logo-1.jpeg"
-import { useAuth } from "../../../Context/AuthContext";
 import Cart from "../CartPage/Cart";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import LoginRegister from "../../LoginRegister/LoginRegister";
+import Order from "../Order/Order";
 
 
 const useIsMobile = () => {
@@ -49,6 +51,7 @@ export default function RestaurantHeader() {
     const [mobileMenu, setMobileMenu] = useState(false)
     const isMobile = useIsMobile()
     const [ isCartSectionOpen, setIsCartSectionOpen ] = useState(false)
+    const [ isOrderSectionOpen, setIsOrderSectionOpen ] = useState(false)
     const [showModal, setShowModal] = useState(false);
 
     const toggleMenu = () => {
@@ -116,8 +119,9 @@ export default function RestaurantHeader() {
                         <div className="btn-dark" onClick={() => setIsCartSectionOpen(true)}>
                             <BiCart /> <span>AED 0.00</span>
                         </div>
-                        <div className="btn-dark" onClick={() => setShowModal(true)}>
-                            <MdAccountCircle /><span>Log In</span>
+                        <div className="btn-dark" onClick={() => setIsOrderSectionOpen(true)}>
+                            {/* <MdAccountCircle /><span>Log In</span> */}
+                            <BiSolidShoppingBagAlt/><span>Orders</span>
                         </div>
                     </div>
                 </div>
@@ -149,12 +153,19 @@ export default function RestaurantHeader() {
                                 <h2 className="menu">Offers</h2>
                             </div>
                         </a>
-                        <a onClick={() => {setShowModal(true)}} className="nav-link">
+                        <div className="nav-link">
+                            <div className={`mobile-menu-item`} onClick={() => setIsOrderSectionOpen(true)}>
+                                <div className="icon"><BiSolidShoppingBagAlt /></div>
+                                <h2 className="menu">Orders</h2>
+                                {/* <h2 className="menu">Cart</h2> */}
+                            </div>
+                        </div>
+                        {/* <a onClick={() => {setShowModal(true)}} className="nav-link">
                             <div className={`mobile-menu-item ${location.pathname === `` ? "active" : "" }`}>
                                 <div className="icon"><MdAccountCircle /></div>
                                 <h2 className="menu">Login</h2>
                             </div>
-                        </a>
+                        </a> */}
                     </div>
                 </div>
             </div>
@@ -167,10 +178,28 @@ export default function RestaurantHeader() {
                             animate={{ x: 0 }}
                             exit={{ x: "100%", opacity: 0 }}
                             transition={{ duration: 0.5, ease: "easeInOut" }} 
-                            className="caseStudy-detail-section">
-                                <div className="caseStudy-details">
+                            className="cartOrder-detail-section">
+                                <div className="cartOrder-details">
                                     <div className="close-btn" onClick={() => setIsCartSectionOpen(false)}><IoIosClose className="icon"/></div>
                                     <Cart setIsCartSectionOpen={setIsCartSectionOpen}/>
+                                </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+            <AnimatePresence mode="wait">
+                {isOrderSectionOpen && (
+                    <>
+                        <div className="overlay" onClick={() => setIsOrderSectionOpen(false)}></div>
+                        <motion.div 
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%", opacity: 0 }}
+                            transition={{ duration: 0.5, ease: "easeInOut" }} 
+                            className="cartOrder-detail-section">
+                                <div className="cartOrder-details">
+                                    <div className="close-btn" onClick={() => setIsOrderSectionOpen(false)}><IoIosClose className="icon"/></div>
+                                    <Order setIsOrderSectionOpen={setIsOrderSectionOpen}/>
                                 </div>
                         </motion.div>
                     </>

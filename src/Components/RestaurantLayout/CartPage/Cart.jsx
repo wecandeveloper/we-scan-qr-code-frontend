@@ -2,23 +2,15 @@ import { useEffect, useState } from "react";
 import "./Cart.scss"
 
 import { motion } from "framer-motion";
-import { FaCartArrowDown, FaMinus, FaPlus, FaUser } from "react-icons/fa";
-import { HiPrinter } from "react-icons/hi";
+import { FaMinus, FaPlus } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { RiSecurePaymentFill, RiUser3Fill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
-import { startDecQty, startDeleteMyCartLineItem, startGetMyCart, startIncQty, startRemoveCoupon, startValidateCoupon } from "../../../Actions/cartActions";
 import { useAuth } from "../../../Context/AuthContext";
 import { toast } from "react-toastify";
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import ConfirmToast from "../../../Designs/ConfirmToast/ConfirmToast";
-import CustomAlert from "../../../Designs/CustomAlert";
 import axios from "axios";
 import { localhost } from "../../../Api/apis";
-import { Box, CircularProgress, Modal } from "@mui/material";
-import { ImLocation2 } from "react-icons/im";
-import { startGetMyAddresses } from "../../../Actions/AddressActions";
-import { FaAngleRight } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import defaultImage from "../../../Assets/Common/defaultImage.avif";
 import { startCreateOrder } from "../../../Actions/orderActions";

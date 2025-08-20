@@ -54,14 +54,10 @@ const setRestaurantOrders = (orders) => {
     }
 }
 
-export const startGetMyOrders = () => {
+export const startGetMyOrders = (guestId) => {
     return async (dispatch) => {
         try {
-            const response = await axios.get(`${localhost}/api/order/myOrders`, {
-                headers: {
-                    "Authorization": localStorage.getItem("token")
-                }
-            })
+            const response = await axios.get(`${localhost}/api/order/myOrders/${guestId}`)
             console.log(response.data.data)
             dispatch(setOrders(response.data.data))
         } catch(err) {
