@@ -30,6 +30,10 @@
             z-index: 1001 !important;
         }
 
+        .mobile-menu-icon {
+            display: none;
+        }
+
         .mobile-footer-menu {
             display: none;
         }
@@ -98,13 +102,14 @@
                     gap: 10px;
                     background: #dcdcdc;
                     border: 2px solid #dcdcdc;
-                    padding: 5px 10px;
+                    padding: 5px 20px;
                     border-radius: 30px;
                     transition: .3s all;
                     cursor: pointer;
 
                     .search-icon {
                         font-size: 30px;
+                        cursor: pointer;
                     }
 
                     input {
@@ -269,7 +274,7 @@
 
 @media (max-width: 500px) {
     .restaurant-nav {
-        height: 140px;
+        height: 120px;
 
         .navbar {
             flex-direction: column;
@@ -280,7 +285,7 @@
             padding: 10px 20px;
 
             .logo-div {
-                width: 200px;
+                width: 170px;
                 z-index: 1001 !important;
 
                 img {
@@ -291,8 +296,21 @@
                 }
             }
 
+            .mobile-menu-icon {
+                display: block;
+                position: fixed;
+                top: 20px;
+                right: 30px;
+                font-size: 25px;
+                z-index: 1001;
+            }
+
             .nav-search-div {
-                display: none;
+                width: 100%;
+            }
+
+            .nav-search-div.close {
+                right: -100%;
             }
 
             .menu-icon {
@@ -306,7 +324,7 @@
                 right: 0;
                 width: 100%;
                 background: white;
-                padding: 15px;
+                padding: 12px;
                 display: flex;
                 flex-direction: row;
                 justify-content: space-around;
@@ -331,20 +349,20 @@
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    top: -30px;
+                    top: -20px;
                     background: #eb3424;
-                    height: 65px;
-                    width: 65px;
+                    height: 55px;
+                    width: 55px;
 
                     border-radius: 50%;
                     
                     .mobile-menu-item {
                         color: white;
-                        margin-top: 10px;
+                        margin-top: 8px;
                         margin-right: 3px;
 
                         .icon {
-                            font-size: 35px;
+                            font-size: 30px;
                         }
 
                         &:hover {
@@ -361,15 +379,14 @@
                     // gap: 1px;
                     text-decoration: none;
                     color: #6E7190;
-                    font-size: 14px;
                     transition: .3s;
 
                     .icon {
-                        font-size: 25px;
+                        font-size: 22px;
                     }
 
                     .menu {
-                        font-size: 14px;
+                        font-size: 12px;
                         font-weight: 600;
                     }
 
@@ -392,7 +409,7 @@
                 gap: 10px;
                 background: #dcdcdc;
                 border: 2px solid #dcdcdc;
-                padding: 8px 20px;
+                padding: 2px 20px;
                 border-radius: 30px;
                 margin-left: auto;
                 margin-right: auto;

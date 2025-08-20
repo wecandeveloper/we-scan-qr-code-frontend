@@ -11,7 +11,7 @@ export default function Restaurant() {
             <CategorySection/>
             <FilteredProducts title="Featured Items"/>
             <PromoSlider/>
-            <FilteredProducts title="Offer Products"/>
+            <FilteredProducts title="Offer Items"/>
        </Fragment>
     );
 }

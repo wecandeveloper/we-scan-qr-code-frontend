@@ -244,14 +244,11 @@ export default function Products() {
                 :   <div className="head-div"><h1>All Items</h1></div>
                 }
                 <div className="product-grid-div">
-                    <div className="header-controls">
+                    {/* <div className="header-controls">
                         <div className="product_views">
-                            {/* <CiGrid41/> */}
-                            {/* <CiGrid2H/> */}
-                            {/* <CiGrid2V/> */}
                             <CiGrid41 className={`style1 ${gridDisplay === "style1" ? "active" : ""}`} onClick={() => setGridDisplay("style1")}/>
                             <CiGrid2H className={`style2 ${gridDisplay === "style2" ? "" : ""}`} onClick={() => setGridDisplay("style2")}/>
-                            {/* <CiGrid2V className={`style2 ${gridDisplay === "style3" ? "active" : ""}`} onClick={() => setGridDisplay("style3")}/> */}
+                            <CiGrid2V className={`style2 ${gridDisplay === "style3" ? "active" : ""}`} onClick={() => setGridDisplay("style3")}/>
                         </div>
                     
                         <div className="product_filters">
@@ -280,7 +277,7 @@ export default function Products() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {getProcessedProducts().length === 0 ? (
                         <div className="product-grid-zero">
                             <p>No Record Found,  <span className="reset-btn" onClick={handleReset}>Show All</span></p>
@@ -338,7 +335,7 @@ export default function Products() {
                             })}
                         </div>
                     )}
-                    <div className="footer-controls">
+                    {/* <div className="footer-controls">
                         <div className="footer-pagination">
                             <span
                                 disabled={currentPage === 1}
@@ -368,7 +365,7 @@ export default function Products() {
                             Showing {(currentPage - 1) * showNo + 1}-
                             {Math.min(currentPage * showNo, totalFilteredItems)} of {totalFilteredItems} Products
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </section>

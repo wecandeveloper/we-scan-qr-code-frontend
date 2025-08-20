@@ -29,12 +29,12 @@ export default function CategorySection() {
         }
     }, [restaurant, dispatch]);
 
-    // 2. Handle first category when categories update
-    useEffect(() => {
-        if (categories.length > 0) {
-            handleCategoryChange(categories[0]);
-        }
-    }, [categories, handleCategoryChange]);
+    // // 2. Handle first category when categories update
+    // useEffect(() => {
+    //     if (categories.length > 0) {
+    //         handleCategoryChange(categories[0]);
+    //     }
+    // }, [categories, handleCategoryChange]);
 
 
     // console.log(restaurant)

@@ -6,7 +6,7 @@ import CategorySection from "../Components/RestaurantLayout/RestaurantHomePage/C
 export default function CategoryCollection() {
     return (
         <Fragment>
-            <CategoryHero/>
+            {/* <CategoryHero/> */}
             <Products/>
         </Fragment>
     )

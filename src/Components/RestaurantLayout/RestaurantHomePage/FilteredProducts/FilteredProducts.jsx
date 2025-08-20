@@ -5,17 +5,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { RiShareFill } from "react-icons/ri";
 import { BsCartPlusFill } from "react-icons/bs";
 import { FiShoppingCart } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import slugify from "slugify";
 import { startCreateCart } from "../../../../Actions/cartActions";
 import { useAuth } from "../../../../Context/AuthContext";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 import { startGetAllProducts } from "../../../../Actions/productActions";
+import { PiSmileySadDuotone } from "react-icons/pi";
 
 export default function FilteredProducts({title}) {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const location = useLocation()
 
     const { user, setGlobalGuestCart } = useAuth()
     const isLoggedIn = Boolean(user && user._id);
@@ -42,17 +44,17 @@ export default function FilteredProducts({title}) {
 
     const getProcessedProducts = () => {
         let filteredArray = products.filter((ele) => {
-            if (title === "Offer Products" && !(ele.offerPrice > 0)) {
+            if (title === "Offer Items" && !(ele.offerPrice > 0)) {
                 return false;
             }
             return true;
         });
 
-        if (title === "Featured Products") {
+        if (title === "Featured Items") {
             // return filteredArray.slice(0, 12);
         }
 
-        if (title === "Related Products") {
+        if (title === "Related Items") {
             const currentTags = product?.tags || []; // Tags of the current product
 
             return filteredArray.filter((p) => {
@@ -135,10 +137,13 @@ export default function FilteredProducts({title}) {
 
     return (
         <section id="sales">
-            <div className={`filtered-products-section common-padding ${title === "Offer Products" ? "margin-bottom" : ""}`}>
+            <div className={`filtered-products-section common-padding 
+                ${title === "Offer Items" || title === "Related Items" ? "margin-bottom" : ""} 
+                ${location.pathname === `/restaurant/${restaurant.slug}/offer-items` ? "margin-top" : ""}
+            `}>
                 <div className="head-div">
                     <h1 className="main-heading">{title}</h1>
-                    <a href="/collections"><div className="btn-dark">Show All</div></a>
+                    <a href={`/restaurant/${restaurant.slug}/collections`}><div className="btn-dark">Show All</div></a>
                 </div>
                 {getProcessedProducts().length > 0 ? (
                     <div className="product-grid">
@@ -194,6 +199,7 @@ export default function FilteredProducts({title}) {
                     </div>
                 ) : (
                     <div className="no-products-found">
+                        <PiSmileySadDuotone />
                         <h1>No {title} found</h1>
                     </div>
                 )}

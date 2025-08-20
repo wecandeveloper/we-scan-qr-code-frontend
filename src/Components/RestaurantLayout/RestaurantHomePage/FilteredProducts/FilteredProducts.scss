@@ -178,14 +178,26 @@
     }
 
     .no-products-found {
+        margin-top: 30px;
+        padding-bottom: 30px;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
+        gap: 20px;
+
+        svg {
+            font-size: 80px;
+        }
     }
 }
 
 .filtered-products-section.margin-bottom {
     margin-bottom: 80px;
+}
+
+.filtered-products-section.margin-top {
+    margin-top: 50px;
 }
 
 @media (max-width: 900px) {
@@ -233,7 +245,7 @@
 
 @media (max-width: 500px) {
     .filtered-products-section {
-        margin-bottom: 80px;
+        margin-bottom: 20px;
 
         .product-grid {
             gap: 15px;
@@ -242,5 +254,9 @@
 
     .filtered-products-section.margin-bottom {
         margin-bottom: 130px;
+    }
+
+     .filtered-products-section.margin-top {
+        margin-top: 100px;
     }
 }

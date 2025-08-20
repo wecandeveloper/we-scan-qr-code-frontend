@@ -53,6 +53,8 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    console.log(selectedCategory)
+
     const handleDashboardMenuChange = (menu) => {
         setSelectedDashboardMenu(menu);
         if(menu) {

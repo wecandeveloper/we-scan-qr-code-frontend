@@ -9,6 +9,7 @@ import RestaurantLayout from "../Components/Layouts/RestaurantLayout/RestaurantL
 import AdminLayout from "../Components/Layouts/AdminLayout/AdminLayout.jsx"
 import Home from "../Components/MainLayout/Home/Home.jsx"
 import LoginRegister from "../Components/LoginRegister/LoginRegister.jsx"
+import OfferPage from "../Pages/OfferPage.jsx"
 
 // const routes = [
 //   {
@@ -121,6 +122,16 @@ const routes = [
     element: (
       <RestaurantLayout>
         <ProductDetailPage />
+      </RestaurantLayout>
+    ),
+    isProtected: false,
+  },
+
+  {
+    path: "restaurant/:restaurantSlug/offer-items",
+    element: (
+      <RestaurantLayout>
+        <OfferPage />
       </RestaurantLayout>
     ),
     isProtected: false,

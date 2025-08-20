@@ -16,7 +16,7 @@ import { TiHome } from "react-icons/ti";
 import logo from "../../../Assets/Logo/logo-1.jpeg"
 import { useAuth } from "../../../Context/AuthContext";
 import Cart from "../CartPage/Cart";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import LoginRegister from "../../LoginRegister/LoginRegister";
 
 
@@ -36,6 +36,7 @@ export default function RestaurantHeader() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
+    const { categoryName } = useParams()
     const restaurant = useSelector((state) => {
         return state.restaurants.selected;
     })
@@ -59,45 +60,57 @@ export default function RestaurantHeader() {
         // }
     }
 
+    // console.log(categoryName)
+
     return (
         <nav className="restaurant-nav">
             <div className="navbar">
                 <div className="logo-div">
                     <a href={`/restaurant/${restaurant.slug}`}><img src={logo} alt="Logo" className="logo"/></a>
                 </div>
+                {!mobileMenu ? <RiMenu2Line className="mobile-menu-icon" onClick={toggleMenu}/> : <VscChromeClose onClick={toggleMenu} className="mobile-menu-icon"/> }
                 <div className="mobile-search-div">
-                    <IoIosSearch className="search-icon"/>
                     <input 
                         type="text" 
                         placeholder="Search"
                         value={searchProduct}
                         onChange={(e) => setSearchProduct(e.target.value)}
                     />
+                    <IoIosSearch
+                        onClick={() => {
+                            if (searchProduct.trim() === "") {
+                                toast.error("Please enter a search term.");
+                            } else {
+                                navigate(`/restaurant/${restaurant.slug}/collections`);
+                            }
+                        }}
+                        className="search-icon"
+                    />
                 </div>
                 {!mobileMenu ? <RiMenu2Line className="menu-icon" onClick={toggleMenu}/> : <VscChromeClose onClick={toggleMenu} className="menu-icon"/> }
                 <div className={`nav-search-div ${mobileMenu ? "" : "close"}`}>
                     <div className="nav-links">
                         <a href={`/restaurant/${restaurant.slug}`} className={`nav-link ${location.pathname === `/restaurant/${restaurant.slug}` ? "active" : "" }`}>Home</a>
-                        <a href={`/restaurant/${restaurant.slug}/collections`} className={`nav-link ${location.pathname === `/restaurant/${restaurant.slug}/collections` ? "active" : "" }`}>Collections</a>
-                        <a href="/Offers" className="nav-link">Offers</a>
+                        <a href={`/restaurant/${restaurant.slug}/collections`} className={`nav-link ${(location.pathname === `/restaurant/${restaurant.slug}/collections` || location.pathname === `/restaurant/${restaurant.slug}/collections/${categoryName}`) ? "active" : "" }`}>Collections</a>
+                        <a href={`/restaurant/${restaurant.slug}/offer-items`} className={`nav-link ${location.pathname === `/restaurant/${restaurant.slug}/offer-items` ? "active" : "" }`}>Offers</a>
                     </div>
                     <div className="search-div-section">
                         <div className="search-div">
-                            <IoIosSearch className="search-icon"/>
                             <input 
                                 type="text" 
                                 placeholder="Search"
                                 value={searchProduct}
                                 onChange={(e) => setSearchProduct(e.target.value)}
-                                onKeyDown={(e) => {
-                                if (e.key === "Enter") {
+                            />
+                            <IoIosSearch
+                                onClick={() => {
                                     if (searchProduct.trim() === "") {
                                         toast.error("Please enter a search term.");
                                     } else {
                                         navigate(`/restaurant/${restaurant.slug}/collections`);
                                     }
-                                }
-                            }}
+                                }}
+                                className="search-icon"
                             />
                         </div>
                         <div className="btn-dark" onClick={() => setIsCartSectionOpen(true)}>
@@ -117,7 +130,7 @@ export default function RestaurantHeader() {
                             </div>
                         </a>
                         <a href={`/restaurant/${restaurant.slug}/collections`} className="nav-link">
-                            <div className={`mobile-menu-item ${location.pathname === `/restaurant/${restaurant.slug}/collections` ? "active" : "" }`}>
+                            <div className={`mobile-menu-item ${(location.pathname === `/restaurant/${restaurant.slug}/collections` || location.pathname === `/restaurant/${restaurant.slug}/collections/${categoryName}`) ? "active" : "" }`}>
                                 <div className="icon"><RiMenu2Line /></div>
                                 <h2 className="menu">Menu</h2>
                             </div>
@@ -130,8 +143,8 @@ export default function RestaurantHeader() {
                         </div>
                     </div>
                     <div className="right">
-                        <a href={`/restaurant/${restaurant.slug}/collections`} className="nav-link">
-                            <div className={`mobile-menu-item ${location.pathname === `` ? "active" : "" }`}>
+                        <a href={`/restaurant/${restaurant.slug}/offer-items`} className="nav-link">
+                            <div className={`mobile-menu-item ${location.pathname === `/restaurant/${restaurant.slug}/offer-items` ? "active" : "" }`}>
                                 <div className="icon"><MdLocalOffer /></div>
                                 <h2 className="menu">Offers</h2>
                             </div>
