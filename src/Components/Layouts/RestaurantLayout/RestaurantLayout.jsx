@@ -14,6 +14,10 @@ export default function RestaurantLayout({ children }) {
     const { restaurantSlug } = useParams();
     // console.log(restaurantSlug);
 
+    const restaurant = useSelector((state) => {
+        return state.restaurants.selected;
+    });
+
     useEffect(() => {
         if(restaurantSlug) {
             dispatch(startGetOneRestaurant(restaurantSlug));
@@ -23,9 +27,9 @@ export default function RestaurantLayout({ children }) {
     // console.log(restaurant)
     return (
         <div className="restaurant-layout">
-            <RestaurantHeader />
+            <RestaurantHeader restaurant={restaurant}/>
             <main className="childrens">{children}</main>
-            <RestaurantFooter />
+            <RestaurantFooter restaurant={restaurant}/>
         </div>
     );
 }

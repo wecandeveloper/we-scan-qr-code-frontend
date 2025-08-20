@@ -55,16 +55,16 @@ button {
 
 /* Default toast styles */
 .custom-toast {
-  background-color: #333;
-  color: #fff;
-  font-size: 16px;
-  padding: 12px;
-  border-radius: 8px;
+    background-color: #333;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 8px;
 }
 
 /* Toast body styles */
 .custom-toast-body {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 /* Mobile-specific styles */
@@ -76,20 +76,36 @@ button {
 
 
 @media screen and (max-width: 500px) {
-  .custom-toast {
-    font-size: 14px;
-    margin-top: 20px;
-    margin-right: 20px;
-    padding: 10px;
-    width: 80% !important;
-    // margin: 0 auto;
-    border-radius: 6px;
-  }
+    .custom-toast {
+        font-size: 14px;
+        margin-top: 20px;
+        margin-right: 20px;
+        padding: 10px;
+        width: 80% !important;
+        // margin: 0 auto;
+        border-radius: 6px;
+    }
 
-  .custom-toast-body {
-    font-size: 12px;
-    text-align: center;
-  }
+    .custom-toast-body {
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .btn-dark {
+        padding: 8px 12px;
+        gap: 10px;
+        border: 1.5px solid #D22228;
+        font-size: 14px;
+
+        svg {
+            font-size: 18px;
+        }
+
+        &:hover {
+            background: #D22228;
+            color: white;
+        }
+    }
 }
 
 
