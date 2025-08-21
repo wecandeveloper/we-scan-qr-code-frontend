@@ -4,7 +4,7 @@ import "./PageNotFound.scss"
 
 export default function PageNotFound() {
     return(
-        <section id="pagenotfound" className="pagenotfound container1">
+        <section id="pagenotfound" className="pagenotfound">
             <div className="notfound">
                 <img src={notFound} alt="Page Not Found"/>
                 <h1>This page doesn't seem to exist.</h1>

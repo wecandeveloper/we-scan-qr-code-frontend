@@ -1,0 +1,27 @@
+.restaurant-admin-layout {
+    .btn-dark {
+        border-radius: 10px;
+        padding: 10px 15px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+        align-items: center;
+        border: 2px solid #D22228;
+        color: #D22228;
+        background: transparent;
+        transition: .3s all;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+
+        svg {
+            font-size: 20px;
+        }
+
+        &:hover {
+            background: #D22228;
+            color: white;
+        }
+    }
+}

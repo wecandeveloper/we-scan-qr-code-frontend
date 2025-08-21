@@ -25,6 +25,10 @@
     }
 }
 
+.promo-slider.margin-top {
+    margin-top: 50px;
+}
+
 @media (max-width: 768px) {
     .promo-slider {
         .img-div-container {
@@ -42,5 +46,11 @@
                 height: 150px;
             }
         }
+    }
+}
+
+@media (max-width: 500px) {
+    .promo-slider.margin-top {
+        margin-top: 100px;
     }
 }

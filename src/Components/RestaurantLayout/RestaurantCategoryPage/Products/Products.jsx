@@ -194,7 +194,7 @@ export default function Products() {
         <section>
             <div className="products-section common-padding">
                 <div className="head-div">
-                    <h1>Our Menu</h1>
+                    <h1 className="main-heading">Our Menu</h1>
                     {/* <p>Visit our shop to see amazing products</p> */}
                 </div>
                 {categoriesLoading ? (
@@ -237,8 +237,8 @@ export default function Products() {
                 )}
 
                 {selectedCategory ? 
-                    <div className="head-div"><h1>{selectedCategory.name}</h1></div> 
-                :   <div className="head-div"><h1>All Items</h1></div>
+                    <div className="head-div"><h1 className="main-heading">{selectedCategory.name}</h1></div> 
+                :   <div className="head-div"><h1 className="main-heading">All Items</h1></div>
                 }
                 <div className="product-grid-div">
                     {/* <div className="header-controls">

@@ -1,7 +1,7 @@
 import CategoryCollection from "../Pages/CategoryCollection.jsx"
 import ProductDetailPage from "../Pages/ProductDetailPage.jsx"
 import CustomerAccount from "../Pages/CustomerAccount.jsx"
-import UnAuthorized from "../Components/UnAuthorized/UnAuthorixed.jsx"
+import UnAuthorized from "../Components/MainLayout/UnAuthorized/UnAuthorixed.jsx"
 import AdminAccount from "../Pages/AdminAccount.jsx"
 import Restaurant from "../Pages/Restaurant.jsx"
 import MainLayout from "../Components/Layouts/MainLayout/MainLayout.jsx"
@@ -11,6 +11,8 @@ import Home from "../Components/MainLayout/Home/Home.jsx"
 import LoginRegister from "../Components/LoginRegister/LoginRegister.jsx"
 import OfferPage from "../Pages/OfferPage.jsx"
 import PageNotFound from "../Components/MainLayout/PageNotFound/PageNotFound.jsx"
+import RestaurantAdminLayout from "../Components/Layouts/RestaurantAdminLayout/RestaurantAdminLayout.jsx"
+import RestaurantAdminAccount from "../Pages/RestaurantAdminAccount.jsx"
 
 // const routes = [
 //   {
@@ -158,27 +160,28 @@ const routes = [
     isProtected: true,
     roles: ["customer"],
   },
-  {
-    path: "/account/:dashboradMenu",
-    element: (
-      <RestaurantLayout>
-        <CustomerAccount />
-      </RestaurantLayout>
-    ),
-    isProtected: true,
-    roles: ["customer"],
-  },
-
   // Admin Routes
   {
     path: "/admin/dashboard",
     element: (
       <AdminLayout>
-        <AdminAccount />
+        <AdminAccount key="super-admin"/>
       </AdminLayout>
     ),
     isProtected: true,
-    roles: ["superAdmin", "restaurantAdmin"],
+    roles: ["superAdmin"],
+  },
+
+  {
+    path: "restaurant-admin/dashboard",
+    element: (
+      <RestaurantAdminLayout>
+        <RestaurantAdminAccount key="restaurant-admin"/>
+      </RestaurantAdminLayout>
+
+    ),
+    isProtected: true,
+    roles: ["restaurantAdmin"],
   },
 
   // Unauthorized Page

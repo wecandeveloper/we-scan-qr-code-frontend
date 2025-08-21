@@ -21,7 +21,7 @@ export default function CategorySection() {
     }, [restaurant, dispatch]);
 
     return (
-        <section id="categories" className="shop-section common-padding">
+        <section id="categories" className={`shop-section common-padding ${restaurant?.theme?.bannerImages.length === 0 && "no-margin-top" }`}>
             <div className="shop-category-section">
                 <div className="head-div">
                     <h1 className="main-heading">Our Menu</h1>

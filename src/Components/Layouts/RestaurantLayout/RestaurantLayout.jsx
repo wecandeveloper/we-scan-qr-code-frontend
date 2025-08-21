@@ -28,6 +28,18 @@ export default function RestaurantLayout({ children }) {
         }
     }, [restaurantSlug, dispatch]);
 
+    useEffect(() => {
+    if (restaurant?.theme) {
+        const { primaryColor, secondaryColor, buttonColor } = restaurant.theme;
+
+        // Set CSS variables on root or on this layout container
+        const layout = document.querySelector(".restaurant-layout");
+        layout.style.setProperty("--primary-color", primaryColor || "#000");
+        layout.style.setProperty("--secondary-color", secondaryColor || "#fff");
+        layout.style.setProperty("--button-color", buttonColor || "#000");
+        }
+    }, [restaurant]);
+
     // Show loader while fetching
     if (restaurantLoading || !restaurant) {
         return (
@@ -49,7 +61,7 @@ export default function RestaurantLayout({ children }) {
                             <br />
                             Please check with the restaurant staff or try scanning the correct QR code.
                         </p>
-                        <div className="btn-dark-2" onClick={() => navigate("/")}>
+                        <div className="btn-dark-2" onClick={() => navigate("/")} style={{ marginTop: "20px" }}>
                             Go to Home
                         </div>
                         <MainFooter/>

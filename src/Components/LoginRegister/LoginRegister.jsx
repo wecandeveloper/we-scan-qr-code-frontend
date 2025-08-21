@@ -253,31 +253,11 @@ export default function LoginRegister({ setShowModal }) {
                 setIsLoading(false)
                 toast.success("Login Successfull")
                 setShowModal(false)
-                const guestCartData = JSON.parse(localStorage.getItem("guestCart"));
-
-                if (guestCartData && guestCartData.lineItems?.length > 0) {
-                    const newCart = {
-                        lineItems: guestCartData.lineItems.map(lineItem => ({
-                            productId: lineItem.productId._id,
-                            quantity: lineItem.quantity
-                        }))
-                    };
-
-                    console.log(guestCartData)
-                    dispatch(startCreateCart(newCart)); // This will merge/create on backend
-
-                    if(!cart.appliedCoupon) {
-                        if(guestCartData.appliedCoupon) {
-                            dispatch(startValidateCoupon(guestCartData.appliedCoupon.code, setCouponSuccess, setCouponError))
-                        }
-                    } else {
-                        toast.warning(`Only One Coupon can be claimed for ${cart?.lineItems?.length > 1 ? "these" : "this"} Item${cart?.lineItems?.length > 1 ? "s" : ""}`);
-                    }
-                    localStorage.removeItem("guestCart"); // Cleanup guest cart
-                    toast.success("Guest cart transferred successfully!");
-                }
-                if(userData.role === "superAdmin" || userData.role === "restaurantAdmin") {
+                
+                if(userData.role === "superAdmin") {
                     navigate("/admin/dashboard")
+                } else if (userData.role === "restaurantAdmin") {
+                    navigate("/restaurant-admin/dashboard")
                 }
             } catch (err) {
                 setFormErrors({})
@@ -352,7 +332,7 @@ export default function LoginRegister({ setShowModal }) {
                             }
                             <button
                                 type="submit"
-                                className="btn"
+                                className="btn-dark"
                             >
                                 {isLoading ? 
                                     <Box sx={{ display: 'flex' }}>
@@ -420,7 +400,7 @@ export default function LoginRegister({ setShowModal }) {
                                     style: {
                                     fontFamily: '"Montserrat", sans-serif',
                                     color: '#470531',
-                                    borderRadius: 10,
+                                    borderRadius: 30,
                                     border: '1.5px solid #470531',
                                     padding: '10px 50px',
                                     width: '100%',
@@ -429,7 +409,7 @@ export default function LoginRegister({ setShowModal }) {
                                 }}
                                 buttonStyle={{
                                     border: '1.5px solid #470531',
-                                    borderRadius: '10px 0 0 10px',
+                                    borderRadius: '30px 0 0 30px',
                                     boxShadow: 'none',
                                 }}
                                 containerStyle={{
@@ -488,7 +468,7 @@ export default function LoginRegister({ setShowModal }) {
                         }
                         <button
                             type="submit"
-                            className="btn"
+                            className="btn-dark"
                         >
                             {isLoading ? 
                                 <Box sx={{ display: 'flex' }}>
@@ -513,7 +493,7 @@ export default function LoginRegister({ setShowModal }) {
                             />
                             <button
                                     type="submit"
-                                    className="btn submit"
+                                    className="btn-dark submit"
                                     onClick={handleVerifyEmailOtp}
                                 >
                                     {isLoading ? 
@@ -534,7 +514,7 @@ export default function LoginRegister({ setShowModal }) {
                             <div className="otp-container">
                                 <button
                                     type="button"
-                                    className="btn-resend"
+                                    className="btn-dark"
                                     onClick={handleClick}
                                     disabled={cooldown > 0}
                                 >

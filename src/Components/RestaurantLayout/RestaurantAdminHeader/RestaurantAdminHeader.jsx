@@ -1,18 +1,18 @@
 import { useAuth } from "../../../Context/AuthContext";
 
-import "./AdminHeader.scss"
+import "./RestaurantAdminHeader.scss"
 
-import logo from "../../../Assets/Logo/we-scan-logo.png"
+import logo from "../../../Assets/Logo/logo-1.jpeg"
 import defaultProfilePic from "../../../Assets/Common/account-icon.png"
 
-export default function AdminHeader() {
+export default function RestaurantAdminHeader() {
     const { 
         user, 
     } = useAuth()
 
 
     return (
-        <nav className="admin-nav">
+        <nav className="restaurant-admin-nav">
             <div className="navbar">
                 <div className="logo-div">
                     <a href="/"><img src={logo} alt="Logo" className="logo"/></a>

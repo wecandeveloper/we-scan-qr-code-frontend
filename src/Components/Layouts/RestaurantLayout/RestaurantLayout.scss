@@ -13,60 +13,47 @@
     .childrens {
         flex: 1; // Pushes the footer to the bottom if content is small
     }
-}
 
-button {
-    font-family: "Montserrat", sans-serif;
-}
+    .btn-dark {
+        border-radius: 30px;
+        padding: 10px 15px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+        align-items: center;
+        border: 2px solid var(--button-color);
+        color: var(--button-color);
+        background: transparent;
+        transition: .3s all;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
 
-.btn-dark {
-    border-radius: 30px;
-    padding: 10px 15px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 10px;
-    align-items: center;
-    border: 2px solid #D22228;
-    color: #D22228;
-    background: transparent;
-    transition: .3s all;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
+        svg {
+            font-size: 20px;
+        }
 
-    svg {
-        font-size: 20px;
+        &:hover {
+            background: var(--button-color);
+            color: white;
+        }
     }
 
-    &:hover {
-        background: #D22228;
-        color: white;
+    button {
+        font-family: "Montserrat", sans-serif;
     }
-}
 
-.common-padding {
-    padding: 70px 50px 0px 50px
-}
+    .common-padding {
+        padding: 70px 50px 0px 50px
+    }
 
-.main-heading {
-    font-size: 30px;
-    font-weight: 800;
-    letter-spacing: 1px;
-}
-
-/* Default toast styles */
-.custom-toast {
-    background-color: #333;
-    color: #fff;
-    font-size: 16px;
-    padding: 12px;
-    border-radius: 8px;
-}
-
-/* Toast body styles */
-.custom-toast-body {
-    font-size: 14px;
+    .main-heading {
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: var(--primary-color);
+    }
 }
 
 .restaurant-loader-notfound-div {
@@ -97,10 +84,6 @@ button {
         h2 {
             color: #d9534f;
             margin-bottom: 10px;
-        }
-
-        .btn-dark-2 {
-            margin-top: 20px;
         }
     }
 
@@ -159,6 +142,20 @@ button {
     }
 }
 
+/* Default toast styles */
+.custom-toast {
+    background-color: #333;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+/* Toast body styles */
+.custom-toast-body {
+    font-size: 14px;
+}
+
 /* Mobile-specific styles */
 @media screen and (max-width: 1200px) {
     .restaurant-layout .childrens {
@@ -166,63 +163,63 @@ button {
     }
 }
 
-@media (max-width: 1200px) {
-    // .restaurant-layout {
-    //     margin-bottom: 50px;
-    // }
-}
-
 @media (max-width: 768px) {
-    .main-heading {
-        font-size: 25px;
+    .restaurant-layout {
+        .main-heading {
+            font-size: 25px;
+        }
     }
 }
 
 @media (max-width: 600px) {
-    .common-padding {
-        padding: 50px 30px 0px 30px;
+    .restaurant-layout {
+        .common-padding {
+            padding: 50px 30px 0px 30px;
+        }
     }
 }
 
 @media (max-width: 500px) {
-    .common-padding {
-        padding: 50px 20px 0px 20px;
-    }
-
-    .main-heading {
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: 0px;
-    }
-
-    .custom-toast {
-        font-size: 14px;
-        margin-top: 20px;
-        margin-right: 20px;
-        padding: 10px;
-        width: 80% !important;
-        // margin: 0 auto;
-        border-radius: 6px;
-    }
-
-    .custom-toast-body {
-        font-size: 12px;
-        text-align: center;
-    }
-
-    .btn-dark {
-        padding: 8px 12px;
-        gap: 10px;
-        border: 1.5px solid #D22228;
-        font-size: 14px;
-
-        svg {
-            font-size: 18px;
+    .restaurant-layout {
+        .common-padding {
+            padding: 50px 20px 0px 20px;
         }
 
-        &:hover {
-            background: #D22228;
-            color: white;
+        .main-heading {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0px;
+        }
+
+        .btn-dark {
+            padding: 8px 12px;
+            gap: 10px;
+            border: 1.5px solid var(--button-color);
+            font-size: 14px;
+
+            svg {
+                font-size: 18px;
+            }
+
+            &:hover {
+                background: var(--button-color);
+                color: white;
+            }
         }
     }
+
+.custom-toast {
+    font-size: 14px;
+    margin-top: 20px;
+    margin-right: 20px;
+    padding: 10px;
+    width: 80% !important;
+    // margin: 0 auto;
+    border-radius: 6px;
+}
+
+.custom-toast-body {
+    font-size: 12px;
+    text-align: center;
+}
 }

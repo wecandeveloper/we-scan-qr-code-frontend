@@ -96,7 +96,7 @@
 
                         .product-price.strike {
                             text-decoration: line-through;
-                            color: #eb3424;
+                            color: red;
                             font-size: 12px;
                         }
                     }
@@ -120,7 +120,7 @@
 
                     .product-price.strike {
                         text-decoration: line-through;
-                        color: #eb3424;
+                        color: red;
                         font-size: 12px;
                         margin-bottom: 2px;
                     }
@@ -134,9 +134,9 @@
                     padding: 5px 10px;
                     gap: 10px;
                     width: 150px;
-                    background: #eb3424;
+                    background: var(--button-color);
                     color: white;
-                    border: 2px solid #eb3424;
+                    border: 2px solid var(--button-color);
                     border-radius: 10px;
                     transition: .5s;
 
@@ -146,7 +146,7 @@
 
                     &:hover {
                         background: transparent;
-                        color: #eb3424;
+                        color: var(--button-color);
                     }
                 }
             }
@@ -155,8 +155,8 @@
                 position: absolute;
                 top: -4px;
                 right: -4px;
-                background: #eb3424;
-                border: 1px solid #eb3424;
+                background: var(--button-color);
+                border: 1px solid var(--button-color);
                 color: white;
                 border-radius: 50%;
                 padding: 1px;
@@ -168,8 +168,8 @@
                 transform: scale(1.1);
                 transition: .3s;
                 background: white !important;
-                color: #eb3424;
-                border: 1px solid #eb3424;
+                color: var(--button-color);
+                border: 1px solid var(--button-color);
             }
         }
 
@@ -185,12 +185,12 @@
 
             a {
                 text-decoration: underline;
-                color: #eb3424;
+                color: var(--primary-color);
             }
 
             a:hover {
                 text-decoration: underline;
-                color: #eb3424;
+                color: var(--button-color);
             }
         }
     }
@@ -220,7 +220,7 @@
 
             .amount {
                 font-weight: 700;
-                color: #eb3424;
+                color: var(--primary-color);
             }
         }
 
@@ -229,8 +229,8 @@
             display: flex;
             justify-content: center;
             padding: 10px 20px;
-            background-color: #eb3424;
-            border: 1px solid #eb3424;
+            background-color: var(--button-color);
+            border: 1px solid var(--button-color);
             color: white;
             border-radius: 10px;
             cursor: pointer;
@@ -240,7 +240,7 @@
             &:hover {
                 background-color: transparent;
                 transition: .3s;
-                color: #eb3424;
+                color: var(--button-color);
             }
         }
     }
@@ -270,7 +270,7 @@
                 text-decoration: underline;
 
                 &:hover {
-                    color: #eb3424;
+                    color: var(--primary-color);
                 }
             }
         }
@@ -351,7 +351,6 @@
 
             &:hover {
                 background: #dcdcdc;
-                // border: 2px solid #eb3424;
             }
         }
 
@@ -446,7 +445,7 @@
 
                         svg {
                             cursor: pointer;
-                            border: 1px solid #eb3424;
+                            border: 1px solid var(--button-color);
                             border-radius: 50%;
                             padding: 2px;
                             font-size: 15px;
@@ -460,7 +459,7 @@
 
                         svg:hover {
                             background: transparent;
-                            color: #eb3424;
+                            color: var(--button-color);
                         }
 
                         &:hover {

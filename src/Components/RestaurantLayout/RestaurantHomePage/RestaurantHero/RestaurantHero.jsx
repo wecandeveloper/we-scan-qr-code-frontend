@@ -9,6 +9,7 @@ import { BsArrowRight } from "react-icons/bs"
 import image1 from "../../../../Assets/Banners/banner-1.webp"
 import image2 from "../../../../Assets/Banners/banner-2.webp"
 import { FaArrowRightLong } from "react-icons/fa6";
+import { useSelector } from "react-redux";
 
 
 const slides = [
@@ -25,9 +26,14 @@ const slides = [
 ];
 
 export default function RestaurantHero() {
+    const { selected: restaurant } = useSelector(
+        (state) => state.restaurants
+    );
+    
     return (
         <section>
             <div className="restaurant-hero-section common-padding">
+               {restaurant?.theme?.bannerImages.length !== 0 && 
                 <div className="img-slider-wrapper">
                     <Swiper
                         modules={[Autoplay, Pagination]}
@@ -37,11 +43,11 @@ export default function RestaurantHero() {
                         pagination={{ clickable: true }}
                         loop
                     >
-                        {slides.map((slide, i) => (
+                        {restaurant?.theme?.bannerImages?.map((slide, i) => (
                         <SwiperSlide key={i}>
                             <div className="img-div">
                             {/* <div className="overlay"></div> */}
-                            <img src={slide.image} alt={`slide-${i}`} />
+                            <img src={slide.url} alt={`slide-${i}`} />
                             {/* <div className="hero-content">
                                 <h2 className="title">{slide.title}</h2>
                                 <p className="subtitle">{slide.subtitle}</p>
@@ -54,6 +60,7 @@ export default function RestaurantHero() {
                         ))}
                     </Swiper>
                 </div>
+                }
             </div>
         </section>
     )

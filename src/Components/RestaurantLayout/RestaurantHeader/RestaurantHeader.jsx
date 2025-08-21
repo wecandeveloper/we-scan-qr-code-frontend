@@ -8,18 +8,19 @@ import { useAuth } from "../../../Context/AuthContext";
 import "./RestaurantHeader.scss"
 
 import { IoIosClose, IoIosSearch } from "react-icons/io";
-import { BiCart } from "react-icons/bi";
-import { MdAccountCircle, MdLocalOffer } from "react-icons/md";
+import { BiSolidCart } from "react-icons/bi";
+import { MdLocalOffer } from "react-icons/md";
 import { RiMenu2Line } from "react-icons/ri";
-import { IoClose } from "react-icons/io5";
 import { VscChromeClose } from "react-icons/vsc";
 import { TiHome } from "react-icons/ti";
 import { BiSolidShoppingBagAlt } from "react-icons/bi";
 
-import logo from "../../../Assets/Logo/logo-1.jpeg"
+import aedWhite from "../../../Assets/Common/aed-symbol-white.webp"
+import aedBlack from "../../../Assets/Common/aed-symbol-black.png"
 import Cart from "../CartPage/Cart";
 import LoginRegister from "../../LoginRegister/LoginRegister";
 import Order from "../Order/Order";
+import { IoLogoWhatsapp } from "react-icons/io5";
 
 
 const useIsMobile = () => {
@@ -36,7 +37,6 @@ const useIsMobile = () => {
 
 export default function RestaurantHeader() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const location = useLocation();
     const { categoryName } = useParams()
     const restaurant = useSelector((state) => {
@@ -46,13 +46,15 @@ export default function RestaurantHeader() {
     const {
         searchProduct,
         setSearchProduct,
+        globalGuestCart,
+        setGlobalGuestCart
     } = useAuth()
 
-    const [mobileMenu, setMobileMenu] = useState(false)
-    const isMobile = useIsMobile()
+    const [ mobileMenu, setMobileMenu ] = useState(false)
+    const [ isSymbolHover, setIsSymbolHover ] = useState(false)
     const [ isCartSectionOpen, setIsCartSectionOpen ] = useState(false)
     const [ isOrderSectionOpen, setIsOrderSectionOpen ] = useState(false)
-    const [showModal, setShowModal] = useState(false);
+    const [ showModal, setShowModal ] = useState(false);
 
     const toggleMenu = () => {
         setMobileMenu(!mobileMenu)
@@ -63,14 +65,21 @@ export default function RestaurantHeader() {
         // }
     }
 
-    // console.log(categoryName)
+    useEffect(() => {
+        const guestCartData = JSON.parse(localStorage.getItem("guestCart")) || [];
+        setGlobalGuestCart(guestCartData);
+    }, [setGlobalGuestCart]);
+
+    const totalAmount = globalGuestCart?.totalAmount
+    console.log(totalAmount)
 
     return (
         <nav className="restaurant-nav">
             <div className="navbar">
                 <div className="logo-div">
-                    <a href={`/restaurant/${restaurant?.slug}`}><img src={logo} alt="Logo" className="logo"/></a>
+                    <a href={`/restaurant/${restaurant?.slug}`}><img src={restaurant.theme.logo.url} alt="Logo" className="logo"/></a>
                 </div>
+                <IoLogoWhatsapp className="mobile-whatsapp-icon"/>
                 {!mobileMenu ? <RiMenu2Line className="mobile-menu-icon" onClick={toggleMenu}/> : <VscChromeClose onClick={toggleMenu} className="mobile-menu-icon"/> }
                 <div className="mobile-search-div">
                     <input 
@@ -116,8 +125,16 @@ export default function RestaurantHeader() {
                                 className="search-icon"
                             />
                         </div>
-                        <div className="btn-dark" onClick={() => setIsCartSectionOpen(true)}>
-                            <BiCart /> <span>AED 0.00</span>
+                        <div className="btn-dark"
+                            onClick={() => setIsCartSectionOpen(true)}
+                            onMouseEnter={() => {setIsSymbolHover(true)}}
+                            onMouseLeave={() => {setIsSymbolHover(false)}}
+                        >
+                            <BiSolidCart /> 
+                            <div className="symbol-amount-div">
+                                {isSymbolHover ? <img className="aed-symbol" src={aedWhite} alt="" /> : <img className="aed-symbol black" src={aedBlack } alt="" />}
+                                <span>{Number(totalAmount?.toFixed(2))}</span>
+                            </div>
                         </div>
                         <div className="btn-dark" onClick={() => setIsOrderSectionOpen(true)}>
                             {/* <MdAccountCircle /><span>Log In</span> */}
@@ -142,8 +159,11 @@ export default function RestaurantHeader() {
                     </div>
                     <div className="cart-menu">
                         <div className={`mobile-menu-item`} onClick={() => setIsCartSectionOpen(true)}>
-                            <div className="icon"><BiCart /></div>
-                            {/* <h2 className="menu">Cart</h2> */}
+                            <div className="icon"><BiSolidCart /></div>
+                            <div className="menu">
+                                <img className="aed-symbol" src={aedWhite} alt="" />
+                                <span className="aed-amount">{Number(totalAmount?.toFixed(2))}</span>
+                            </div>
                         </div>
                     </div>
                     <div className="right">

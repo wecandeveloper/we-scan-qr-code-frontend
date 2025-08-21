@@ -5,8 +5,8 @@ import { styled } from '@mui/material/styles';
 const StyledAlert = styled(Alert)(({ theme }) => ({
   fontFamily: '"Montserrat", sans-serif',
   width: '100%',
-  borderRadius: "10px",
-  fontSize: '16px',
+  borderRadius: "30px",
+  fontSize: '14px',
   '& .MuiAlert-message': {
     fontFamily: '"Montserrat", sans-serif',
   },

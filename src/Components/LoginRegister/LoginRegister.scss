@@ -97,12 +97,12 @@
     .form-field {
         width: 100%;
         // border: 2px solid #470531;
-        border-radius: 10px;
+        border-radius: 30px;
 
         .MuiOutlinedInput-root {
             color: #470531;
             font-family: "Montserrat", sans-serif;
-            border-radius: 10px;
+            border-radius: 30px;
             transition: all 0.3s ease;
 
             fieldset {
@@ -145,25 +145,25 @@
         }
     }
 
-    .btn {
-        width: 150px;
-        margin-left: auto;
-        margin-right: auto;
-        font-weight: normal;
-        background-color: #470531;
-        color: white;
-        border: 2px solid #470531;
-        border-radius: 6px;
-        padding: 8px 16px;
-        cursor: pointer;
-        transition: 0.3s;
+    // .btn {
+    //     width: 150px;
+    //     margin-left: auto;
+    //     margin-right: auto;
+    //     font-weight: normal;
+    //     background-color: #470531;
+    //     color: white;
+    //     border: 2px solid #470531;
+    //     border-radius: 6px;
+    //     padding: 8px 16px;
+    //     cursor: pointer;
+    //     transition: 0.3s;
 
-        &:hover {
-            background-color: white;
-            color: #470531;
-            border: 2px solid #470531;
-        }
-    }
+    //     &:hover {
+    //         background-color: white;
+    //         color: #470531;
+    //         border: 2px solid #470531;
+    //     }
+    // }
 
     .verify-email-div {
         display: flex;
@@ -187,7 +187,7 @@
 
         .btn.submit {
             height: 55px;
-            border-radius: 10px;
+            border-radius: 30px;
         }
 
         .otp-error {
@@ -207,27 +207,8 @@
         .otp-container {
             text-align: center;
 
-            .btn-resend {
+            .btn-dark {
                 width: 160px;
-                padding: 10px 20px;
-                background-color: #470531;
-                color: white;
-                border: 2px solid #470531;
-                border-radius: 6px;
-                font-size: 16px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-
-                &:disabled {
-                    background-color: #9e4a83;
-                    cursor: not-allowed;
-                    opacity: 0.8;
-                }
-
-                &:hover:enabled {
-                    background-color: white;
-                    color: #470531;
-                }
             }
 
             .cooldown-text {

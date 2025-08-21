@@ -98,7 +98,7 @@ const getOneOrder = (order) => {
     }
 }
 
-export const startCancelOrder = (guestId, orderId, handleCloseAll) => {
+export const startCancelOrder = (guestId, orderId) => {
     return async (dispatch) => {
         try {
             const orderResponse = await axios.put(`${localhost}/api/order/cancel/${guestId}/${orderId}`, { status : "Cancelled"}, {
@@ -109,9 +109,6 @@ export const startCancelOrder = (guestId, orderId, handleCloseAll) => {
             dispatch(cancelOrder(orderResponse.data.data))
             toast.success("Order Cancelled Successfully")
             console.log(orderResponse.data)
-            if(handleCloseAll) {
-                handleCloseAll()
-            }
         } catch(err) {
             console.log(err)
             // alert(err.message)

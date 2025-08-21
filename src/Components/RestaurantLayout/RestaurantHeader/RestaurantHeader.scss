@@ -34,6 +34,10 @@
             display: none;
         }
 
+        .mobile-whatsapp-icon {
+            display: none;
+        }
+
         .mobile-footer-menu {
             display: none;
         }
@@ -79,12 +83,12 @@
                     font-weight: 600;
 
                     &:hover {
-                        color: #eb3424;
+                        color: var(--primary-color);
                         transition: .3s;
                     }
 
                     &.active {
-                        color: #eb3424;
+                        color: var(--primary-color);
                     }
                 }
             }
@@ -119,34 +123,24 @@
 
                     &:hover {
                         background: #dcdcdc;
-                        border: 2px solid #eb3424;
+                        border: 2px solid var(--button-color);
                     }
                 }
 
-                .btn {
-                    width: 120px;
+                .symbol-amount-div {
                     display: flex;
                     flex-direction: row;
-                    gap: 5px;
                     align-items: center;
-                    justify-content: center;
-                    border-radius: 30px;
-                    padding: 10px 10px;
-                    border: 2px solid black;
-                    transition: .3s;
-                    font-size: 14px;
-                    cursor: pointer;
+                    gap: 2px;
+                }
 
-                    svg {
-                        font-size: 23px;
-                    }
+                .aed-symbol {
+                    width: 20px;
+                    margin-bottom: -2px;
+                }
 
-                    &:hover {
-                        background: black;
-                        color: white;
-                        transition: .3s;
-                        border: 2px solid black;
-                    }
+                .aed-symbol.black {
+                    margin-bottom: -1px;
                 }
             }
         }
@@ -307,6 +301,15 @@
                 z-index: 1001;
             }
 
+            .mobile-whatsapp-icon {
+                display: block;
+                position: fixed;
+                top: 20px;
+                right: 80px;
+                font-size: 25px;
+                z-index: 1001;
+            }
+
             .nav-search-div {
                 width: 100%;
             }
@@ -351,20 +354,38 @@
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
+                    padding: 12px;
                     top: -20px;
-                    background: #eb3424;
-                    height: 55px;
-                    width: 55px;
+                    background: var(--primary-color);
+                    height: fit-content;
+                    width: fit-content;
+
 
                     border-radius: 50%;
                     
                     .mobile-menu-item {
                         color: white;
-                        margin-top: 8px;
-                        margin-right: 3px;
 
                         .icon {
                             font-size: 30px;
+                            margin-right: 3px;
+                        }
+
+                        .menu {
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            margin-top: -6px;
+                            text-align: center;
+                            gap: 2px;
+
+                            .aed-symbol {
+                                width: 12px;
+                            }
+
+                            .aed-amount {
+                                font-size: 10px;
+                            }
                         }
 
                         &:hover {
@@ -393,12 +414,12 @@
                     }
 
                     &:hover {
-                        color: #eb3424;
+                        color: var(--primary-color);
                         transition: .3s;
                     }
 
                     &.active {
-                        color: #eb3424;
+                        color: var(--primary-color);
                         font-weight: 600;
                     }
                 }
@@ -428,7 +449,7 @@
 
                 &:hover {
                     background: #dcdcdc;
-                    border: 2px solid black;
+                    border: 2px solid var(--button-color);
                 }
             }
         }

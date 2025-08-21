@@ -11,33 +11,13 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import ConfirmToast from "../../../Designs/ConfirmToast/ConfirmToast";
 import axios from "axios";
 import { localhost } from "../../../Api/apis";
-import { useNavigate } from "react-router-dom";
 import defaultImage from "../../../Assets/Common/defaultImage.avif";
 import { startCreateOrder } from "../../../Actions/orderActions";
 import { MdTableBar } from "react-icons/md";
 
-const style = {
-    position: 'absolute',
-    top: '70px',
-    right: '50px',
-    // transform: 'translate(-50%, -50%)',
-    // width: 250,
-    bgcolor: 'background.paper',
-    border: '2px solid #470531',
-    borderRadius: '5px',
-    // boxShadow: 24,
-    p: '20px 30px',
-};
-
 export default function Cart({setIsCartSectionOpen}) {
     const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const { user, setGlobalGuestId, setGlobalGuestCart } = useAuth()
-    const isLoggedIn = Boolean(user && user._id); // or user.token
-
-    const cart = useSelector(state => {
-        return state.cart.data
-    })
+    const { setGlobalGuestId, setGlobalGuestCart } = useAuth()
 
     const restaurant = useSelector((state) => {
         return state.restaurants.selected;
@@ -85,8 +65,8 @@ export default function Cart({setIsCartSectionOpen}) {
     // const cartItems = cart?.lineItems
     // const totalAmount = cart?.totalAmount
 
-    const cartItems = isLoggedIn ? cart?.lineItems || [] : guestCart?.lineItems || [];
-    const totalAmount = isLoggedIn ? cart?.totalAmount || 0 : guestCart?.totalAmount || 0;
+    const cartItems = guestCart?.lineItems || [];
+    const totalAmount = guestCart?.totalAmount || 0;
 
     const handleQtyInc = (productId) => {
         const updatedLineItems = guestCart.lineItems.map((ele) => {

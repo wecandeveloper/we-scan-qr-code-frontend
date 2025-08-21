@@ -31,10 +31,10 @@ export default function Order() {
     })
 
     const [ guestId, setGuestId ] = useState("")
-    const [orderStatus, setOrderStatus] = useState("");
-    const [showConfirmCancelOrder, setShowConfirmCancelOrder] = useState(false)
-    const [orderId, setOrderId] = useState("");
-    console.log(orders)
+    const [ orderStatus, setOrderStatus ] = useState("");
+    const [ showConfirmCancelOrder, setShowConfirmCancelOrder ] = useState(false)
+    const [ orderId, setOrderId ] = useState("");
+    console.log(orderId)
 
     useEffect(() => {
         const guestId = localStorage.getItem("guestId") || "";
@@ -62,18 +62,10 @@ export default function Order() {
         return filtered;
     };
 
-    const handleCancelOrder = (orderId) => {
-        setShowConfirmCancelOrder(true)
-        setOrderId(orderId)
-    }
-
     const confirmCancelOrder = () => {
-        dispatch(startCancelOrder(orderId))
+        dispatch(startCancelOrder(guestId, orderId))
     }
     
-    const cancelCanacelOrder = () => {
-        setShowConfirmCancelOrder(false)
-    }
     return (
         <section>
             <div className="order-section">
@@ -151,7 +143,8 @@ export default function Order() {
                                                     className={`btn-dark ${ order.status === "Cancelled" ? "cancel" : ""}`}
                                                     onClick={() => {
                                                         if (order.status !== "Cancelled") {
-                                                            handleCancelOrder(order._id);
+                                                            setOrderId(order._id);
+                                                            setShowConfirmCancelOrder(true)
                                                         }
                                                     }}
                                                 >
@@ -180,9 +173,9 @@ export default function Order() {
             </div>
             {showConfirmCancelOrder && (
                 <ConfirmToast
-                    message="Are you sure you want to Delete this Address?"
+                    message="Are you sure you want to Cancel the Order?"
                     onConfirm={confirmCancelOrder}
-                    onCancel={cancelCanacelOrder}
+                    onCancel={() => {setShowConfirmCancelOrder(false)}}
                 />
             )}
         </section>
