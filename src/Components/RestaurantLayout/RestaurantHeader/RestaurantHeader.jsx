@@ -133,7 +133,7 @@ export default function RestaurantHeader() {
                             <BiSolidCart /> 
                             <div className="symbol-amount-div">
                                 {isSymbolHover ? <img className="aed-symbol" src={aedWhite} alt="" /> : <img className="aed-symbol black" src={aedBlack } alt="" />}
-                                <span>{Number(totalAmount?.toFixed(2)) || 0.00}</span>
+                                <span>{Number(totalAmount?.toFixed(2)) || "0.00"}</span>
                             </div>
                         </div>
                         <div className="btn-dark" onClick={() => setIsOrderSectionOpen(true)}>
@@ -162,7 +162,7 @@ export default function RestaurantHeader() {
                             <div className="icon"><BiSolidCart /></div>
                             <div className="menu">
                                 <img className="aed-symbol" src={aedWhite} alt="" />
-                                <span className="aed-amount">{Number(totalAmount?.toFixed(2)) || 0.00}</span>
+                                <span className="aed-amount">{Number(totalAmount?.toFixed(2)) || "0.00"}</span>
                             </div>
                         </div>
                     </div>
