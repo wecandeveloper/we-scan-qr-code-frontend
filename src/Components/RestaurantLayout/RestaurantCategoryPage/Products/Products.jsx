@@ -34,15 +34,13 @@ export default function Products() {
     const [currentPage, setCurrentPage] = useState(1);
     const [gridDisplay, setGridDisplay] = useState("style1");
 
-    const isLoggedIn = Boolean(user && user._id);
-
     // console.log("selectedCategory", selectedCategory)
 
-    const products = useSelector((state) => {
-        return state.products.data;
+    const { data: products, loading: productsLoading } = useSelector((state) => {
+        return state.products;
     })
 
-    const { data: categories, loading } = useSelector((state) => {
+    const { data: categories, loading: categoriesLoading } = useSelector((state) => {
         return state.categories;
     })
     
@@ -67,7 +65,7 @@ export default function Products() {
     const getProcessedProducts = () => {
         // Apply category and price filters
         
-        let filteredArray = products.filter((ele) => {
+        let filteredArray = products?.filter((ele) => {
             if(searchProduct && !slugify(ele.name).toLowerCase().includes(slugify(searchProduct).toLowerCase())) {
                 return false;
             }
@@ -82,7 +80,7 @@ export default function Products() {
         });
 
         // Sort the array based on selected sort criteria
-        filteredArray = filteredArray.sort((a, b) => {
+        filteredArray = filteredArray?.sort((a, b) => {
             if (sortBy === "Name") {
                 return a.name.localeCompare(b.name);
             } else if (sortBy === "Category") {
@@ -96,12 +94,12 @@ export default function Products() {
         // Slice the array for pagination
         const startIndex = (currentPage - 1) * showNo;
         const endIndex = startIndex + showNo;
-        return filteredArray.slice(startIndex, endIndex);
+        return filteredArray?.slice(startIndex, endIndex);
     };
 
     // console.log("filtered Products", getProcessedProducts())
 
-    const totalFilteredItems = products.filter((ele) => {
+    const totalFilteredItems = products?.filter((ele) => {
 
         if(searchProduct && !slugify(ele.name).toLowerCase().includes(slugify(searchProduct).toLowerCase())) {
             return false;
@@ -199,7 +197,7 @@ export default function Products() {
                     <h1>Our Menu</h1>
                     {/* <p>Visit our shop to see amazing products</p> */}
                 </div>
-                {loading ? (
+                {categoriesLoading ? (
                     <div className="loading-div">
                         <Box sx={{ display: 'flex' }}>
                             <CircularProgress color="inherit" size={40}/>
@@ -277,63 +275,77 @@ export default function Products() {
                             </div>
                         </div>
                     </div> */}
-                    {getProcessedProducts().length === 0 ? (
-                        <div className="product-grid-zero">
+                    {productsLoading ? (
+                        <div className="loading-div">
+                            <Box sx={{ display: 'flex' }}>
+                                <CircularProgress color="inherit" size={50}/>
+                            </Box>
+                            <p>Loading Products...</p>
+                        </div>
+                    ) : products.length === 0 ? (
+                        <div className="no-products-div">
                             <PiSmileySadDuotone />
-                            <p>No Record Found,  <span className="reset-btn" onClick={handleReset}>Show All</span></p>
+                            <p>No Products found</p>
                         </div>
                     ) : (
-                        <div className="product-grid">
-                            {getProcessedProducts().map((product) => {
-                                return (
-                                    <div 
-                                        key={product._id}
-                                        className="product-card"
-                                        onClick={() => {
-                                            navigate(`/restaurant/${restaurant.slug}/products/${slugify(product.name)}`, {
-                                            state: { productId: product._id },
-                                            });
-                                        }}
-                                        >
-                                        <div className="img-div">
-                                            <img className="product-image" src={product.images[1]?.url || product.images[0]?.url} alt={product.name} />
-                                            <motion.div 
-                                                whileTap={{ scale: 0.96 }}
-                                                whileHover={{ scale: 1.01 }}
-                                                transition={{ type: "spring", stiffness: 300 }}
-                                                onClick={(e) => {
-                                                    e.stopPropagation(); 
-                                                    handleAddToCart(product);
-                                                }}
-                                                className="cart-div">
-                                                <FiShoppingCart className="cart-icon"/>
-                                            </motion.div>
-                                            {/* <FaHeart className="wishlist-btn"/> */}
-                                        </div>
-                                        <div className="product-details">
-                                            <h1 className="product-name">{product.name}</h1>
-                                            <p className="product-category">{product.categoryId.name}</p>
-                                            <div className="price-div">
-                                                {product.offerPrice != 0 && 
-                                                    <span className="offer-price">
-                                                        AED {product.offerPrice}
+                        getProcessedProducts()?.length === 0 ? (
+                            <div className="product-grid-zero">
+                                <PiSmileySadDuotone />
+                                <p>No Record Found,  <span className="reset-btn" onClick={handleReset}>Show All</span></p>
+                            </div>
+                        ) : (
+                            <div className="product-grid">
+                                {getProcessedProducts()?.map((product) => {
+                                    return (
+                                        <div 
+                                            key={product._id}
+                                            className="product-card"
+                                            onClick={() => {
+                                                navigate(`/restaurant/${restaurant.slug}/products/${slugify(product.name)}`, {
+                                                state: { productId: product._id },
+                                                });
+                                            }}
+                                            >
+                                            <div className="img-div">
+                                                <img className="product-image" src={product.images[1]?.url || product.images[0]?.url} alt={product.name} />
+                                                <motion.div 
+                                                    whileTap={{ scale: 0.96 }}
+                                                    whileHover={{ scale: 1.01 }}
+                                                    transition={{ type: "spring", stiffness: 300 }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); 
+                                                        handleAddToCart(product);
+                                                    }}
+                                                    className="cart-div">
+                                                    <FiShoppingCart className="cart-icon"/>
+                                                </motion.div>
+                                                {/* <FaHeart className="wishlist-btn"/> */}
+                                            </div>
+                                            <div className="product-details">
+                                                <h1 className="product-name">{product.name}</h1>
+                                                <p className="product-category">{product.categoryId.name}</p>
+                                                <div className="price-div">
+                                                    {product.offerPrice != 0 && 
+                                                        <span className="offer-price">
+                                                            AED {product.offerPrice}
+                                                        </span>
+                                                    }
+                                                    <span className={`product-price ${product.offerPrice != 0 ? "strike" : ""}`}>
+                                                        AED {product.price}
                                                     </span>
-                                                }
-                                                <span className={`product-price ${product.offerPrice != 0 ? "strike" : ""}`}>
-                                                    AED {product.price}
-                                                </span>
+                                                </div>
                                             </div>
+                                            {product.discountPercentage > 0 && (
+                                                <div className="offer-percentage-div">
+                                                    {/* <MdLocalOffer className="icon"/> */}
+                                                    <span className="offer">{product.discountPercentage}% off</span>
+                                                </div>
+                                            )}
                                         </div>
-                                        {product.discountPercentage > 0 && (
-                                            <div className="offer-percentage-div">
-                                                {/* <MdLocalOffer className="icon"/> */}
-                                                <span className="offer">{product.discountPercentage}% off</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                )
-                            })}
-                        </div>
+                                    )
+                                })}
+                            </div>
+                        )
                     )}
                     {/* <div className="footer-controls">
                         <div className="footer-pagination">

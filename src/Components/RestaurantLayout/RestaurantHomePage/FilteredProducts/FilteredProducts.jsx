@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import { useEffect } from "react";
 import { startGetAllProducts } from "../../../../Actions/productActions";
 import { PiSmileySadDuotone } from "react-icons/pi";
+import { Box, CircularProgress } from "@mui/material";
 
 export default function FilteredProducts({title}) {
     const navigate = useNavigate()
@@ -22,8 +23,8 @@ export default function FilteredProducts({title}) {
     const { user, setGlobalGuestCart } = useAuth()
     const isLoggedIn = Boolean(user && user._id);
 
-    const products = useSelector((state) => {
-        return state.products.data;
+    const { data: products, loading: productsLoading } = useSelector((state) => {
+        return state.products;
     })
 
     const product = useSelector((state) => {
@@ -145,63 +146,77 @@ export default function FilteredProducts({title}) {
                     <h1 className="main-heading">{title}</h1>
                     <a href={`/restaurant/${restaurant?.slug}/collections`}><div className="btn-dark">Show All</div></a>
                 </div>
-                {getProcessedProducts().length > 0 ? (
-                    <div className="product-grid">
-                        {getProcessedProducts().map((product) => {
-                            return (
-                                <div 
-                                    key={product._id}
-                                    className="product-card"
-                                    onClick={() => {
-                                        navigate(`/restaurant/${restaurant?.slug}/products/${slugify(product.name)}`, {
-                                        state: { productId: product._id },
-                                        });
-                                    }}
-                                    >
-                                    <div className="img-div">
-                                        <img className="product-image" src={product.images[1]?.url || product.images[0]?.url} alt={product.name} />
-                                        <motion.div 
-                                            whileTap={{ scale: 0.96 }}
-                                            whileHover={{ scale: 1.01 }}
-                                            transition={{ type: "spring", stiffness: 300 }}
-                                            onClick={(e) => {
-                                                e.stopPropagation(); 
-                                                handleAddToCart(product);
-                                            }}
-                                            className="cart-div">
-                                            <FiShoppingCart className="cart-icon"/>
-                                        </motion.div>
-                                        {/* <FaHeart className="wishlist-btn"/> */}
-                                    </div>
-                                    <div className="product-details">
-                                        <h1 className="product-name">{product.name}</h1>
-                                        <p className="product-category">{product.categoryId.name}</p>
-                                        <div className="price-div">
-                                            {product.offerPrice != 0 && 
-                                                <span className="offer-price">
-                                                    AED {product.offerPrice}
-                                                </span>
-                                            }
-                                            <span className={`product-price ${product.offerPrice != 0 ? "strike" : ""}`}>
-                                                AED {product.price}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {product.discountPercentage > 0 && (
-                                        <div className="offer-percentage-div">
-                                            {/* <MdLocalOffer className="icon"/> */}
-                                            <span className="offer">{product.discountPercentage}% off</span>
-                                        </div>
-                                    )}
-                                </div>
-                            )
-                        })}
+                {productsLoading ? (
+                    <div className="loading-div">
+                        <Box sx={{ display: 'flex' }}>
+                            <CircularProgress color="inherit" size={50}/>
+                        </Box>
+                        <p>Loading Products...</p>
+                    </div>
+                ) : products.length === 0 ? (
+                    <div className="no-products-div">
+                        <PiSmileySadDuotone />
+                        <p>No Products found</p>
                     </div>
                 ) : (
-                    <div className="no-products-found">
-                        <PiSmileySadDuotone />
-                        <h1>No {title} found</h1>
-                    </div>
+                    getProcessedProducts().length > 0 ? (
+                        <div className="product-grid">
+                            {getProcessedProducts().map((product) => {
+                                return (
+                                    <div 
+                                        key={product._id}
+                                        className="product-card"
+                                        onClick={() => {
+                                            navigate(`/restaurant/${restaurant?.slug}/products/${slugify(product.name)}`, {
+                                            state: { productId: product._id },
+                                            });
+                                        }}
+                                        >
+                                        <div className="img-div">
+                                            <img className="product-image" src={product.images[1]?.url || product.images[0]?.url} alt={product.name} />
+                                            <motion.div 
+                                                whileTap={{ scale: 0.96 }}
+                                                whileHover={{ scale: 1.01 }}
+                                                transition={{ type: "spring", stiffness: 300 }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); 
+                                                    handleAddToCart(product);
+                                                }}
+                                                className="cart-div">
+                                                <FiShoppingCart className="cart-icon"/>
+                                            </motion.div>
+                                            {/* <FaHeart className="wishlist-btn"/> */}
+                                        </div>
+                                        <div className="product-details">
+                                            <h1 className="product-name">{product.name}</h1>
+                                            <p className="product-category">{product.categoryId.name}</p>
+                                            <div className="price-div">
+                                                {product.offerPrice != 0 && 
+                                                    <span className="offer-price">
+                                                        AED {product.offerPrice}
+                                                    </span>
+                                                }
+                                                <span className={`product-price ${product.offerPrice != 0 ? "strike" : ""}`}>
+                                                    AED {product.price}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {product.discountPercentage > 0 && (
+                                            <div className="offer-percentage-div">
+                                                {/* <MdLocalOffer className="icon"/> */}
+                                                <span className="offer">{product.discountPercentage}% off</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    ) : (
+                        <div className="no-products-found">
+                            <PiSmileySadDuotone />
+                            <h1>No {title} found</h1>
+                        </div>
+                    )
                 )}
             </div>
         </section>

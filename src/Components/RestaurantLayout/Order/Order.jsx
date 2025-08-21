@@ -26,6 +26,10 @@ export default function Order() {
         return state.orders.data
     })
 
+    const restaurant = useSelector((state) => {
+        return state.restaurants.selected
+    })
+
     const [ guestId, setGuestId ] = useState("")
     const [orderStatus, setOrderStatus] = useState("");
     const [showConfirmCancelOrder, setShowConfirmCancelOrder] = useState(false)
@@ -47,8 +51,6 @@ export default function Order() {
     console.log(guestId)
 
     const getFilteredOrders = () => {
-        const now = new Date();
-
         const filtered = orders?.filter((order) => {
             // Filter by status
             if (orderStatus && order.status !== orderStatus) {
@@ -172,7 +174,7 @@ export default function Order() {
                         <h1 className="main-heading">My Orders</h1>
                         <p>There is no order, Please place your first order</p>
                         <img src={defaultImage} alt="" />
-                        <p>Go to <a href="/collections">Collection</a> to add a new Item to the Cart</p>
+                        <p>Go to <a href={`/restaurant/${restaurant?.slug}/collections`}>Collection</a> to add a new Item to the Cart</p>
                     </div>
                 )}
             </div>

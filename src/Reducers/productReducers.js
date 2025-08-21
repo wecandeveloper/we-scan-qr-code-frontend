@@ -1,7 +1,8 @@
 const initialState = {
     data: [],
     serverErrors: [],
-    selected: null
+    selected: null,
+    loading: false
 }
 
 export default function productReducers(state = initialState, action){

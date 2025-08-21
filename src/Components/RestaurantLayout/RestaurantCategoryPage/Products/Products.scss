@@ -407,7 +407,7 @@
         }
     }
 
-    .loading-div, .no-categories-div {
+    .loading-div, .no-categories-div, .no-products-div {
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -423,6 +423,11 @@
             font-size: 50px;
             color: #eb3424;
         }
+    }
+
+    .no-products-div {
+        margin-top: 50px;
+        margin-bottom: 50px;
     }
 }
 

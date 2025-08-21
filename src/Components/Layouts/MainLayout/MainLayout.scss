@@ -1,6 +1,5 @@
 .main-layout {
     .btn-dark {
-        width: 120px;
         height: 45px;
         display: flex;
         flex-direction: row;
@@ -8,12 +7,13 @@
         align-items: center;
         justify-content: center;
         border-radius: 30px;
-        padding: 10px 10px;
+        padding: 10px 15px;
         border: 2px solid #FE931D;
         color: #FE931D;
         transition: .3s;
-        font-size: 14px;
+        font-size: 16px;
         cursor: pointer;
+        text-align: center;
 
         svg {
             font-size: 23px;
@@ -24,6 +24,26 @@
             color: white;
             transition: .3s;
             border: 2px solid #FE931D;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .main-layout {
+        .btn-dark {
+            padding: 8px 12px;
+            gap: 5px;
+            border: 1.5px solid #FE931D;
+            font-size: 14px;
+
+            svg {
+                font-size: 20px;
+            }
+
+            &:hover {
+                background: #FE931D;
+                color: white;
+            }
         }
     }
 }

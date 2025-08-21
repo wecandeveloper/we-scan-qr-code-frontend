@@ -1,6 +1,7 @@
 const initialState = {
     data: [],
-    serverErrors: []
+    serverErrors: [],
+    loading: false
 }
 
 export default function categoryReducers(state = initialState, action){

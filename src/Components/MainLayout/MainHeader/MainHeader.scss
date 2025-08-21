@@ -17,7 +17,6 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        gap: 200px;
         align-items: center;
         width: 100%;
         height: 80px;
@@ -40,6 +39,44 @@
             gap: 20px;
             align-items: center;
             justify-content: center;
+
+            .call-icon {
+                display: none;
+            }
+        }
+    }
+}
+
+@media (max-width: 550px) {
+    .nav {
+        .navbar {
+            padding: 10px 30px;
+
+            .logo-div {
+                width: 150px;
+            }
+        }
+    }
+}
+
+@media (max-width: 450px) {
+    .nav {
+        .navbar {
+            padding: 10px 30px;
+
+            .btn-dark {
+                span {
+                    display: none;
+                }
+
+                svg {
+                    font-size: 25px;
+                }
+
+                .call-icon {
+                    display: block;
+                }
+            }
         }
     }
 }

@@ -1,48 +1,70 @@
-// layouts/RestaurantLayout.js
-
-import "./RestaurantLayout.scss"
-
+import "./RestaurantLayout.scss";
 import RestaurantHeader from "../../RestaurantLayout/RestaurantHeader/RestaurantHeader";
 import RestaurantFooter from "../../RestaurantLayout/RestaurantFooter/RestaurantFooter";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { startGetOneRestaurant } from "../../../Actions/restaurantActions";
+import MainHeader from "../../MainLayout/MainHeader/MainHeader";
+import MainFooter from "../../MainLayout/MainFooter/MainFooter";
+import notFound from "../../../Assets/Common/not-found.svg";
+import loading from "../../../Assets/Common/Loading.svg"
 
 export default function RestaurantLayout({ children }) {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { restaurantSlug } = useParams();
-    // console.log(restaurantSlug);
 
-    const restaurant = useSelector((state) => {
-        return state.restaurants.selected;
-    });
+    const { selected: restaurant, loading: restaurantLoading } = useSelector(
+        (state) => state.restaurants
+    );
 
-    console.log(restaurant)
-
+    // Fetch restaurant details
     useEffect(() => {
-        if(restaurantSlug) {
-            dispatch(startGetOneRestaurant(restaurantSlug));
+        if (restaurantSlug) {
+            if(!restaurant) {
+                dispatch(startGetOneRestaurant(restaurantSlug));
+            }
         }
     }, [restaurantSlug, dispatch]);
 
-    // if (!restaurant) {
-    //     navigate("/", {
-    //         state: { invalidRestaurant: true },
-    //         replace: true,
-    //     });
-    //     return null; // Stop rendering here
-    // }
+    // Show loader while fetching
+    if (restaurantLoading || !restaurant) {
+        return (
+            <div className="restaurant-loader-notfound-div">
+                
+                {restaurantLoading ? (
+                    <div className="restaurant-loading">
+                        <img className="loading-img" src={loading} alt="Restaurant Not Found" />
+                        <h2>Restaurant Loading</h2>
+                        <p>Please Wait</p>
+                    </div>
+                ) : !restaurant && (
+                    <div className="invalid-restaurant">
+                        <MainHeader/>
+                        <img className="notFound-img" src={notFound} alt="Restaurant Not Found" />
+                        <h2>Restaurant Not Found</h2>
+                        <p>
+                            The QR code or restaurant link you’re trying to access is invalid or no longer active.
+                            <br />
+                            Please check with the restaurant staff or try scanning the correct QR code.
+                        </p>
+                        <div className="btn-dark-2" onClick={() => navigate("/")}>
+                            Go to Home
+                        </div>
+                        <MainFooter/>
+                    </div>
+                )}
+                
+            </div>
+        );
+    } 
 
-    // console.log(restaurant)
     return (
         <div className="restaurant-layout">
-            <div>
-                <RestaurantHeader restaurant={restaurant} />
-                <main className="childrens">{children}</main>
-                <RestaurantFooter restaurant={restaurant} />
-            </div>
+            <RestaurantHeader restaurant={restaurant} />
+            <main className="childrens">{children}</main>
+            <RestaurantFooter restaurant={restaurant} />
         </div>
     );
 }

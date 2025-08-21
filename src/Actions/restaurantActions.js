@@ -50,11 +50,13 @@ const getMyRestaurant = (restaurant)=>{
 export const startGetOneRestaurant = (restaurantSlug) => {
     return async(dispatch)=>{
         try{
+            dispatch({ type: "GET_RESTAURANT_REQUEST" });
             const response = await axios.get(`${localhost}/api/restaurant/show/${restaurantSlug}`)
             dispatch(getOneRestaurant(response.data.data))
             // console.log(response.data.data)
         }catch(err){
             // alert(err)
+            dispatch({ type: "GET_RESTAURANT_FAIL", payload: err.response?.data || [] });
             console.log(err)
         }
     }

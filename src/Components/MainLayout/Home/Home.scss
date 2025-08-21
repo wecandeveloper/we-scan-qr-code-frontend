@@ -1,5 +1,4 @@
 .home {
-
     .invalid-restaurant {
         background: #ffeaea;
         padding: 20px;
@@ -8,6 +7,7 @@
         text-align: center;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         animation: fadeIn 0.3s ease-in-out;
+        text-align: center;
 
         .notFound-img {
             width: 300px;
@@ -26,6 +26,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        text-align: center;
         padding: 20px;
         height: 100vh;
 
@@ -48,4 +49,20 @@
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 550px) {
+    .home {
+        .invalid-restaurant {
+            .notFound-img {
+                width: 200px;
+            }
+        }
+
+        .home-page {
+            .welcome-img {
+                width: 200px;
+            }
+        }
+    }
 }

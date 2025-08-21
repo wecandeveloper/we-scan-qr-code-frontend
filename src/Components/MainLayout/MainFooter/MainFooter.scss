@@ -5,6 +5,7 @@
     width: 100%;
     margin-top: 50px;
     bottom: 0;
+    box-shadow: 0px -1px 20px rgba(0, 0, 0, 0.1);
 
     .footer-section {
         display: flex;
@@ -12,6 +13,7 @@
         gap: 50px;
         align-items: center;
         justify-content: space-between;
+        text-align: center;
         width: 100%;
 
         .social-links {
@@ -48,6 +50,18 @@
                 color: #fff5e4;
                 transition: .5;
             }
+        }
+    }
+}
+
+@media (max-width: 1100px) {
+    .footer {
+        padding: 15px 20px;
+
+        .footer-section {
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
     }
 }

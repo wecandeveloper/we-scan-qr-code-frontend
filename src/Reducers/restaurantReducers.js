@@ -1,16 +1,23 @@
 const initialState = {
     data: [],
     selected: null,
-    serverErrors: []
+    serverErrors: [],
+    loading: false
 }
 
 export default function restaurantReducers(state = initialState, action){
     switch (action.type) {
+        case 'GET_RESTAURANT_REQUEST': {
+            return { ...state, loading: true, selected: null };
+        }
         case 'GET_ALL_RESTAURANT': {
             return {...state, data: action.payload }
         }
+        case 'GET_RESTAURANT_FAIL': {
+            return { ...state, selected: null, loading: false, serverErrors: action.payload || [] };
+        }
         case 'GET_ONE_RESTAURANT': {
-            return {...state, selected: action.payload }
+            return { ...state, selected: action.payload, loading: false }
         }
         case 'GET_MY_RESTAURANT': {
             return {...state, selected: action.payload }

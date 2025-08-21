@@ -10,6 +10,7 @@ import AdminLayout from "../Components/Layouts/AdminLayout/AdminLayout.jsx"
 import Home from "../Components/MainLayout/Home/Home.jsx"
 import LoginRegister from "../Components/LoginRegister/LoginRegister.jsx"
 import OfferPage from "../Pages/OfferPage.jsx"
+import PageNotFound from "../Components/MainLayout/PageNotFound/PageNotFound.jsx"
 
 // const routes = [
 //   {
@@ -75,6 +76,15 @@ const routes = [
     element: (
       <MainLayout>
         <Home />
+      </MainLayout>
+    ),
+    isProtected: false,
+  },
+  {
+    path: "*",
+    element: (
+      <MainLayout>
+        <PageNotFound/>
       </MainLayout>
     ),
     isProtected: false,

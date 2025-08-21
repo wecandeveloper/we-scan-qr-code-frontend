@@ -191,6 +191,24 @@
             color: #eb3424;
         }
     }
+
+    .loading-div, .no-products-div {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+
+        svg {
+            font-size: 50px;
+            color: #eb3424;
+        }
+    }
 }
 
 .filtered-products-section.margin-bottom {
