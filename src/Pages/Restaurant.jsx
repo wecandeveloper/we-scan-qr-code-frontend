@@ -3,12 +3,14 @@ import RestaurantHero from "../Components/RestaurantLayout/RestaurantHomePage/Re
 import FilteredProducts from "../Components/RestaurantLayout/RestaurantHomePage/FilteredProducts/FilteredProducts";
 import PromoSlider from "../Components/RestaurantLayout/RestaurantHomePage/PromoSlider/PromoSlider";
 import CategorySection from "../Components/RestaurantLayout/RestaurantHomePage/CategorySection/CategorySection";
+import Products from "../Components/RestaurantLayout/RestaurantCategoryPage/Products/Products";
 
 export default function Restaurant() {
     return (
        <Fragment>
             <RestaurantHero/>
-            <CategorySection/>
+            {/* <CategorySection/> */}
+            <Products/>
             <FilteredProducts title="Featured Items"/>
             <PromoSlider/>
             <FilteredProducts title="Offer Items"/>

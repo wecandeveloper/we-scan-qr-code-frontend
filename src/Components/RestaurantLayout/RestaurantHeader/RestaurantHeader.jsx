@@ -10,7 +10,7 @@ import "./RestaurantHeader.scss"
 import { IoIosClose, IoIosSearch } from "react-icons/io";
 import { BiSolidCart } from "react-icons/bi";
 import { MdLocalOffer } from "react-icons/md";
-import { RiMenu2Line } from "react-icons/ri";
+import { RiLayoutGridFill, RiMenu2Line } from "react-icons/ri";
 import { VscChromeClose } from "react-icons/vsc";
 import { TiHome } from "react-icons/ti";
 import { BiSolidShoppingBagAlt } from "react-icons/bi";
@@ -20,20 +20,8 @@ import aedBlack from "../../../Assets/Common/aed-symbol-black.png"
 import Cart from "../CartPage/Cart";
 import LoginRegister from "../../LoginRegister/LoginRegister";
 import Order from "../Order/Order";
-import { IoLogoWhatsapp } from "react-icons/io5";
-
-
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 550);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 550);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  return isMobile;
-};
+import { IoGrid, IoLogoWhatsapp } from "react-icons/io5";
+import { FaBell } from "react-icons/fa";
 
 export default function RestaurantHeader() {
     const navigate = useNavigate();
@@ -55,6 +43,7 @@ export default function RestaurantHeader() {
     const [ isCartSectionOpen, setIsCartSectionOpen ] = useState(false)
     const [ isOrderSectionOpen, setIsOrderSectionOpen ] = useState(false)
     const [ showModal, setShowModal ] = useState(false);
+    const [ clickBell, setClickBell ] = useState(false)
 
     const toggleMenu = () => {
         setMobileMenu(!mobileMenu)
@@ -65,6 +54,15 @@ export default function RestaurantHeader() {
         // }
     }
 
+    const handleToggleBell = () => {
+        setClickBell(true);
+
+        // Remove class after animation completes
+        setTimeout(() => {
+            setClickBell(false);
+        }, 500); // match CSS animation duration
+    };
+     
     useEffect(() => {
         const guestCartData = JSON.parse(localStorage.getItem("guestCart")) || [];
         setGlobalGuestCart(guestCartData);
@@ -152,7 +150,7 @@ export default function RestaurantHeader() {
                         </a>
                         <a href={`/restaurant/${restaurant?.slug}/collections`} className="nav-link">
                             <div className={`mobile-menu-item ${(location.pathname === `/restaurant/${restaurant?.slug}/collections` || location.pathname === `/restaurant/${restaurant?.slug}/collections/${categoryName}`) ? "active" : "" }`}>
-                                <div className="icon"><RiMenu2Line /></div>
+                                <div className="icon"><RiLayoutGridFill /></div>
                                 <h2 className="menu">Menu</h2>
                             </div>
                         </a>
@@ -188,6 +186,13 @@ export default function RestaurantHeader() {
                         </a> */}
                     </div>
                 </div>
+                <div
+                    onClick={handleToggleBell}
+                    className={`waiter-bell ${clickBell ? "tap" : ""}`}
+                >
+                    <FaBell />
+                </div>
+
             </div>
             <AnimatePresence mode="wait">
                 {isCartSectionOpen && (

@@ -14,6 +14,7 @@ import { startGetAllProducts } from "../../../../Actions/productActions";
 import { PiSmileySadDuotone } from "react-icons/pi";
 import { FiShoppingCart } from "react-icons/fi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { CiGrid2H, CiGrid2V, CiGrid41 } from "react-icons/ci";
 
 import allItems from "../../../../Assets/Common/all-items.webp"
 import { Box, CircularProgress } from "@mui/material";
@@ -192,7 +193,7 @@ export default function Products() {
 
     return (
         <section>
-            <div className="products-section common-padding">
+            <div className={`products-section common-padding ${location.pathname === `/restaurant/${restaurant?.slug}` ? "no-margin-top-bottom" : ""}`}>
                 <div className="head-div">
                     <h1 className="main-heading">Our Menu</h1>
                     {/* <p>Visit our shop to see amazing products</p> */}
@@ -211,7 +212,7 @@ export default function Products() {
                     </div>
                 ) : (
                     <div className="category-grid">
-                        <div className="category-card"
+                        {/* <div className="category-card"
                             onClick={() => {
                             handleCategoryChange("")
                         }}>
@@ -219,7 +220,7 @@ export default function Products() {
                                 <img src={allItems} alt="" className="category-image"/>
                             </div>
                             <h1 className="category-name">All Items</h1>
-                        </div>
+                        </div> */}
                         {categories.map((category) => {
                             return (
                                 <div key={category._id} className="category-card"
@@ -237,8 +238,22 @@ export default function Products() {
                 )}
 
                 {selectedCategory ? 
-                    <div className="head-div"><h1 className="main-heading">{selectedCategory.name}</h1></div> 
-                :   <div className="head-div"><h1 className="main-heading">All Items</h1></div>
+                    <div className="head-div menu">
+                        <h1 className="main-heading">{selectedCategory.name}</h1>
+                        <div className="product_views">
+                            <CiGrid41 className={`style1 ${gridDisplay === "style1" ? "active" : ""}`} onClick={() => setGridDisplay("style1")}/>
+                            <CiGrid2H className={`style2 ${gridDisplay === "style2" ? "" : ""}`} onClick={() => setGridDisplay("style2")}/>
+                            {/* <CiGrid2V className={`style2 ${gridDisplay === "style3" ? "active" : ""}`} onClick={() => setGridDisplay("style3")}/> */}
+                        </div>
+                    </div> 
+                :   <div className="head-div menu">
+                        <h1 className="main-heading">All Items</h1>
+                        <div className="product_views">
+                            <CiGrid41 className={`style1 ${gridDisplay === "style1" ? "active" : ""}`} onClick={() => setGridDisplay("style1")}/>
+                            <CiGrid2H className={`style2 ${gridDisplay === "style2" ? "" : ""}`} onClick={() => setGridDisplay("style2")}/>
+                            {/* <CiGrid2V className={`style2 ${gridDisplay === "style3" ? "active" : ""}`} onClick={() => setGridDisplay("style3")}/> */}
+                        </div>
+                    </div>
                 }
                 <div className="product-grid-div">
                     {/* <div className="header-controls">
@@ -294,7 +309,7 @@ export default function Products() {
                                 <p>No Record Found,  <span className="reset-btn" onClick={handleReset}>Show All</span></p>
                             </div>
                         ) : (
-                            <div className="product-grid">
+                            <div className={`${gridDisplay === "style1" ? "product-grid" : gridDisplay === "style2" && "product-grid-style-2"}`}>
                                 {getProcessedProducts()?.map((product) => {
                                     return (
                                         <div 
@@ -324,6 +339,11 @@ export default function Products() {
                                             <div className="product-details">
                                                 <h1 className="product-name">{product.name}</h1>
                                                 <p className="product-category">{product.categoryId.name}</p>
+                                                {gridDisplay === "style2" && <p className="product-description">
+                                                    {product.description.length > 50
+                                                        ? product.description.substring(0, 50) + "..."
+                                                        : product.description}
+                                                </p>}
                                                 <div className="price-div">
                                                     {product.offerPrice != 0 && 
                                                         <span className="offer-price">

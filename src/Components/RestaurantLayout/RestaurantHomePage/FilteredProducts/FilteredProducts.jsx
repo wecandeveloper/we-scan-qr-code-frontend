@@ -170,6 +170,9 @@ export default function FilteredProducts({title}) {
                                         >
                                         <div className="img-div">
                                             <img className="product-image" src={product.images[1]?.url || product.images[0]?.url} alt={product.name} />
+                                            {/* <FaHeart className="wishlist-btn"/> */}
+                                        </div>
+                                        <div className="product-details">
                                             <motion.div 
                                                 whileTap={{ scale: 0.96 }}
                                                 whileHover={{ scale: 1.01 }}
@@ -181,11 +184,13 @@ export default function FilteredProducts({title}) {
                                                 className="cart-div">
                                                 <FiShoppingCart className="cart-icon"/>
                                             </motion.div>
-                                            {/* <FaHeart className="wishlist-btn"/> */}
-                                        </div>
-                                        <div className="product-details">
                                             <h1 className="product-name">{product.name}</h1>
                                             <p className="product-category">{product.categoryId.name}</p>
+                                            <p className="product-description">
+                                                {product.description.length > 50
+                                                    ? product.description.substring(0, 50) + "..."
+                                                    : product.description}
+                                            </p>
                                             <div className="price-div">
                                                 {product.offerPrice != 0 && 
                                                     <span className="offer-price">

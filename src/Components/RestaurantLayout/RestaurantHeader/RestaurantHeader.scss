@@ -46,6 +46,36 @@
             display: none;
         }
 
+        .waiter-bell {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            font-size: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            background: white;
+            width: 50px;
+            height: 50px;
+            padding: 10px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* 🔹 Hover Animation → Continuous Ring */
+        .waiter-bell:hover {
+            animation: bell-ring-hover 0.6s ease-in-out infinite;
+        }
+
+        /* 🔹 Click Animation → Single Ring + Scale */
+        .waiter-bell.tap {
+            animation: bell-ring-click 0.6s ease-in-out;
+        }
+
         .logo-div {
             width: 250px;
             // height: 70px;
@@ -203,6 +233,27 @@
     }
 }
 
+@keyframes bell-ring-hover {
+    0% { transform: rotate(0deg); }
+    15% { transform: rotate(12deg); }
+    30% { transform: rotate(-12deg); }
+    45% { transform: rotate(8deg); }
+    60% { transform: rotate(-8deg); }
+    75% { transform: rotate(4deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Single smooth ring animation for click */
+@keyframes bell-ring-click {
+    0% { transform: rotate(0deg) scale(1); }
+    15% { transform: rotate(15deg) scale(1.01); }
+    30% { transform: rotate(-15deg) scale(1.02); }
+    45% { transform: rotate(10deg) scale(1.03); }
+    60% { transform: rotate(-10deg) scale(1.05); }
+    75% { transform: rotate(5deg) scale(1.02); }
+    100% { transform: rotate(0deg) scale(1); }
+}
+
 @media (max-width: 1200px) {
     .restaurant-nav {
         .navbar {
@@ -280,8 +331,13 @@
             margin: auto;
             padding: 10px 20px;
 
+            .waiter-bell {
+                bottom: 80px;
+                font-size: 27px;
+            }
+
             .logo-div {
-                width: 170px;
+                width: 160px;
                 z-index: 1001 !important;
 
                 img {
@@ -329,7 +385,7 @@
                 right: 0;
                 width: 100%;
                 background: white;
-                padding: 12px;
+                padding: 10px;
                 display: flex;
                 flex-direction: row;
                 justify-content: space-around;
@@ -354,13 +410,11 @@
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    padding: 12px;
+                    // padding: 10px;
                     top: -20px;
                     background: var(--primary-color);
-                    height: fit-content;
-                    width: fit-content;
-
-
+                    height: 65px;
+                    width: 65px;
                     border-radius: 50%;
                     
                     .mobile-menu-item {
@@ -380,11 +434,11 @@
                             gap: 2px;
 
                             .aed-symbol {
-                                width: 12px;
+                                width: 10px;
                             }
 
                             .aed-amount {
-                                font-size: 10px;
+                                font-size: 9px;
                             }
                         }
 
@@ -405,7 +459,7 @@
                     transition: .3s;
 
                     .icon {
-                        font-size: 22px;
+                        font-size: 20px;
                     }
 
                     .menu {
