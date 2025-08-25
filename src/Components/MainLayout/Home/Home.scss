@@ -9,7 +9,7 @@
         height: 100vh;
 
         .welcome-img {
-            width: 800px;
+            width: 300px;
             height: auto;
             margin-bottom: 20px;
         }
@@ -37,6 +37,10 @@
             h1 {
                 font-size: 25px;
                 margin-bottom: 10px;
+            }
+
+            p {
+                font-size: 14px;
             }
 
             .welcome-img {
