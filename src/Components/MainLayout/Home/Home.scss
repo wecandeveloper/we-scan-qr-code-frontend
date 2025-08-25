@@ -1,26 +1,4 @@
 .home {
-    .invalid-restaurant {
-        background: #ffeaea;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        text-align: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        animation: fadeIn 0.3s ease-in-out;
-        text-align: center;
-
-        .notFound-img {
-            width: 300px;
-            height: auto;
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            color: #d9534f;
-            margin-bottom: 10px;
-        }
-    }
-
     .home-page {
         display: flex;
         flex-direction: column;
@@ -31,7 +9,7 @@
         height: 100vh;
 
         .welcome-img {
-            width: 300px;
+            width: 800px;
             height: auto;
             margin-bottom: 20px;
         }
@@ -53,13 +31,14 @@
 
 @media (max-width: 550px) {
     .home {
-        .invalid-restaurant {
-            .notFound-img {
-                width: 200px;
-            }
-        }
-
         .home-page {
+            margin-top: -50px;
+
+            h1 {
+                font-size: 25px;
+                margin-bottom: 10px;
+            }
+
             .welcome-img {
                 width: 200px;
             }

@@ -44,7 +44,6 @@ export default function RestaurantLayout({ children }) {
     if (restaurantLoading || !restaurant) {
         return (
             <div className="restaurant-loader-notfound-div">
-                
                 {restaurantLoading ? (
                     <div className="restaurant-loading">
                         <img className="loading-img" src={loading} alt="Restaurant Not Found" />

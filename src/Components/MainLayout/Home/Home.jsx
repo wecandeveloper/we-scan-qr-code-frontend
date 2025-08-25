@@ -2,6 +2,7 @@ import "./Home.scss";
 import welcome from "../../../Assets/Common/Welcome.svg";
 
 export default function Home() {
+
     return (
         <div className="home">
             {/* {invalidRestaurant ? (
@@ -21,8 +22,8 @@ export default function Home() {
                 <div className="home-page">
                     <img className="welcome-img" src={welcome} alt="Welcome" />
                     <h1>Welcome to We Scan</h1>
-                    <h4>We Scan – Smart QR Menu & WhatsApp Ordering with Integrated Restaurant POS</h4>
-                    <p>We Scan transforms the dining experience with a seamless QR-based menu system, enabling customers to browse, order, and pay effortlessly. Restaurants receive orders directly via WhatsApp and manage them efficiently through an integrated POS dashboard, combining convenience, speed, and innovation in one powerful platform.</p>
+                    <p>Your one-stop solution for QR code scanning and generation.</p>
+                    <p>Explore our features and services to enhance your QR code experience.</p>
                     {/* <p>Contact us for more information or support.</p>
                     <p>Follow us on social media for updates and news.</p> */}
                     <p>Thank you for choosing We Scan!</p>

@@ -82,7 +82,7 @@
         }
 
         h2 {
-            color: #d9534f;
+            color: #333;
             margin-bottom: 10px;
         }
     }
@@ -204,6 +204,20 @@
             &:hover {
                 background: var(--button-color);
                 color: white;
+            }
+        }
+    }
+
+    .restaurant-loader-notfound-div {
+        .invalid-restaurant {
+            .notFound-img {
+                width: 200px;
+                height: auto;
+                margin-bottom: 20px;
+            }
+
+            p {
+                font-size: 14px;
             }
         }
     }

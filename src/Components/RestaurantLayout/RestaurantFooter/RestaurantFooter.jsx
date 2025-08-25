@@ -9,7 +9,7 @@ export default function RestaurantFooter({restaurant}) {
         <footer className="restaurant-footer">
             <div className="footer-section">
                 <div className="copy-right-div">
-                    <p>Copyright © 2025 We Scan, All rights reserved</p>
+                    <p>Copyright © 2025 {restaurant?.name}, All rights reserved</p>
                 </div>
                 <div className="social-links">
                     <RiInstagramFill />
