@@ -43,15 +43,15 @@ export default function RestaurantNotification() {
         socket.current.on("restaurant-order-notification", (data) => {
             if (data.restaurantId && restaurant?._id && data.restaurantId !== restaurant._id) return;
 
-            // toast.info(data.message, { autoClose: 5000 });
+            toast.info(data.message, { autoClose: 5000 });
 
-            // // Play order notification sound
-            // if (orderAudioRef.current) {
-            //     orderAudioRef.current.currentTime = 0;
-            //     orderAudioRef.current.play().catch(() => {
-            //         console.warn("User interaction required before playing audio");
-            //     });
-            // }
+            // Play order notification sound
+            if (orderAudioRef.current) {
+                orderAudioRef.current.currentTime = 0;
+                orderAudioRef.current.play().catch(() => {
+                    console.warn("User interaction required before playing audio");
+                });
+            }
 
             setNotifications((prev) => [data, ...prev]);
         });
@@ -66,14 +66,14 @@ export default function RestaurantNotification() {
         socket.current.on("call-waiter", (data) => {
             if (data.restaurantId !== restaurant._id) return;
 
-            // toast.info(`🚨 Table ${data.tableNo} is requesting a waiter!`, { autoClose: 5000 });
+            toast.info(`🚨 Table ${data.tableNo} is requesting a waiter!`, { autoClose: 5000 });
 
-            // if (waiterAudioRef.current) {
-            //     waiterAudioRef.current.currentTime = 0;
-            //     waiterAudioRef.current.play().catch(() => {
-            //         console.warn("User interaction required before playing audio");
-            //     });
-            // }
+            if (waiterAudioRef.current) {
+                waiterAudioRef.current.currentTime = 0;
+                waiterAudioRef.current.play().catch(() => {
+                    console.warn("User interaction required before playing audio");
+                });
+            }
 
             setWaiterCalls((prev) => [data, ...prev]);
         });

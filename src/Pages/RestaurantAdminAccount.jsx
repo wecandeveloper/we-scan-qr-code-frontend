@@ -11,7 +11,7 @@ export default function RestaurantAdminAccount() {
             {user.role === "restaurantAdmin" && 
                 <RestauarantAdminDashboardHome/>
             }
-            <RestaurantNotification2/>
+            {/* <RestaurantNotification2/> */}
         </Fragment>
     )
 }
