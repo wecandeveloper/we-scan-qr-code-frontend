@@ -11,16 +11,18 @@ export const useAuth = () => {
 }
 
 export const AuthProvider = ({ children }) => {
+    const { restaurantSlug } = useParams();
     const [ user, setUser ] = useState(null)
     const [ restaurant, setRestaurant ] = useState(null)
     const [ restaurantId, setRestaurantId ] = useState(null)
-    const { restaurantSlug } = useParams();
+    const [ globalTableId, setGlobalTableId ] = useState("")
     const [ globalGuestId, setGlobalGuestId ] = useState("")
     const [ globalGuestCart, setGlobalGuestCart ] = useState(null)
     const [ selectedDashboardMenu, setSelectedDashboardMenu ] = useState("")
     const [ selectedCategory, setSelectedCategory ] = useState("")
     const [ openDashboardModal, setOpenDashboardModal ] = useState(false)
     const [ searchProduct, setSearchProduct ] = useState("")
+    const [ openSelectTableNumberModal, setOpenSelectTableNumberModal ] = useState(false);
     const openDashboardModalFunc = () => setOpenDashboardModal(true);
     const closeDashboardModalFunc = () => setOpenDashboardModal(false);
 
@@ -53,7 +55,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    console.log(selectedCategory)
+    // console.log(selectedCategory)
 
     const handleDashboardMenuChange = (menu) => {
         setSelectedDashboardMenu(menu);
@@ -74,6 +76,8 @@ export const AuthProvider = ({ children }) => {
                 restaurantId,
                 setRestaurantId,
                 restaurantSlug,
+                globalTableId,
+                setGlobalTableId,
                 handleLogin, 
                 handleLogout,
                 selectedCategory,
@@ -88,7 +92,9 @@ export const AuthProvider = ({ children }) => {
                 openDashboardModalFunc,
                 closeDashboardModalFunc,
                 searchProduct,
-                setSearchProduct
+                setSearchProduct,
+                openSelectTableNumberModal, 
+                setOpenSelectTableNumberModal
             }}>
             { children }
         </AuthContext.Provider>

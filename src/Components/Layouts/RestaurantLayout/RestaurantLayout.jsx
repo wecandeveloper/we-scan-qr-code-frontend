@@ -9,6 +9,8 @@ import MainHeader from "../../MainLayout/MainHeader/MainHeader";
 import MainFooter from "../../MainLayout/MainFooter/MainFooter";
 import notFound from "../../../Assets/Common/not-found.svg";
 import loading from "../../../Assets/Common/Loading.svg"
+import { useAuth } from "../../../Context/AuthContext";
+import TableNoPopup from "../../RestaurantLayout/TableNoPopup/TableNoPopup";
 
 export default function RestaurantLayout({ children }) {
     const navigate = useNavigate();
@@ -19,6 +21,23 @@ export default function RestaurantLayout({ children }) {
         (state) => state.restaurants
     );
 
+    const { openSelectTableNumberModal, setOpenSelectTableNumberModal } = useAuth()
+
+    // Show TableNoPopup after 5 seconds
+    useEffect(() => {
+        // Check if table is already selected
+        const savedTableId = localStorage.getItem("selectedTableId");
+
+        if (!savedTableId) {
+        // If no table is selected, show popup after 5 seconds
+        const timer = setTimeout(() => {
+            setOpenSelectTableNumberModal(true);
+        }, 5000);
+
+        return () => clearTimeout(timer); // Cleanup on unmount
+        }
+    }, [setOpenSelectTableNumberModal]);
+
     // Fetch restaurant details
     useEffect(() => {
         if (restaurantSlug) {
@@ -26,7 +45,7 @@ export default function RestaurantLayout({ children }) {
                 dispatch(startGetOneRestaurant(restaurantSlug));
             }
         }
-    }, [restaurantSlug, dispatch]);
+    }, [restaurantSlug, restaurant, dispatch]);
 
     useEffect(() => {
     if (restaurant?.theme) {
@@ -75,6 +94,9 @@ export default function RestaurantLayout({ children }) {
         <div className="restaurant-layout">
             <RestaurantHeader restaurant={restaurant} />
             <main className="childrens">{children}</main>
+            {openSelectTableNumberModal && (
+                <TableNoPopup setOpenSelectTableNumberModal={setOpenSelectTableNumberModal} />
+            )}
             <RestaurantFooter restaurant={restaurant} />
         </div>
     );

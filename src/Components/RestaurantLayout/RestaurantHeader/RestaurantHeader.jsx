@@ -22,6 +22,8 @@ import LoginRegister from "../../LoginRegister/LoginRegister";
 import Order from "../Order/Order";
 import { IoGrid, IoLogoWhatsapp } from "react-icons/io5";
 import { FaBell } from "react-icons/fa";
+import axios from "axios";
+import { localhost } from "../../../Api/apis";
 
 export default function RestaurantHeader() {
     const navigate = useNavigate();
@@ -35,7 +37,8 @@ export default function RestaurantHeader() {
         searchProduct,
         setSearchProduct,
         globalGuestCart,
-        setGlobalGuestCart
+        setGlobalGuestCart,
+        setOpenSelectTableNumberModal,
     } = useAuth()
 
     const [ mobileMenu, setMobileMenu ] = useState(false)
@@ -44,6 +47,7 @@ export default function RestaurantHeader() {
     const [ isOrderSectionOpen, setIsOrderSectionOpen ] = useState(false)
     const [ showModal, setShowModal ] = useState(false);
     const [ clickBell, setClickBell ] = useState(false)
+    const [ tableId, setTableId ] = useState("")
 
     const toggleMenu = () => {
         setMobileMenu(!mobileMenu)
@@ -54,13 +58,26 @@ export default function RestaurantHeader() {
         // }
     }
 
-    const handleToggleBell = () => {
-        setClickBell(true);
-
-        // Remove class after animation completes
-        setTimeout(() => {
-            setClickBell(false);
-        }, 500); // match CSS animation duration
+    const handleToggleBell = async () => {
+        const savedTableId = localStorage.getItem("selectedTableId");
+        setTableId(savedTableId)
+        if (!savedTableId) {
+            toast.error("Please Select the table Number");
+            setOpenSelectTableNumberModal(true);
+        } else {
+            setClickBell(true);
+            setTimeout(() => setClickBell(false), 500);
+            try {
+                await axios.post(`${localhost}/api/table/call-waiter`, {
+                    restaurantId: restaurant._id,
+                    tableId: savedTableId,
+                });
+                toast.success("Waiter called successfully!");
+            } catch (error) {
+                console.error("Error calling waiter:", error);
+                toast.error("Failed to call waiter. Try again!");
+            }
+        }
     };
      
     useEffect(() => {

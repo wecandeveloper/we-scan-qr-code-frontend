@@ -364,7 +364,7 @@ export default function CategoryDashboard({restaurant}) {
                                 />
                             </div>
                             <div className="table-actions">
-                                <div className="product_filters">
+                                <div className="category_filters">
                                     <div className="sort-show">
                                         <label htmlFor="sort-select">Sort:</label>
                                         <div className="sort-select-div">
@@ -378,75 +378,79 @@ export default function CategoryDashboard({restaurant}) {
                                         </div>
                                     </div>
                                 </div>
-                                <button className="export-btn">
-                                    {/* 📁  */}
-                                    Export
-                                </button>
-                                <button className="add-btn" onClick={() => {
-                                    setIsViewEditSectionOpen(true)
-                                    setIsEditCategory(true)
-                                    }}>Add Category</button>
+                                <div className="btn-div">
+                                    <button className="export-btn">
+                                        {/* 📁  */}
+                                        Export
+                                    </button>
+                                    <button className="add-btn" onClick={() => {
+                                        setIsViewEditSectionOpen(true)
+                                        setIsEditCategory(true)
+                                        }}>Add Category</button>
+                                </div>
                             </div>
                         </div>
-                        <table className="category-table">
-                            <thead>
-                                <tr>
-                                    <th>SI No</th>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Image</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            {getProcessedCategories().length > 0 ? (
-                                <tbody>
-                                    {getProcessedCategories().map((category, index) => (
-                                        <tr key={category._id}>
-                                            <td>{index + 1}</td>
-                                            <td>{category.name}</td>
-                                            <td>{category.description || "—"}</td>
-                                            <td>
-                                                {category.image ? (
-                                                <img src={category.image} alt={category.name} className="category-img" />
-                                                ) : (
-                                                "No Image"
-                                                )}
-                                            </td>
-                                            <td>
-                                                <div className="action-div">
-                                                    <button className="view-btn" onClick={() => {
-                                                        setIsViewEditSectionOpen(true)
-                                                        setCategoryId(category._id)
-                                                        }}><MdRemoveRedEye /></button>
-                                                    <button className="edit-btn" onClick={() => {
-                                                        setIsViewEditSectionOpen(true)
-                                                        setIsEditCategory(true)
-                                                        setCategoryId(category._id)
-                                                        }}><MdEditSquare /></button>
-                                                    <button className="delete-btn" onClick={() => {
-                                                        setShowConfirmDeleteCategory(true)
-                                                        setCategoryId(category._id)
-                                                    }}>{(isLoading && categoryId === category._id) ? 
-                                                        <Box sx={{ display: 'flex', gap: 1 }}>
-                                                            <CircularProgress color="inherit" size={15}/>
-                                                        </Box> : <BiSolidTrash />}
-                                                    </button>
-                                                </div>
+                        <div className="category-table-container">
+                            <table className="category-table">
+                                <thead>
+                                    <tr>
+                                        <th>SI No</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Image</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                {getProcessedCategories().length > 0 ? (
+                                    <tbody>
+                                        {getProcessedCategories().map((category, index) => (
+                                            <tr key={category._id}>
+                                                <td>{index + 1}</td>
+                                                <td>{category.name}</td>
+                                                <td>{category.description || "—"}</td>
+                                                <td>
+                                                    {category.image ? (
+                                                    <img src={category.image} alt={category.name} className="category-img" />
+                                                    ) : (
+                                                    "No Image"
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    <div className="action-div">
+                                                        <button className="view-btn" onClick={() => {
+                                                            setIsViewEditSectionOpen(true)
+                                                            setCategoryId(category._id)
+                                                            }}><MdRemoveRedEye /></button>
+                                                        <button className="edit-btn" onClick={() => {
+                                                            setIsViewEditSectionOpen(true)
+                                                            setIsEditCategory(true)
+                                                            setCategoryId(category._id)
+                                                            }}><MdEditSquare /></button>
+                                                        <button className="delete-btn" onClick={() => {
+                                                            setShowConfirmDeleteCategory(true)
+                                                            setCategoryId(category._id)
+                                                        }}>{(isLoading && categoryId === category._id) ? 
+                                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                                <CircularProgress color="inherit" size={15}/>
+                                                            </Box> : <BiSolidTrash />}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                ) : (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="5" style={{ textAlign: "center" }}>
+                                                <p className="no-order-text">No Product Categories Data Found</p>
                                             </td>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            ) : (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="5" style={{ textAlign: "center" }}>
-                                            <p className="no-order-text">No Product Categories Data Found</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            )}
-                            
-                        </table>
+                                    </tbody>
+                                )}
+                                
+                            </table>
+                        </div>
                         <div className="table-footer">
                             <div className="footer-pagination">
                                 <span

@@ -2,10 +2,10 @@ import "./PasswordDashboard.scss"
 
 import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { useState } from "react";
-import CustomAlert from "../../../../../Designs/CustomAlert";
+import CustomAlert from "../../../../Designs/CustomAlert";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { localhost } from "../../../../../Api/apis";
+import { localhost } from "../../../../Api/apis";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 export default function PasswordDashboard() {

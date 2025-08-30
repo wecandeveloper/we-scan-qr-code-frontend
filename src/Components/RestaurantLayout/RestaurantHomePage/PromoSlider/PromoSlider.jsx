@@ -11,17 +11,17 @@ const PromoSlider = () => {
     );
 
     return (
-        <section className={`promo-slider common-padding ${location.pathname === `/restaurant/${restaurant?.slug}/offer-items` ? "margin-top" : ""}`}>
-            {restaurant?.theme?.offerBannerImages.length !== 0 && 
-            <div className="img-div-container">
-                {restaurant?.theme?.offerBannerImages.map((slide, i) => (
-                    <div className="img-div" key={i}>
-                        <img src={slide.url} alt={`slide-${i}`} />
-                    </div>
-                ))}
-            </div>
-            }
-        </section>
+        restaurant?.theme?.offerBannerImages.length !== 0 && 
+            <section className={`promo-slider common-padding`}>
+                
+                <div className="img-div-container">
+                    {restaurant?.theme?.offerBannerImages.map((slide, i) => (
+                        <div className="img-div" key={i}>
+                            <img src={slide.url} alt={`slide-${i}`} />
+                        </div>
+                    ))}
+                </div>
+            </section>
     );
 };
 

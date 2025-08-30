@@ -30,10 +30,11 @@ export default function Products() {
         selectedCategory, 
         handleCategoryChange,
     } = useAuth()
-    const [sortBy, setSortBy] = useState("")
-    const [showNo, setShowNo] = useState(16)
-    const [currentPage, setCurrentPage] = useState(1);
-    const [gridDisplay, setGridDisplay] = useState("style1");
+    const [ sortBy, setSortBy ] = useState("")
+    const [ showNo, setShowNo ] = useState(16)
+    const [ currentPage, setCurrentPage ] = useState(1);
+    const [ gridDisplay, setGridDisplay ] = useState("style1");
+    const [ isBannerImage, setIsBannerImage ] = useState(false)
 
     // console.log("selectedCategory", selectedCategory)
 
@@ -48,13 +49,15 @@ export default function Products() {
     const restaurant = useSelector((state) => {
         return state.restaurants.selected;
     });
-    console.log("products", products)
 
     useEffect(() => {
         if (restaurant) {
             dispatch(startGetAllProducts(restaurant.slug));
+            setIsBannerImage(restaurant?.theme?.bannerImages.length > 0)
         }
     }, [restaurant, dispatch]);
+
+    console.log("isBannerImage", isBannerImage)
     
     // 1. Get categories when restaurant changes
     useEffect(() => {
@@ -193,7 +196,7 @@ export default function Products() {
 
     return (
         <section>
-            <div className={`products-section common-padding ${location.pathname === `/restaurant/${restaurant?.slug}` ? "no-margin-top-bottom" : ""}`}>
+            <div className={`products-section common-padding`}>
                 <div className="head-div">
                     <h1 className="main-heading">Our Menu</h1>
                     {/* <p>Visit our shop to see amazing products</p> */}

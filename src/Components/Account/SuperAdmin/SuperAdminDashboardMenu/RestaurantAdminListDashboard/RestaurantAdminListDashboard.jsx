@@ -16,54 +16,11 @@ import { BiSolidTrash } from "react-icons/bi"
 import CustomAlert from "../../../../../Designs/CustomAlert"
 import { toast } from "react-toastify"
 import { useAuth } from "../../../../../Context/AuthContext";
-import { startDeletePayment, startGetAllPayments } from "../../../../../Actions/paymentActions";
 import axios from "axios"
 import { localhost } from "../../../../../Api/apis"
 import { startDeleteCustomer, startGetAllCustomers, startToggleBlockUser } from "../../../../../Actions/userActions"
 
 import defaultPic from "../../../../../Assets/Common/account-icon.png"
-
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-});
-
-const UploadButton = styled(Button)(({ theme }) => ({
-    backgroundColor: "#470531",
-    border: "1.5px solid #470531",
-    color: '#fff',
-    fontFamily: "Montserrat",
-    width: '250px', // reduced width
-    padding: '6px 10px',
-    textTransform: 'none',
-    fontWeight: 500,
-    borderRadius: '8px',
-    '&:hover': {
-        backgroundColor: "white",
-        color: "#470531",
-        border: "1.5px solid #470531",
-    },
-}))
-
-function formatDateToDDMMYYYY(dateString) {
-    if (!dateString) return '';
-
-    const date = new Date(dateString);
-    if (isNaN(date)) return '';
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${day}-${month}-${year}`;
-}
 
 export default function RestaurantAdminListDashboard() {
     const dispatch = useDispatch()
@@ -344,46 +301,48 @@ export default function RestaurantAdminListDashboard() {
                             </button>
                         </div>
                     </div>
-                    <table className="customer-table">
-                        <thead>
-                            <tr>
-                                <th>SI No.</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone Number</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th>Verification</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {getProcessedProducts().map((customer, index) => (
-                                <tr key={customer._id}>
-                                    <td>{index + 1}</td>
-                                    <td>{`${customer.firstName} ${customer.lastName}`}</td>
-                                    <td>{customer?.email.address}</td>
-                                    <td>{customer?.phone.countryCode} {customer?.phone.number}</td>
-                                    <td>{customer.role}</td>
-                                    <td>{customer.isBlocked ? "Blocked" : "Active"}</td>
-                                    <td>{customer.isVerified ? "Verified" : "Not Verified"}</td>
-                                    
-                                    <td>
-                                        <div className="action-div">
-                                            <button className="view-btn" onClick={() => {
-                                                setIsViewSectionOpen(true)
-                                                setCustomerId(customer._id)
-                                                }}><MdRemoveRedEye /></button>
-                                            <button className="delete-btn" onClick={() => {
-                                                setShowConfirmDeleteCustomer(true)
-                                                setCustomerId(customer._id)
-                                            }}><BiSolidTrash /></button>
-                                        </div>
-                                    </td>
+                    <div className="restaurant-admin-table-container">
+                        <table className="restaurant-admin-table">
+                            <thead>
+                                <tr>
+                                    <th>SI No.</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone Number</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Verification</th>
+                                    <th>Action</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {getProcessedProducts().map((customer, index) => (
+                                    <tr key={customer._id}>
+                                        <td>{index + 1}</td>
+                                        <td>{`${customer.firstName} ${customer.lastName}`}</td>
+                                        <td>{customer?.email.address}</td>
+                                        <td>{customer?.phone.countryCode} {customer?.phone.number}</td>
+                                        <td>{customer.role}</td>
+                                        <td>{customer.isBlocked ? "Blocked" : "Active"}</td>
+                                        <td>{customer.isVerified ? "Verified" : "Not Verified"}</td>
+                                        
+                                        <td>
+                                            <div className="action-div">
+                                                <button className="view-btn" onClick={() => {
+                                                    setIsViewSectionOpen(true)
+                                                    setCustomerId(customer._id)
+                                                    }}><MdRemoveRedEye /></button>
+                                                <button className="delete-btn" onClick={() => {
+                                                    setShowConfirmDeleteCustomer(true)
+                                                    setCustomerId(customer._id)
+                                                }}><BiSolidTrash /></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="table-footer">
                         <div className="footer-pagination">
                             <span

@@ -1,28 +1,31 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../Context/AuthContext"
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import "./RestauarantAdminDashboardHome.scss"
 
 import { TbLogout, TbTruckDelivery } from "react-icons/tb";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
 import { MdSpaceDashboard } from "react-icons/md";
-import { HiBuildingStorefront } from "react-icons/hi2";
 import { LuCandy } from "react-icons/lu";
 import { BiSolidCookie, BiSolidOffer } from "react-icons/bi";
 import { GrMoney } from "react-icons/gr";
-import { useDispatch, useSelector } from "react-redux";
+
 import CategoryDashboard from "../RestauarantAdminDashboardMenu/CategoryDashboard/CategoryDashboard";
 import ProductDashboard from "../RestauarantAdminDashboardMenu/ProductDashboard/ProductDashboard";
-import CouponDashboard from "../RestauarantAdminDashboardMenu/CouponDashboard/CouponDashboard";
-import PasswordDashboard from "../RestauarantAdminDashboardMenu/PasswordDashboard/PasswordDashboard";
+// import CouponDashboard from "../RestauarantAdminDashboardMenu/CouponDashboard/CouponDashboard";
+
 import OrderDashboard from "../RestauarantAdminDashboardMenu/OrderDashboard/OrderDashboard";
 import RestaurantProfileDashboard from "../RestauarantAdminDashboardMenu/RestaurantProfileDashboard/RestaurantProfileDashboard";
-import AdminProfileDashboard from "../RestauarantAdminDashboardMenu/AdminProfileDashboard/AdminProfileDashboard";
+import ProfileDashboard from "../../CommonDashboard/ProfileDashboard/ProfileDashboard";
+
 import { startGetMyRestaurant } from "../../../../Actions/restaurantActions";
 import { startGetCategories } from "../../../../Actions/categoryActions";
 import { startGetAllProducts } from "../../../../Actions/productActions";
 import { startGetRestaurantOrders } from "../../../../Actions/orderActions";
+import PasswordDashboard from "../../CommonDashboard/PasswordDashboard/PasswordDashboard";
+import RestaurantNotification from "../RestauarantAdminDashboardMenu/RestaurantNotification/RestaurantNotification";
 
 export default function RestauarantAdminDashboardHome() {
     const navigate = useNavigate()
@@ -127,7 +130,7 @@ export default function RestauarantAdminDashboardHome() {
                     dashboardMenu: "admin-profile", 
                     name: "Admin Profile", 
                     link: "/admin-profile",
-                    component: <AdminProfileDashboard/>
+                    component: <ProfileDashboard/>
                 },
                 { 
                     id: 5,
@@ -173,8 +176,8 @@ export default function RestauarantAdminDashboardHome() {
         }) ()
     }, [dispatch, restaurantId?._id, restaurant?.slug])
     return (
-        <section className="superadmin-dashboard">
-            <div className="super-admin-dashboard-home-section">
+        <section className="restaurant-admin-dashboard">
+            <div className="restaurant-admin-dashboard-home-section">
                 <div className={`dashboard-navigation-div ${openDashboardMenu ? "open" : "close"}`}>
                     <div className="dashboard-head" onClick={() => {handleDashboardMenuChange("")}}>
                         <MdSpaceDashboard className="icon"/>
@@ -239,39 +242,41 @@ export default function RestauarantAdminDashboardHome() {
                                 <div className="dashboard-overview-card">
                                     <div className="icon"><LuCandy /></div>
                                     <div className="overview-details">
-                                        <h1>Category</h1>
-                                        <p>{categories?.length || 0}</p>
+                                        <h1 className="title">Category</h1>
+                                        <p className="nos">{categories?.length || 0}</p>
                                     </div>
                                 </div>
                                 <div className="dashboard-overview-card">
                                     <div className="icon"><BiSolidCookie /></div>
                                     <div className="overview-details">
-                                        <h1>Products</h1>
-                                        <p>{products?.length || 0}</p>
+                                        <h1 className="title">Products</h1>
+                                        <p className="nos">{products?.length || 0}</p>
                                     </div>
                                 </div>
                                 <div className="dashboard-overview-card">
                                     <div className="icon"><BiSolidOffer /></div>
                                     <div className="overview-details">
-                                        <h1>Coupons</h1>
-                                        <p>{coupons?.length || 0}</p>
+                                        <h1 className="title">Coupons</h1>
+                                        <p className="nos">{coupons?.length || 0}</p>
                                     </div>
                                 </div>
                                 <div className="dashboard-overview-card">
                                     <div className="icon"><TbTruckDelivery /></div>
                                     <div className="overview-details">
-                                        <h1>Orders</h1>
-                                        <p>{orders?.length || 0}</p>
+                                        <h1 className="title">Orders</h1>
+                                        <p className="nos">{orders?.length || 0}</p>
                                     </div>
                                 </div>
                                 <div className="dashboard-overview-card">
                                     <div className="icon"><GrMoney /></div>
                                     <div className="overview-details">
-                                        <h1>Payments</h1>
-                                        <p>AED {payments?.reduce((acc, curr) => acc + curr?.amount, 0) || 0}</p>
+                                        <h1 className="title">Payments</h1>
+                                        <p className="nos">AED {payments?.reduce((acc, curr) => acc + curr?.amount, 0) || 0}</p>
                                     </div>
                                 </div>
                             </div>
+
+                            <RestaurantNotification/>
                         </div>
                     : 
                         <div className="empty-dashboard-overview-grid">

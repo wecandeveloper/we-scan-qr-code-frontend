@@ -75,12 +75,12 @@ export default function RestaurantDashboard() {
                         mouse: 4,
                         touch: 10,
                     },
-                    breakpoints: {
-                        640: {
-                            fixedWidth: 20,
-                            fixedHeight: 20,
-                        },
-                    },
+                    // breakpoints: {
+                    //     640: {
+                    //         fixedWidth: 20,
+                    //         fixedHeight: 20,
+                    //     },
+                    // },
                 });
 
                 main.sync(thumbnails);
@@ -219,22 +219,22 @@ export default function RestaurantDashboard() {
 
     return (
         <section>
-            <div className="product-dashboard-section">
-                <div className="product-dashboard-head">
+            <div className="restaurant-dashboard-section">
+                <div className="restaurant-dashboard-head">
                     <h1 className="dashboard-head">Restaurant Dashboard</h1>
                 </div>
-                <div className="product-dashboard-body">
+                <div className="restaurant-dashboard-body">
                     <div className="table-header">
                         <div className="search-bar">
                             <input
                                 type="text"
-                                placeholder="Search Products..."
+                                placeholder="Search Restaurant..."
                                 value={searchText}
                                 onChange={(e) => setSearchText(e.target.value)}
                             />
                         </div>
                         <div className="table-actions">
-                            <div className="product_filters">
+                            <div className="restaurant_filters">
                                 <div className="sort-show">
                                     <label htmlFor="sort-select">Sort:</label>
                                     <div className="sort-select-div">
@@ -260,60 +260,62 @@ export default function RestaurantDashboard() {
                                 }}>Add Product</button> */}
                         </div>
                     </div>
-                    <table className="product-table">
-                        <thead>
-                            <tr>
-                                <th>SI No</th>
-                                <th>Name</th>
-                                <th>Restaurant Owner</th>
-                                <th>Location</th>
-                                <th>Table Count</th>
-                                <th>Contact Details</th>
-                                <th>Restaurant Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        {getProcessedProducts().length > 0 ? (
-                            <tbody>
-                                {getProcessedProducts().map((restaurant, index) => (
-                                    <tr key={restaurant._id}>
-                                        <td>{index + 1}</td>
-                                        <td>{restaurant.name}</td>
-                                        <td>{restaurant.adminId.firstName} {restaurant.adminId.lastName}</td>
-                                        <td>{restaurant.address.street}, {restaurant.address.area}, {restaurant.address.city}</td>
-                                        <td>{restaurant.tableCount || 0}</td>
-                                        <td>{restaurant.contactNumber.countryCode} {restaurant.contactNumber.number}</td>
-                                        <td>{restaurant.isOpen ? 'Open' : 'Closed'}</td>
-                                        <td>
-                                            <div className="action-div">
-                                                <button className="view-btn" onClick={() => {
-                                                    setIsViewEditSectionOpen(true)
-                                                    setRestaurantId(restaurant._id)
-                                                    }}><MdRemoveRedEye /></button>
-                                                {/* <button className="edit-btn" onClick={() => {
-                                                    setIsViewEditSectionOpen(true)
-                                                    setIsEditRestaurant(true)
-                                                    setRestaurantId(restaurant._id)
-                                                    }}><MdEditSquare /></button> */}
-                                                <button className="delete-btn" onClick={() => {
-                                                    setShowConfirmDeleteRestaurant(true)
-                                                    setRestaurantId(restaurant._id)
-                                                }}><BiSolidTrash /></button>
-                                            </div>
+                    <div className="restaurant-table-container">
+                        <table className="restaurant-table">
+                            <thead>
+                                <tr>
+                                    <th>SI No</th>
+                                    <th>Name</th>
+                                    <th>Restaurant Owner</th>
+                                    <th>Location</th>
+                                    <th>Table Count</th>
+                                    <th>Contact Details</th>
+                                    <th>Restaurant Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            {getProcessedProducts().length > 0 ? (
+                                <tbody>
+                                    {getProcessedProducts().map((restaurant, index) => (
+                                        <tr key={restaurant._id}>
+                                            <td>{index + 1}</td>
+                                            <td>{restaurant.name}</td>
+                                            <td>{restaurant.adminId.firstName} {restaurant.adminId.lastName}</td>
+                                            <td>{restaurant.address.street}, {restaurant.address.area}, {restaurant.address.city}</td>
+                                            <td>{restaurant.tableCount || 0}</td>
+                                            <td>{restaurant.contactNumber.countryCode} {restaurant.contactNumber.number}</td>
+                                            <td>{restaurant.isOpen ? 'Open' : 'Closed'}</td>
+                                            <td>
+                                                <div className="action-div">
+                                                    <button className="view-btn" onClick={() => {
+                                                        setIsViewEditSectionOpen(true)
+                                                        setRestaurantId(restaurant._id)
+                                                        }}><MdRemoveRedEye /></button>
+                                                    {/* <button className="edit-btn" onClick={() => {
+                                                        setIsViewEditSectionOpen(true)
+                                                        setIsEditRestaurant(true)
+                                                        setRestaurantId(restaurant._id)
+                                                        }}><MdEditSquare /></button> */}
+                                                    <button className="delete-btn" onClick={() => {
+                                                        setShowConfirmDeleteRestaurant(true)
+                                                        setRestaurantId(restaurant._id)
+                                                    }}><BiSolidTrash /></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            ) : (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan="9" style={{ textAlign: "center" }}>
+                                            <p className="no-order-text">No Restaurant Data Found</p>
                                         </td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        ) : (
-                            <tbody>
-                                <tr>
-                                    <td colSpan="9" style={{ textAlign: "center" }}>
-                                        <p className="no-order-text">No Restaurant Data Found</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        )}
-                    </table>
+                                </tbody>
+                            )}
+                        </table>
+                    </div>
                     <div className="table-footer">
                         <div className="footer-pagination">
                             <span
@@ -369,12 +371,12 @@ export default function RestaurantDashboard() {
                             animate={{ x: 0 }}
                             exit={{ x: "100%", opacity: 0 }}
                             transition={{ duration: 0.5, ease: "easeInOut" }} 
-                            className="product-form-section">
+                            className="restaurant-form-section">
                                 <div className="close-btn" onClick={handleCloseAll}><IoIosClose className="icon"/></div>
-                                <div className="product-content">
+                                <div className="restaurant-content">
                                     <div>
-                                        <h1 className="product-head">View Restaurant</h1>
-                                        <div className="product-details">
+                                        <h1 className="restaurant-head">View Restaurant</h1>
+                                        <div className="restaurant-details">
                                             <div className="img-div">
                                                 <div id="main-slider" className="splide">
                                                     <div className="splide__track">
@@ -401,37 +403,37 @@ export default function RestaurantDashboard() {
                                                 </div>
                                             </div>
                                             <div className="details-div">
-                                                <div className="product-detail name">
+                                                <div className="restaurant-detail name">
                                                     <span className="head">Name</span>
                                                     <span className="value">{restaurant.name}</span>
                                                 </div>
-                                                <div className="product-detail category">
+                                                <div className="restaurant-detail category">
                                                     <span className="head">Restaurant Admin</span>
                                                     <span className="value">
                                                         {`${restaurant?.adminId?.firstName} ${restaurant?.adminId?.lastName}`}
                                                     </span>
                                                 </div>
-                                                <div className="product-detail stock">
+                                                <div className="restaurant-detail stock">
                                                     <span className="head">Address</span>
                                                     <span className="value">{restaurant?.address?.street}, {restaurant?.address?.area}, {restaurant?.address?.city}</span>
                                                 </div>
-                                                <div className="product-detail price">
+                                                <div className="restaurant-detail price">
                                                     <span className="head">Location</span>
                                                     <span className="value">Longitude {restaurant?.location?.coordinates[0]}, Latitude {restaurant?.location?.coordinates[1]}</span>
                                                 </div>
-                                                <div className="product-detail description">
+                                                <div className="restaurant-detail description">
                                                     <span className="head">Contact Number</span>
                                                     <span className="value">{`${restaurant?.contactNumber?.countryCode} ${restaurant?.contactNumber?.number}`}</span>
                                                 </div>
-                                                <div className="product-detail offer-per">
+                                                <div className="restaurant-detail offer-per">
                                                     <span className="head">Restaurant Open</span>
                                                     <span className="value">{restaurant?.isOpen ? 'Yes' : 'No'}</span>
                                                 </div>
-                                                <div className="product-detail discount-expiry">
+                                                <div className="restaurant-detail discount-expiry">
                                                     <span className="head">Restaurant Approved</span>
                                                     <span className="value">{restaurant?.isApproved ? 'Yes' : 'No'}</span>
                                                 </div>
-                                                <div className="product-detail discount-expiry">
+                                                <div className="restaurant-detail discount-expiry">
                                                     <span className="head">Restaurant Blocked</span>
                                                     <span className="value">{restaurant?.isBlocked ? 'Yes' : 'No'}</span>
                                                 </div>

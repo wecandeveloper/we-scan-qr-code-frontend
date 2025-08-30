@@ -1,4 +1,5 @@
 // layouts/AdminLayout.js
+import "./AdminLayout.scss"
 
 import AdminHeader from "../../AdminLayout/AdminHeader/AdminHeader";
 

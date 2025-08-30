@@ -25,6 +25,7 @@ import { IoMdClose } from "react-icons/io"
 import { IoClose } from "react-icons/io5"
 import { useDispatch, useSelector } from "react-redux"
 import { startCreateRestaurant, startDeleteRestaurant, startUpdateRestaurant } from "../../../../../Actions/restaurantActions"
+import ColorPickerField from "../../../../../Designs/ColorPickerField"
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -57,12 +58,13 @@ const UploadButton = styled(Button)(({ theme }) => ({
 
 export default function RestaurantProfileDashboard() {
     const dispatch = useDispatch()
-    const { user, handleLogin } = useAuth()
+    const { user } = useAuth()
     const restaurant = useSelector((state) => {
         return state.restaurants.selected
     })
     console.log(restaurant)
     const [ loading, setLoading ] = useState(false)
+    const [ loadingDelete, setLoadingDelete ] = useState(false)
 
     const [ restaurantForm, setRestaurantForm ] = useState({
         name: "",
@@ -82,6 +84,14 @@ export default function RestaurantProfileDashboard() {
         },
         images: [],
         tableCount: "",
+        theme: {
+            logo: "",
+            primaryColor: "",
+            secondaryColor: "",
+            buttonColor: "",
+            bannerImages: [],
+            offerBannerImages: []
+        },
         isOpen: false,
         isApproved: false,
         isBlocked: false
@@ -92,7 +102,7 @@ export default function RestaurantProfileDashboard() {
     const [ openEditProfileSection, setOpenEditProfileSection ] = useState(false);
     const [ showConfirmDeleteProfile, setShowConfirmDeleteProfile ] = useState(false);
     const [ showConfirmCancel, setShowConfirmCancel ] = useState(false)
-    const [cooldown, setCooldown] = useState(0);
+    const [ cooldown, setCooldown ] = useState(0);
 
 
     useEffect(() => {
@@ -115,6 +125,14 @@ export default function RestaurantProfileDashboard() {
                     number: restaurant.contactNumber?.number || "",
                 },
                 tableCount: restaurant.tableCount || 0,
+                theme: {
+                    logo: restaurant.theme.logo || "",
+                    primaryColor: restaurant.theme.primaryColor || "",
+                    secondaryColor: restaurant.theme.secondaryColor || "",
+                    buttonColor: restaurant.theme.buttonColor || "",
+                    bannerImages: restaurant.theme.bannerImages || [],
+                    offerBannerImages: restaurant.theme.offerBannerImages || [],
+                },
                 isOpen: restaurant.isOpen ?? false,
                 isApproved: restaurant.isApproved ?? false,
                 isBlocked: restaurant.isBlocked ?? false,
@@ -138,6 +156,14 @@ export default function RestaurantProfileDashboard() {
                     number: "",
                 },
                 tableCount: "",
+                theme: {
+                    logo: "",
+                    primaryColor: "",
+                    secondaryColor: "",
+                    buttonColor: "",
+                    bannerImages: [],
+                    offerBannerImages: []
+                },
                 isOpen: false,
                 isApproved: false,
                 isBlocked: false,
@@ -181,8 +207,8 @@ export default function RestaurantProfileDashboard() {
             },
             breakpoints: {
                 640: {
-                    fixedWidth: 20,
-                    fixedHeight: 20,
+                    // fixedWidth: 20,
+                    // fixedHeight: 20,
                 },
             },
         });
@@ -296,22 +322,41 @@ export default function RestaurantProfileDashboard() {
     const handleChange = (field) => (event) => {
         const inputValue = event.target.value;
 
-        // Handle images
+        // Handle different image fields separately
+        if (["logo", "bannerImages", "offerBannerImages"].includes(field)) {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                const fileArray = Array.from(files);
+
+                setRestaurantForm((prev) => ({
+                    ...prev,
+                    theme: {
+                        ...prev.theme,
+                        [field]: field === "logo" 
+                            ? fileArray[0] // Logo is single
+                            : [...(prev.theme[field] || []), ...fileArray] // Banners are multiple
+                    },
+                }));
+            }
+            return;
+        }
+
+        // Handle generic images (outside theme)
         if (field === "images") {
             const files = event.target.files;
             if (files && files.length > 0) {
                 const fileArray = Array.from(files);
                 setRestaurantForm((prev) => ({
                     ...prev,
-                    images: [...(prev.images || []), ...fileArray], // store File objects directly
+                    images: [...(prev.images || []), ...fileArray],
                 }));
             }
             return;
         }
 
-        // Handle phone
+        // Handle phone number
         if (field.startsWith("contactNumber.")) {
-            const key = field.split(".")[1]; // 'number' or 'countryCode'
+            const key = field.split(".")[1];
             setRestaurantForm((prev) => ({
                 ...prev,
                 contactNumber: {
@@ -324,7 +369,7 @@ export default function RestaurantProfileDashboard() {
 
         // Handle address
         if (field.startsWith("address.")) {
-            const key = field.split(".")[1]; // 'street', 'area', 'city'
+            const key = field.split(".")[1];
             setRestaurantForm((prev) => ({
                 ...prev,
                 address: {
@@ -337,7 +382,7 @@ export default function RestaurantProfileDashboard() {
 
         // Handle location
         if (field.startsWith("location.")) {
-            const key = field.split(".")[1]; // 'type' or 'coordinates[0/1]'
+            const key = field.split(".")[1];
             if (key === "type") {
                 setRestaurantForm((prev) => ({
                     ...prev,
@@ -347,7 +392,7 @@ export default function RestaurantProfileDashboard() {
                     },
                 }));
             } else if (key.startsWith("coordinates")) {
-                const index = parseInt(key.match(/\d/)[0]); // 0 or 1
+                const index = parseInt(key.match(/\d/)[0]);
                 setRestaurantForm((prev) => ({
                     ...prev,
                     location: {
@@ -361,11 +406,52 @@ export default function RestaurantProfileDashboard() {
             return;
         }
 
-        // Default fallback for simple fields
+        // Handle theme colors
+        if (field.startsWith("theme.")) {
+            const key = field.split(".")[1];
+            setRestaurantForm((prev) => ({
+                ...prev,
+                theme: {
+                    ...prev.theme,
+                    [key]: inputValue,
+                },
+            }));
+            return;
+        }
+
+        if (["bannerImages", "offerBannerImages"].includes(field)) {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                const fileArray = Array.from(files);
+                setRestaurantForm((prev) => ({
+                    ...prev,
+                    [field]: [...(prev[field] || []), ...fileArray], // ✅ store at root
+                }));
+            }
+            return;
+        }
+
+        // Logo stays inside theme
+        if (field === "logo") {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                setRestaurantForm((prev) => ({
+                    ...prev,
+                    theme: {
+                        ...prev.theme,
+                        logo: files[0], // ✅ single file only
+                    },
+                }));
+            }
+            return;
+        }
+        // Default fallback
         setRestaurantForm((prev) => ({
             ...prev,
             [field]: inputValue,
         }));
+
+        console.log(restaurantForm)
     };
 
     const handleGeoLocationChange = () => {
@@ -404,10 +490,17 @@ export default function RestaurantProfileDashboard() {
         });
     };
 
+    const normalizeImage = (img) => {
+        if (!img) return null;
+        if (img instanceof File) return img.name;        // New uploads
+        if (img.url) return img.url;                     // Existing images
+        if (typeof img === "string") return img;         // Fallback
+        return null;
+    };
+
     const isFormChanged = () => {
         if (!restaurantForm || !restaurant) return false;
 
-        // Required fields to check for changes
         const isNameChanged = restaurantForm.name !== restaurant.name;
 
         const isStreetChanged = restaurantForm.address.street !== restaurant.address.street;
@@ -420,10 +513,29 @@ export default function RestaurantProfileDashboard() {
         const isTableCountChanged = restaurantForm.tableCount !== restaurant.tableCount;
         const isIsOpenChanged = restaurantForm.isOpen !== restaurant.isOpen;
 
-        // Optional: check images (new files or removed ones)
         const areImagesChanged =
             restaurantForm.images.length !== restaurant.images.length ||
-            restaurantForm.images.some((img, idx) => img !== restaurant.images[idx]);
+            restaurantForm.images.some((img, idx) => normalizeImage(img) !== normalizeImage(restaurant.images[idx]));
+
+        const areBannerImagesChanged =
+            restaurantForm.bannerImages?.length !== restaurant.theme.bannerImages?.length ||
+            restaurantForm.bannerImages?.some((img, idx) => normalizeImage(img) !== normalizeImage(restaurant.theme.bannerImages[idx]));
+
+        const areOfferBannerImagesChanged =
+            restaurantForm.offerBannerImages?.length !== restaurant.theme.offerBannerImages?.length ||
+            restaurantForm.offerBannerImages?.some((img, idx) => normalizeImage(img) !== normalizeImage(restaurant.theme.offerBannerImages[idx]));
+
+        const isThemeLogoChanged =
+            normalizeImage(restaurantForm.theme.logo) !== normalizeImage(restaurant.theme.logo);
+
+        const isThemePrimaryColorChanged =
+            restaurantForm.theme.primaryColor !== restaurant.theme.primaryColor;
+
+        const isThemeSecondaryColorChanged =
+            restaurantForm.theme.secondaryColor !== restaurant.theme.secondaryColor;
+
+        const isThemeButtonColorChanged =
+            restaurantForm.theme.buttonColor !== restaurant.theme.buttonColor;
 
         return (
             isNameChanged ||
@@ -434,18 +546,25 @@ export default function RestaurantProfileDashboard() {
             isPhoneNumberChanged ||
             isTableCountChanged ||
             isIsOpenChanged ||
-            areImagesChanged
+            areImagesChanged ||
+            areBannerImagesChanged ||
+            areOfferBannerImagesChanged ||
+            isThemeLogoChanged ||
+            isThemePrimaryColorChanged ||
+            isThemeSecondaryColorChanged ||
+            isThemeButtonColorChanged
         );
     };
+    // #eb3424
 
     const handleSubmitProfile = async () => {
-        console.log(restaurantForm)
-        setLoading(true)
-        if(Object.keys(errors).length === 0){
+        console.log(restaurantForm);
+        setLoading(true);
+
+        if (Object.keys(errors).length === 0) {
             const data = new FormData();
 
             // Basic fields
-            // data.append('_id', restaurantId);
             data.append('name', restaurantForm.name);
             data.append('tableCount', restaurantForm.tableCount || "");
             data.append('isOpen', restaurantForm.isOpen ?? "");
@@ -464,41 +583,86 @@ export default function RestaurantProfileDashboard() {
             data.append('contactNumber.countryCode', restaurantForm.contactNumber.countryCode || "");
             data.append('contactNumber.number', restaurantForm.contactNumber.number || "");
 
-            // Images (only if they are File objects)
-            restaurantForm.images.forEach((img, index) => {
+            // 🔹 Restaurant Images
+            restaurantForm.images.forEach((img) => {
                 if (img instanceof File) {
                     data.append('images', img);
                 }
             });
 
+            // 🔹 Banner Images
+            restaurantForm.theme.bannerImages?.forEach((img) => {
+                if (img instanceof File) {
+                    data.append('bannerImages', img);
+                }
+            });
+
+            // 🔹 Offer Banner Images
+            restaurantForm.theme.offerBannerImages?.forEach((img) => {
+                if (img instanceof File) {
+                    data.append('offerBannerImages', img);
+                }
+            });
+
+            // 🔹 Theme Fields (logo required, rest optional)
+            if (restaurantForm.theme?.logo instanceof File) {
+                data.append('logo', restaurantForm.theme.logo);
+            }
+
+            if (restaurantForm.theme?.primaryColor) {
+                data.append('primaryColor', restaurantForm.theme.primaryColor);
+            }
+
+            if (restaurantForm.theme?.secondaryColor) {
+                data.append('secondaryColor', restaurantForm.theme.secondaryColor);
+            }
+
+            if (restaurantForm.theme?.buttonColor) {
+                data.append('buttonColor', restaurantForm.theme.buttonColor);
+            }
+
             try {
-                if(user.restaurantId) {
+                if (user.restaurantId) {
+                    // 🔹 Check if any change exists
                     if (!isFormChanged()) {
                         toast.warning("No changes detected.");
                         setLoading(false);
                         return;
-                    } else {
-                        await dispatch(startUpdateRestaurant(restaurant._id, data, setServerErrors, setOpenEditProfileSection));
                     }
+
+                    await dispatch(
+                        startUpdateRestaurant(
+                            restaurant._id,
+                            data,
+                            setServerErrors,
+                            setOpenEditProfileSection
+                        )
+                    );
                 } else {
-                    await dispatch(startCreateRestaurant(data, setServerErrors, setOpenEditProfileSection));
+                    await dispatch(
+                        startCreateRestaurant(
+                            data,
+                            setServerErrors,
+                            setOpenEditProfileSection
+                        )
+                    );
                 }
             } catch (error) {
                 console.error("Update failed:", error);
-                setServerErrors(error.response.data.message)
-                toast.error("Update failed")
+                setServerErrors(error.response?.data?.message || "Something went wrong");
+                toast.error("Update failed");
             } finally {
                 setLoading(false);
             }
         } else {
-            setFormErrors(errors)
-            console.log(formErrors)
-            toast.error("Please fill in all fields correctly.")
+            setFormErrors(errors);
+            console.log(formErrors);
+            toast.error("Please fill in all fields correctly.");
         }
     };
 
     const confirmDeleteProfile = async () => {
-        setLoading(true);
+        setLoadingDelete(true);
         try {
             await dispatch(startDeleteRestaurant(restaurant._id, setServerErrors));
         } catch (error) {
@@ -507,7 +671,7 @@ export default function RestaurantProfileDashboard() {
             window.location.reload()
             toast.error("Delete failed");
         } finally {
-            setLoading(false);
+            setLoadingDelete(false);
             setOpenEditProfileSection(false);
         }
     }
@@ -515,11 +679,11 @@ export default function RestaurantProfileDashboard() {
     // console.log("verifyEmailModal", verifyEmailModal); // Add this before the Modal to debug
 
     return (
-        <section className="customer-profile-section-div">
-            <div className="customer-profile-section">
+        <section className="restaurant-profile-section-div">
+            <div className="restaurant-profile-section">
                 <div className="head-div">
                     <div className="head">
-                        <h2>{openEditProfileSection ? "Edit" : "" } Restaurant Profile</h2>
+                        <h2 className="dashboard-head">{openEditProfileSection ? "Edit" : "" } Restaurant Profile</h2>
                         <p>{openEditProfileSection ? "Update" : "View" } Your Personal and Contact Information</p>
                     </div>
                 <div className="btn-div">
@@ -548,90 +712,152 @@ export default function RestaurantProfileDashboard() {
 
                 </div>
                 {!openEditProfileSection ? (
-                    <div className="customer-profile-details">
+                    <div className="restaurant-profile-details">
                         {user.restaurantId ? 
-                            <div className="customer-profile-info-div">
-                                <h1 className="profile-info-head">Restaurant Information</h1>
-                                {/* {restaurant.images?.length > 0 && ( */}
-                                    <div className="img-div">
-                                        <div id="main-slider" className="splide">
-                                            <div className="splide__track">
-                                                <ul className="splide__list">
-                                                    {restaurant?.images?.map((img, index) => (
-                                                    <li className="splide__slide" key={index}>
-                                                        <img src={img.url} alt={`Main ${index}`} />
-                                                    </li>
-                                                    ))}
-                                                </ul>
+                            <div className="restaurant-profile-theme-div">
+                                <div className="restaurant-profile-info-div">
+                                    <h1 className="profile-info-head">Restaurant Information</h1>
+                                    {restaurant?.images?.length > 0 && (
+                                        <div className="img-div">
+                                            <div id="main-slider" className="splide">
+                                                <div className="splide__track">
+                                                    <ul className="splide__list">
+                                                        {restaurant?.images?.map((img, index) => (
+                                                        <li className="splide__slide" key={index}>
+                                                            <img src={img.url} alt={`Main ${index}`} />
+                                                        </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                            <div id="thumbnail-slider" className="splide mt-4">
+                                                <div className="splide__track">
+                                                    <ul className="splide__list">
+                                                        {restaurant?.images?.map((img, index) => (
+                                                        <li className="splide__slide" key={index}>
+                                                            <img src={img.url} alt={`Thumb ${index}`} />
+                                                        </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
+                                    )}
 
-                                        <div id="thumbnail-slider" className="splide mt-4">
-                                            <div className="splide__track">
-                                                <ul className="splide__list">
-                                                    {restaurant?.images?.map((img, index) => (
-                                                    <li className="splide__slide" key={index}>
-                                                        <img src={img.url} alt={`Thumb ${index}`} />
-                                                    </li>
-                                                    ))}
-                                                </ul>
+                                    <div className="profile-info-details">
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Restaurant Name</h1>
+                                            <div className="profile-value">{restaurantForm.name || "Not Updated"}</div>
+                                        </div>
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Admin ID</h1>
+                                            <div className="profile-value">{`${restaurantForm.adminId.firstName}${" "}${restaurantForm.adminId.lastName}` || "Not Updated"}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="profile-info-details">
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Street Address</h1>
+                                            <div className="profile-value">{restaurantForm.address.street || "Not Updated"}</div>
+                                        </div>
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Area</h1>
+                                            <div className="profile-value">{restaurantForm.address.area || "Not Updated"}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="profile-info-details">
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">City</h1>
+                                            <div className="profile-value">{restaurantForm.address.city || "Not Updated"}</div>
+                                        </div>
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Contact Number</h1>
+                                            <div className="profile-value">
+                                                {restaurantForm.contactNumber.countryCode && restaurantForm.contactNumber.number
+                                                    ? `${restaurantForm.contactNumber.countryCode} ${restaurantForm.contactNumber.number}`
+                                                    : "Not Updated"}
                                             </div>
                                         </div>
                                     </div>
-                                {/* )} */}
 
-                                <div className="profile-info-details">
-                                    <div className="profile-details">
-                                        <h1 className="profile-head">Restaurant Name</h1>
-                                        <div className="profile-value">{restaurantForm.name || "Not Updated"}</div>
-                                    </div>
-                                    <div className="profile-details">
-                                        <h1 className="profile-head">Admin ID</h1>
-                                        <div className="profile-value">{`${restaurantForm.adminId.firstName}${" "}${restaurantForm.adminId.lastName}` || "Not Updated"}</div>
-                                    </div>
-                                </div>
-
-                                <div className="profile-info-details">
-                                    <div className="profile-details">
-                                        <h1 className="profile-head">Street Address</h1>
-                                        <div className="profile-value">{restaurantForm.address.street || "Not Updated"}</div>
-                                    </div>
-                                    <div className="profile-details">
-                                        <h1 className="profile-head">Area</h1>
-                                        <div className="profile-value">{restaurantForm.address.area || "Not Updated"}</div>
-                                    </div>
-                                </div>
-
-                                <div className="profile-info-details">
-                                    <div className="profile-details">
-                                        <h1 className="profile-head">City</h1>
-                                        <div className="profile-value">{restaurantForm.address.city || "Not Updated"}</div>
-                                    </div>
-                                    <div className="profile-details">
-                                        <h1 className="profile-head">Contact Number</h1>
-                                        <div className="profile-value">
-                                            {restaurantForm.contactNumber.countryCode && restaurantForm.contactNumber.number
-                                                ? `${restaurantForm.contactNumber.countryCode} ${restaurantForm.contactNumber.number}`
-                                                : "Not Updated"}
+                                    <div className="profile-info-details">
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Table Count</h1>
+                                            <div className="profile-value">{restaurantForm.tableCount || "Not Updated"}</div>
+                                        </div>
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Status</h1>
+                                            <div className="profile-value">
+                                                {restaurantForm.isOpen ? "Open" : "Closed"} | {restaurantForm.isApproved ? "Approved" : "Not Approved"} | {restaurantForm.isBlocked ? "Blocked" : "Active"}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="profile-info-details">
-                                    <div className="profile-details">
-                                        <h1 className="profile-head">Table Count</h1>
-                                        <div className="profile-value">{restaurantForm.tableCount || "Not Updated"}</div>
-                                    </div>
-                                    <div className="profile-details">
-                                        <h1 className="profile-head">Status</h1>
-                                        <div className="profile-value">
-                                            {restaurantForm.isOpen ? "Open" : "Closed"} | {restaurantForm.isApproved ? "Approved" : "Not Approved"} | {restaurantForm.isBlocked ? "Blocked" : "Active"}
+                                <div className="restaurant-profile-info-div theme">
+                                    <h1 className="profile-info-head">Restaurant Theme</h1>
+                                    {restaurantForm?.theme?.logo?.url && 
+                                        <div className="profile-info-details">
+                                            <div className="logo-div">
+                                                <img src={restaurantForm.theme.logo.url} alt="" />
+                                            </div>
                                         </div>
+                                    }
+
+                                    <div className="profile-info-details">
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Primary Color</h1>
+                                            <div className="profile-value">{restaurantForm.theme.primaryColor || "Not Updated"}</div>
+                                        </div>
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Secondary Color</h1>
+                                            <div className="profile-value">{restaurantForm.theme.secondaryColor || "Not Updated"}</div>
+                                        </div>
+                                        <div className="profile-details">
+                                            <h1 className="profile-head">Button Color</h1>
+                                            <div className="profile-value">{restaurantForm.theme.buttonColor || "Not Updated"}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="profile-info-details">
+                                        {restaurantForm.theme.bannerImages.length !== 0 &&
+                                            <div className="profile-details">
+                                                <h1 className="profile-head">Banner Images</h1>
+                                                <div className="banner-image-grid">
+                                                    {restaurantForm.theme.bannerImages.map((image) => {
+                                                        return (
+                                                            <div key={image.url} className="banner-image-div">
+                                                                <img src={image.url} alt="" />
+                                                            </div>
+                                                        )
+                                                    }) }
+                                                    </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div className="profile-info-details">
+                                        {restaurantForm.theme.offerBannerImages.length !== 0 &&
+                                            <div className="profile-details">
+                                                <h1 className="profile-head">Offer Banner Images</h1>
+                                                <div className="banner-image-grid">
+                                                    {restaurantForm.theme.offerBannerImages.map((image) => {
+                                                        return (
+                                                            <div key={image._id} className="banner-image-div">
+                                                                <img src={image.url} alt="" />
+                                                            </div>
+                                                        )
+                                                    }) }
+                                                    </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </div>
                         : 
-                            <div className="customer-profile-info-div-empty">
+                            <div className="restaurant-profile-info-div-empty">
                                 <p>
                                     You haven’t added your restaurant profile yet. Start by creating your restaurant profile to showcase your restaurant to your customers.
                                     Once your profile is set up, you can add categories, menu items, and manage orders—all from this dashboard. 
@@ -884,13 +1110,182 @@ export default function RestaurantProfileDashboard() {
                                     message={`${formErrors.stock || ''}${formErrors.stock && formErrors.price ? ' | ' : ''}${formErrors.price || ''}`}
                                 />
                             }
+
+                        <div className="restaurant-banner-div">
+                            <h1>Restaurant Theme</h1>
+
+                            {/* Logo Upload */}
+                            {restaurantForm.theme.logo && (
+                                <div className="image-preview-container">
+                                    <div className="image-box-logo">
+                                        <img
+                                            src={restaurantForm.theme.logo instanceof File
+                                                ? URL.createObjectURL(restaurantForm.theme.logo)
+                                                : restaurantForm.theme.logo.url || restaurantForm.theme.logo}
+                                            alt="logo-preview"
+                                        />
+                                        <div className="image-info">
+                                            <button
+                                                className="remove-btn"
+                                                type="button"
+                                                onClick={() =>
+                                                    setRestaurantForm((prev) => ({
+                                                        ...prev,
+                                                        theme: { ...prev.theme, logo: "" },
+                                                    }))
+                                                }
+                                            >
+                                                <IoClose />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <UploadButton
+                                component="label"
+                                role={undefined}
+                                variant="contained"
+                                tabIndex={-1}
+                                startIcon={<CloudUploadIcon />}
+                            >
+                                Upload Logo
+                                <VisuallyHiddenInput
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleChange("logo")}
+                                />
+                            </UploadButton>
+
+                            {/* Theme Colors */}
+<div className="same-line">
+  <ColorPickerField
+    label="Primary Color"
+    value={restaurantForm.theme.primaryColor}
+    onChange={(val) =>
+      handleChange("theme.primaryColor")({ target: { value: val } })
+    }
+  />
+  <ColorPickerField
+    label="Secondary Color"
+    value={restaurantForm.theme.secondaryColor}
+    onChange={(val) =>
+      handleChange("theme.secondaryColor")({ target: { value: val } })
+    }
+  />
+  <ColorPickerField
+    label="Button Color"
+    value={restaurantForm.theme.buttonColor}
+    onChange={(val) =>
+      handleChange("theme.buttonColor")({ target: { value: val } })
+    }
+  />
+</div>
+
+
+
+                            {/* Banner Images */}
+                            {restaurantForm.theme.bannerImages?.length > 0 && (
+                                <div className="image-preview-container">
+                                    {restaurantForm.theme.bannerImages.map((img, index) => {
+                                        const isFile = img instanceof File;
+                                        const imageUrl = isFile ? URL.createObjectURL(img) : img.url || img;
+                                        return (
+                                            <div key={index} className="image-box">
+                                                <img src={imageUrl} alt={`banner-${index}`} />
+                                                <div className="image-info">
+                                                    <button
+                                                        className="remove-btn"
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const updatedImages = restaurantForm.theme.bannerImages.filter(
+                                                                (_, i) => i !== index
+                                                            );
+                                                            setRestaurantForm((prev) => ({
+                                                                ...prev,
+                                                                theme: { ...prev.theme, bannerImages: updatedImages },
+                                                            }));
+                                                        }}
+                                                    >
+                                                        <IoClose />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                            <UploadButton
+                                component="label"
+                                role={undefined}
+                                variant="contained"
+                                tabIndex={-1}
+                                startIcon={<CloudUploadIcon />}
+                            >
+                                Upload Banner Images
+                                <VisuallyHiddenInput
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleChange("bannerImages")}
+                                    multiple
+                                />
+                            </UploadButton>
+
+                            {/* Offer Banner Images */}
+                            {restaurantForm.theme.offerBannerImages?.length > 0 && (
+                                <div className="image-preview-container">
+                                    {restaurantForm.theme.offerBannerImages.map((img, index) => {
+                                        const isFile = img instanceof File;
+                                        const imageUrl = isFile ? URL.createObjectURL(img) : img.url || img;
+                                        return (
+                                            <div key={index} className="image-box">
+                                                <img src={imageUrl} alt={`offer-banner-${index}`} />
+                                                <div className="image-info">
+                                                    <button
+                                                        className="remove-btn"
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const updatedImages =
+                                                                restaurantForm.theme.offerBannerImages.filter(
+                                                                    (_, i) => i !== index
+                                                                );
+                                                            setRestaurantForm((prev) => ({
+                                                                ...prev,
+                                                                theme: { ...prev.theme, offerBannerImages: updatedImages },
+                                                            }));
+                                                        }}
+                                                    >
+                                                        <IoClose />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                            <UploadButton
+                                component="label"
+                                role={undefined}
+                                variant="contained"
+                                tabIndex={-1}
+                                startIcon={<CloudUploadIcon />}
+                            >
+                                Upload Offer Banners
+                                <VisuallyHiddenInput
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleChange("offerBannerImages")}
+                                    multiple
+                                />
+                            </UploadButton>
+                        </div>
+
                         </div>
                         <div className="button-div">
                             <div
                                 onClick={() => setShowConfirmDeleteProfile(true)}
                                 className="btn-dark save"
                             >
-                                {loading ? 
+                                {loadingDelete ? 
                                     <Box sx={{ display: 'flex' }} className="save-btn">
                                         Deleting <CircularProgress color="inherit" size={20}/>
                                     </Box>

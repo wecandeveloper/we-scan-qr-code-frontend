@@ -22,7 +22,7 @@
             .search-bar {
                 input {
                     padding: 8px 12px;
-                    font-size: 16px;
+                    font-size: 14px;
                     border-radius: 5px;
                     border: none;
                     outline: none;
@@ -42,10 +42,11 @@
             .table-actions {
                 display: flex;
                 gap: 10px;
+                font-size: 14px;
 
                 button {
                     padding: 8px 12px;
-                    font-size: 16px;
+                    font-size: 14px;
                     border: none;
                     border-radius: 5px;
                     cursor: pointer;
@@ -117,7 +118,7 @@
                 select {
                     border: none;
                     background: transparent;
-                    font-size: 16px;
+                    font-size: 14px;
                     color: black;
                     padding: 8px;
                     cursor: pointer;
@@ -132,7 +133,27 @@
             }
         }
 
-        .customer-table {
+        .restaurant-admin-table-container {
+            width: 100%;
+            overflow-x: auto;  // ✅ Horizontal scroll if table too wide
+            overflow-y: auto;  // ✅ Vertical scroll if table too tall
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+            /* Hide scrollbar for Chrome, Safari, Edge */
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            /* Hide scrollbar for Firefox */
+            scrollbar-width: none;
+
+            /* Hide scrollbar for IE/Edge (legacy) */
+            -ms-overflow-style: none;
+        }
+
+        .restaurant-admin-table {
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
@@ -147,7 +168,7 @@
                 th {
                     text-align: left;
                     padding: 30px 20px;
-                    font-size: 16px;
+                    font-size: 14px;
                     color: #470531;
                     text-transform: uppercase;
                 }
@@ -159,7 +180,7 @@
 
                     td {
                         padding: 20px;
-                        font-size: 16px;
+                        font-size: 14px;
                         color: #374151;
                         text-align: left;
                         // vertical-align: middle;
@@ -242,6 +263,7 @@
             // border: 1px solid #ddd;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             border-radius: 10px;
+            font-size: 14px;
 
             .footer-pagination {
                 display: flex;
@@ -294,6 +316,7 @@
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                font-size: 14px;
 
                 .sort-select-div {
                     display: flex;
@@ -318,7 +341,7 @@
                 select {
                     border: none;
                     background: transparent;
-                    font-size: 16px;
+                    font-size: 14px;
                     color: black;
                     padding: 8px;
                     cursor: pointer;
@@ -629,6 +652,71 @@
                 &:hover {
                     background: transparent;
                     color: #ef4444;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 700px) {
+    .customer-details-section {
+        width: 100%;
+
+        .customer-details-div {
+            .customer-details {
+                .customer-head {
+                    font-size: 25px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 650px) {
+    .restaurant-admin-dashboard-section {
+        .restaurant-admin-dashboard-body {
+            .table-header {
+                flex-direction: column;
+                gap: 10px;
+
+                .search-bar {
+                    width: 100%;
+
+                    input {
+                        width: 100%;
+                    }
+                }
+
+                .table-actions {
+                    width: 100%;
+                    justify-content: space-between;
+                    margin-left: auto;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .restaurant-admin-dashboard-section {
+        padding: 20px;
+
+        .restaurant-admin-dashboard-body {
+            .table-footer {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    }
+
+    .customer-details-section {
+        width: 100%;
+
+        .customer-details-div {
+             padding: 30px;
+            .customer-details {
+                .customer-head {
+                    font-size: 22px;
                 }
             }
         }

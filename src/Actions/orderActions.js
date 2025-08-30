@@ -2,7 +2,7 @@ import axios from "axios"
 import {render, localhost} from "../Api/apis"
 import { toast } from "react-toastify"
 
-export const startCreateOrder = (formData, setGlobalGuestId, setOpenSelectTableNumberModal, setIsCartSectionOpen) => {
+export const startCreateOrder = (formData, setGlobalGuestId, setIsCartSectionOpen) => {
     return async (dispatch) => {
         try {
             const orderResponse = await axios.post(`${localhost}/api/order/create`, formData, )
@@ -10,14 +10,13 @@ export const startCreateOrder = (formData, setGlobalGuestId, setOpenSelectTableN
             setGlobalGuestId(order.guestId)
             localStorage.setItem("guestId", order.guestId)
             localStorage.removeItem("guestCart")
-            setOpenSelectTableNumberModal(false)
             setIsCartSectionOpen(false)
             dispatch(addOrder(order))
             // console.log(order)
             toast.success("Your Order Placed Successfully")
         } catch(err) {
             console.log(err)
-            toast.success("Unable to Place the Order")
+            toast.error("Unable to Place the Order")
             // alert(err.message)
         }
     }

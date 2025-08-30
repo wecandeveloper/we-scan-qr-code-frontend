@@ -1,8 +1,8 @@
-.customer-profile-section-div {
+.profile-dashboard-section-div {
     display: block;
     padding: 30px;
 
-    .customer-profile-section {
+    .profile-dashboard-section {
         display: block;
         padding-bottom: 30px;
 
@@ -15,10 +15,16 @@
             border-radius: 10px;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
 
             .head {
                 display: flex;
                 flex-direction: column;
+                gap: 5px;
+
+                p {
+                    font-size: 14px;
+                }
             }
 
             .btn-div {
@@ -37,13 +43,13 @@
             }
         }
 
-        .customer-profile-details {
+        .profile-dashboard-details {
             margin-top: 30px;
             display: flex;
             flex-direction: column;
             gap: 30px;       
             
-            .customer-profile-info-div {
+            .profile-dashboard-info-div {
                 display: flex;
                 flex-direction: column;
                 background: white;
@@ -53,7 +59,7 @@
                 gap: 20px;
 
                 .profile-info-head {
-                    font-size: 25px;
+                    font-size: 22px;
                 }
 
                 .profile-image-div {
@@ -79,11 +85,16 @@
                         flex-direction: column;
                         gap: 5px;
 
+                        .profile-head {
+                            font-size: 16px;
+                        }
+
                         .profile-value {
-                            padding: 15px 15px;
+                            padding: 10px 15px;
                             border-radius: 10px;
+                            font-size: 14px;
                             border : 2px solid #470531;
-                            width: 100%;
+                            width: 300px;
                         }
                     }
 
@@ -95,7 +106,7 @@
                         }
 
                         .btn-dark {
-                            height: 55px;
+                            // height: 55px;
                             width: 100px;
                         }
 
@@ -230,7 +241,7 @@
                 gap: 20px;
 
                 .contact-info-head {
-                    font-size: 25px;
+                    font-size: 22px;
                 }
 
                 .profile-image-div {
@@ -287,7 +298,7 @@
                         }
 
                         .form-field {
-                            width: 100%;
+                            width: 350px;
                             // border: 2px solid #470531;
                             border-radius: 10px;
 
@@ -341,6 +352,7 @@
             }
         }
     }
+
     .verify-email-div-modal {
         position: fixed;
         top: 0;
@@ -512,6 +524,153 @@
                 }
                 to {
                     width: 0%;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 1250px) {
+    .profile-dashboard-section-div {
+        .profile-dashboard-section {
+            .profile-dashboard-details {
+                .profile-dashboard-info-div {
+                    .profile-info-details {
+                        .profile-details {
+                            .profile-value {
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .edit-profile-modal-body {
+                .contact-info-div {
+                    .contact-info {
+                        .contact-div {
+                            .form-field {
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 900px) {
+    .profile-dashboard-section-div {
+        .profile-dashboard-section {
+            .profile-dashboard-details {
+                .profile-dashboard-info-div {
+                    .profile-info-details {
+                        flex-direction: column;
+
+                        .profile-details {
+                            width: 100%;
+
+                            .profile-value {
+                                width: 320px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .edit-profile-modal-body {
+                .contact-info-div {
+                    .contact-info {
+                        flex-direction: column;
+
+                        .contact-div {
+                            .form-field {
+                                width: 300px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-dashboard-section-div {
+        padding: 20px;
+
+        .profile-dashboard-section {
+            .head-div { 
+                flex-direction: column;
+                gap: 10px;
+
+                .head {
+                    margin-right: auto;
+
+                    p {
+                        font-size: 14px;
+                    }
+                }
+
+                .btn-div {
+                    justify-content: space-between;
+                    width: 100%;
+
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 500px) {
+    .profile-dashboard-section-div {
+        padding: 20px;
+
+        .profile-dashboard-section {
+            .profile-dashboard-details {
+                .profile-dashboard-info-div.contact {
+                    .profile-info-details {
+                        .profile-details {
+                            .same-line {
+                                flex-direction: column;
+                            }
+
+                            .profile-value {
+                                width: 100%;
+                            }
+
+                            .btn-dark {
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+
+                .profile-dashboard-info-div {
+                    .profile-info-details {
+                        .profile-details {
+                            .profile-value {
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .edit-profile-modal-body {
+                .contact-info-div {
+                    .contact-info-head {
+                        font-size: 20px;
+                    }
+                    
+                    .contact-info {
+                        .contact-div {
+                            .form-field {
+                                width: 100%;
+                            }
+                        }
+                    }
                 }
             }
         }

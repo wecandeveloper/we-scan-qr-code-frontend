@@ -2,20 +2,24 @@ import { useAuth } from "../../../Context/AuthContext";
 
 import "./RestaurantAdminHeader.scss"
 
-import logo from "../../../Assets/Logo/logo-1.jpeg"
+import dummyLogo from "../../../Assets/Logo/dummy-logo.png"
 import defaultProfilePic from "../../../Assets/Common/account-icon.png"
+import { useSelector } from "react-redux";
 
 export default function RestaurantAdminHeader() {
     const { 
         user, 
     } = useAuth()
 
+    const restaurant = useSelector((state) => {
+        return state.restaurants.selected;
+    })
 
     return (
         <nav className="restaurant-admin-nav">
             <div className="navbar">
                 <div className="logo-div">
-                    <a href="/"><img src={logo} alt="Logo" className="logo"/></a>
+                    <a href={`/restaurant/${restaurant?.slug}`}><img src={restaurant?.theme?.logo?.url || dummyLogo} alt="Logo" className="logo"/></a>
                 </div>
                 <div className="profile-div">
                     <div className="profile-image-div">

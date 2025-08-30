@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { useAuth } from "../../../../../Context/AuthContext"
+import { useAuth } from "../../../../Context/AuthContext"
 
-import "./AdminProfileDashboard.scss"
+import "./ProfileDashboard.scss"
 
 import { TextField } from "@mui/material"
 import PhoneInput from "react-phone-input-2"
@@ -10,17 +10,16 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Button, Box } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from "axios"
-import { localhost } from "../../../../../Api/apis"
+import { localhost } from "../../../../Api/apis"
 import { toast } from "react-toastify"
-import CustomAlert from "../../../../../Designs/CustomAlert"
-import checkIcon from "../../../../../Assets/Icons/check-icon.png"
-import { Modal } from "reactstrap"
-import { FaTimes } from "react-icons/fa"
+import CustomAlert from "../../../../Designs/CustomAlert"
+import checkIcon from "../../../../Assets/Icons/check-icon.png"
 
-import defaultProfile from "../../../../../Assets/Common/account-icon.png"
-import ConfirmToast from "../../../../../Designs/ConfirmToast/ConfirmToast"
-import { IoMdClose } from "react-icons/io"
+
+import defaultProfile from "../../../../Assets/Common/account-icon.png"
+import ConfirmToast from "../../../../Designs/ConfirmToast/ConfirmToast"
 import { IoClose } from "react-icons/io5"
+import useIsMobile from "../../../../Designs/UseIsMobile"
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -51,39 +50,14 @@ const UploadButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-function formatDateToYYYYMMDD(dateString) {
-    if (!dateString) return '';
-
-    const date = new Date(dateString);
-    if (isNaN(date)) return '';
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
-}
-
-function formatDateToDDMMYYYY(dateString) {
-    if (!dateString) return '';
-
-    const date = new Date(dateString);
-    if (isNaN(date)) return '';
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${day}-${month}-${year}`;
-}
-
-export default function AdminProfileDashboard() {
+export default function ProfileDashboard() {
     const { user, handleLogin } = useAuth()
     // console.log(user)
     const [ loading, setLoading ] = useState(false)
-    const [preview, setPreview] = useState(null);
+    const [ preview, setPreview ] = useState(null);
+    const isMobile = useIsMobile(800)
 
-    const [formData, setFormData] = useState( !user ? {
+    const [ formData, setFormData ] = useState( !user ? {
         firstName: "",
         lastName: "",
         email: {
@@ -110,8 +84,6 @@ export default function AdminProfileDashboard() {
             number: user.phone.number,
             isVerified: user.phone.isVerified,
         },
-        dob: user.dob,
-        nationality: user.nationality,
         profilePic: user.profilePic,
     });
 
@@ -123,7 +95,7 @@ export default function AdminProfileDashboard() {
     const [ verifyPhoneModal, setVerifyPhoneModal ] = useState(false);
     const [ otp, setOtp ] = useState("")
     const [ otpError, setOtpError ] = useState("");
-    const [cooldown, setCooldown] = useState(0);
+    const [ cooldown, setCooldown ] = useState(0);
 
     const handleResendEmailOtp = () => {
         handleSendEmailOtp()
@@ -172,16 +144,6 @@ export default function AdminProfileDashboard() {
             errors.phone = "Phone number is required";
         } else if (/^\d{7,15}$/.test(formData?.phone.number.trim()).length === 0) {
             errors.phone = "Phone number must be 7 to 15 digits";
-        }
-
-        // Date of Birth (optional)
-        if (formData?.dob && isNaN(Date.parse(formData?.dob))) {
-            errors.dob = "Invalid date of birth";
-        }
-
-        // Nationality (optional)
-        if (formData?.nationality && typeof formData?.nationality !== "string") {
-            errors.nationality = "Invalid nationality";
         }
 
         // Profile Picture (optional)
@@ -252,12 +214,6 @@ export default function AdminProfileDashboard() {
         const isPhoneCodeChanged = formData.phone.countryCode !== user.phone.countryCode;
 
         // Optional fields — only compare if at least one is not empty
-        const isDobChanged =
-            (formData.dob || user.dob) && formData.dob !== user.dob;
-
-        const isNationalityChanged =
-            (formData.nationality || user.nationality) &&
-            formData.nationality !== user.nationality;
 
         const isProfilePicChanged =
             (formData.profilePic || user.profilePic) &&
@@ -269,8 +225,6 @@ export default function AdminProfileDashboard() {
             isEmailChanged ||
             isPhoneNumberChanged ||
             isPhoneCodeChanged ||
-            isDobChanged ||
-            isNationalityChanged ||
             isProfilePicChanged
         );
     };
@@ -395,8 +349,6 @@ export default function AdminProfileDashboard() {
             data.append('email.address', formData.email.address);
             data.append('phone.number', formData.phone.number);
             data.append('phone.countryCode', formData.phone.countryCode);
-            data.append('dob', formData.dob);
-            data.append('nationality', formData.nationality);
 
             // Only append file if it's a File object
             if (formData.profilePic && formData.profilePic instanceof File) {
@@ -439,8 +391,8 @@ export default function AdminProfileDashboard() {
     // console.log("verifyEmailModal", verifyEmailModal); // Add this before the Modal to debug
 
     return (
-        <section className="customer-profile-section-div">
-            <div className="customer-profile-section">
+        <section className="profile-dashboard-section-div">
+            <div className="profile-dashboard-section">
                 <div className="head-div">
                     <div className="head">
                         <h2>{openEditProfileSection ? "Edit" : "My" }  Profile</h2>
@@ -473,8 +425,8 @@ export default function AdminProfileDashboard() {
                     </div>
                 </div>
                 {!openEditProfileSection ? (
-                    <div className="customer-profile-details">
-                        <div className="customer-profile-info-div">
+                    <div className="profile-dashboard-details">
+                        <div className="profile-dashboard-info-div">
                             <h1 className="profile-info-head">Personal Information</h1>
                             <div className="profile-image-div">
                                 <img src={formData.profilePic || defaultProfile} alt="" />
@@ -489,18 +441,8 @@ export default function AdminProfileDashboard() {
                                     <div className="profile-value">{formData.lastName}</div>
                                 </div>
                             </div>
-                            <div className="profile-info-details">
-                                <div className="profile-details">
-                                    <h1 className="profile-head">Date of Birth</h1>
-                                    <div className="profile-value">{formatDateToDDMMYYYY(formData.dob) || "Not Updated"} </div>
-                                </div>
-                                <div className="profile-details">
-                                    <h1 className="profile-head">Nationality</h1>
-                                    <div className="profile-value">{formData.nationality || "Not Updated"}</div>
-                                </div>
-                            </div>
                         </div>
-                        <div className="customer-profile-info-div">
+                        <div className="profile-dashboard-info-div contact">
                             <h1 className="profile-info-head">Contact Information</h1>
                             <div className="profile-info-details">
                                 <div className="profile-details">
@@ -536,10 +478,8 @@ export default function AdminProfileDashboard() {
                     <div className="edit-profile-modal-body">
                         <div className="contact-info-div">
                             <h1 className="contact-info-head">Personal Information</h1>
-                            <div className="contact-info">
-                                <div className="profile-image-div">
-                                    <img src={preview || user.profilePic || defaultProfile} alt="" />
-                                </div>
+                            <div className="profile-image-div">
+                                <img src={preview || user.profilePic || defaultProfile} alt="" />
                             </div>
                             <UploadButton
                                 component="label"
@@ -557,7 +497,7 @@ export default function AdminProfileDashboard() {
                             </UploadButton>
                             <div className="contact-info">
                                 <div className="contact-div">
-                                    <h1 className="contact-head">First Name</h1>
+                                    {/* <h1 className="contact-head">First Name</h1> */}
                                     <TextField
                                         label="First Name"
                                         variant="outlined"
@@ -568,7 +508,7 @@ export default function AdminProfileDashboard() {
                                     />
                                 </div>
                                 <div className="contact-div">
-                                    <h1 className="contact-head">last Name</h1>
+                                    {/* <h1 className="contact-head">last Name</h1> */}
                                     <TextField
                                         label="last Name"
                                         variant="outlined"
@@ -585,43 +525,15 @@ export default function AdminProfileDashboard() {
                                     message={`${formErrors.firstName || ''}${formErrors.firstName && formErrors.lastName ? ' | ' : ''}${formErrors.lastName || ''}`}
                                 />
                             }
-                            <div className="contact-info">
-                                <div className="contact-div">
-                                    <h1 className="contact-head">Date Of Birth</h1>
-                                    <TextField
-                                        label="Date of Birth"
-                                        type="date"
-                                        variant="outlined"
-                                        value={formatDateToYYYYMMDD(formData.dob)}  // make sure this is in 'YYYY-MM-DD' format
-                                        onChange={handleChange('dob')}
-                                        fullWidth
-                                        className="form-field"
-                                        InputLabelProps={{
-                                            shrink: true, // ensures the label stays above the input when a date is selected
-                                        }}
-                                    />
-                                </div>
-                                <div className="contact-div">
-                                    <h1 className="contact-head">Nationality</h1>
-                                    <TextField
-                                        label="Nationality"
-                                        variant="outlined"
-                                        value={formData.nationality}
-                                        onChange={handleChange('nationality')}
-                                        fullWidth
-                                        className="form-field"
-                                    />
-                                </div>
-                            </div>
                         </div>
-                        <div className="contact-info-div">
+                        <div className="contact-info-div contact">
                             <h1 className="contact-info-head">Contact Information</h1>
                             <div className="contact-info">
                                 <div className="contact-div">
-                                    <h1 className="contact-head">Email Address</h1>
+                                    {/* <h1 className="contact-head">Email Address</h1> */}
                                     <div className="same-line">
                                         <TextField
-                                            label="Email"
+                                            label="Email Address"
                                             variant="outlined"
                                             value={formData.email.address}
                                             onChange={handleChange("email.address")}
@@ -629,10 +541,9 @@ export default function AdminProfileDashboard() {
                                             className="form-field"
                                         />
                                     </div>
-                                    
                                 </div>
                                 <div className="contact-div">
-                                    <h1 className="contact-head">Phone Number</h1>
+                                    {/* <h1 className="contact-head">Phone Number</h1> */}
                                     <div className="same-line">
                                         <PhoneInput
                                             country={"ae"}              // default country
@@ -661,7 +572,7 @@ export default function AdminProfileDashboard() {
                                                     borderRadius: 10,
                                                     border: '1.5px solid #470531',
                                                     padding: '10px 50px',
-                                                    width: '100%',
+                                                    width: isMobile ? '100%' : '350px',
                                                     height: '57px',
                                                 }
                                             }}

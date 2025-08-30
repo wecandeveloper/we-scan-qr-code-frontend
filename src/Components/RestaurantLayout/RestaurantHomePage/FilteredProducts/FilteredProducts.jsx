@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import slugify from "slugify";
 import { useAuth } from "../../../../Context/AuthContext";
 import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { startGetAllProducts } from "../../../../Actions/productActions";
 import { PiSmileySadDuotone } from "react-icons/pi";
 import { Box, CircularProgress } from "@mui/material";
@@ -17,6 +17,7 @@ import { Box, CircularProgress } from "@mui/material";
 export default function FilteredProducts({title}) {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const [ isOfferBannerImage, setIsOfferBannerImage ] = useState(false)
 
     const { setGlobalGuestCart } = useAuth()
 
@@ -32,11 +33,12 @@ export default function FilteredProducts({title}) {
         return state.restaurants.selected;
     });
 
-    // console.log(products)
+    console.log(restaurant)
 
     useEffect(() => {
         if (restaurant) {
             dispatch(startGetAllProducts(restaurant?.slug));
+            setIsOfferBannerImage(restaurant?.theme?.offerBannerImages?.length > 0)
         }
     }, [restaurant, dispatch]);
 
@@ -44,13 +46,13 @@ export default function FilteredProducts({title}) {
         let filteredArray = products.filter((ele) => {
             if (title === "Offer Items" && !(ele.offerPrice > 0)) {
                 return false;
+            } else if (title === "Featured Items") {
+                if(!ele.isFeatured) {
+                    return false
+                }
             }
             return true;
         });
-
-        if (title === "Featured Items") {
-            // return filteredArray.slice(0, 12);
-        }
 
         if (title === "Related Items") {
             const currentTags = product?.tags || []; // Tags of the current product
@@ -137,6 +139,7 @@ export default function FilteredProducts({title}) {
         <section id="sales">
             <div className={`filtered-products-section common-padding 
                 ${title === "Offer Items" || title === "Related Items" ? "margin-bottom" : ""} 
+                ${(isOfferBannerImage || location.pathname === `/restaurant/${restaurant?.slug}/offers`) ? "" : "margin-top"}
             `}>
                 <div className="head-div">
                     <h1 className="main-heading">{title}</h1>

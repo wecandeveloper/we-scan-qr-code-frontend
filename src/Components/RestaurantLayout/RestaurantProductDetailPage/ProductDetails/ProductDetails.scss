@@ -1,5 +1,4 @@
 .product-details-section {
-    margin-top: 100px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -314,7 +313,6 @@
 
 @media (max-width: 768px) {
     .product-details-section {
-        margin-top: 80px;
         flex-direction: column;
 
         .img-div {
@@ -365,11 +363,5 @@
                 }
             }
         }
-    }
-}
-
-@media (max-width: 500px) {
-    .product-details-section {
-        margin-top: 100px;
     }
 }

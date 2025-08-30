@@ -1,11 +1,11 @@
-.superadmin-dashboard {
+.restaurant-admin-dashboard {
     background: #f5f5f5;
     margin-top: 80px;
     height: calc(100vh - 80px); // Make sure it fits the remaining viewport
     overflow: hidden; // prevent the entire page from scrolling
 }
 
-.super-admin-dashboard-home-section {
+.restaurant-admin-dashboard-home-section {
     display: flex;
     width: 100%;
     height: 100%; // full height of dashboard
@@ -22,6 +22,7 @@
         overflow-y: auto;
         // max-height: 100%; // restrict scrolling inside
         transition: 0.5s;
+        z-index: 1000;
 
         .dashboard-hr-1 {
             // margin-top: 20px;
@@ -67,7 +68,7 @@
             cursor: pointer;
 
             .icon {
-                font-size: 30px;
+                font-size: 25px;
             }
 
             .heading {
@@ -93,13 +94,13 @@
                     padding: 0px 30px 0px;
 
                     .main-heading {
-                        font-size: 20px;
+                        font-size: 18px;
                         letter-spacing: 1px;
                     }
                 }
 
                 .dashboard-hr-2 {
-                    margin-top: 20px;
+                    margin-top: 10px;
                     border: .5px solid #e0e0e0;
                     width: 280px;
                     height: 1px;
@@ -108,7 +109,7 @@
                 }
 
                 .menubar-ul {
-                    margin: 20px 10px 20px;
+                    margin: 15px 10px 15px;
                     width: 280px;
                     // margin-left: 30px;
 
@@ -119,6 +120,8 @@
                         border-left: 3px solid white;
                         cursor: pointer;
                         transition: .5s;
+                        font-size: 14px;
+                        font-weight: 500;
                     }
 
                     .menubar-li.active {
@@ -163,6 +166,7 @@
             text-align: left;
             gap: 10px;
             cursor: pointer;
+            font-weight: 600;
 
             svg {
                 font-size: 25px;
@@ -197,6 +201,7 @@
         padding: 30px;
         overflow-y: auto;
         max-height: 100%;
+        gap: 20px;
 
         .dashboard-overview-head {
             font-size: 30px;
@@ -204,9 +209,8 @@
 
         .dashboard-overview-grid {
             margin-top: 50px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            // flex-wrap: wrap;
+            display: flex;
+            flex-wrap: wrap;
             gap: 30px;
 
             .dashboard-overview-card {
@@ -214,15 +218,32 @@
                 flex-direction: row;
                 align-items: center;
                 justify-content: flex-start;
-                width: 100%;
-                background: #470531;
+                width: 250px;
+                height: 100px;
+                background: var(--primary-color);
                 color: white;
                 padding: 20px 30px;
                 border-radius: 10px;
-                gap: 30px;
+                gap: 20px;
 
                 .icon {
-                    font-size: 50px;
+                    font-size: 40px;
+                }
+
+                .overview-details {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    gap: 5px;
+
+                    .title {
+                        font-size: 22px;
+                    }
+
+                    .nos {
+                        font-size: 18px;
+                        font-weight: 600;
+                    }
                 }
             }
         }
@@ -253,17 +274,108 @@
     }
 }
 
-@media (max-width: 950px) {
-    .dashboardhome-container {
-        margin-top: 50px;
-        flex-direction: column;
-
-        .navigation-section {
-            width: 100%;
+@media (max-width: 1000px) {
+    .restaurant-admin-dashboard-home-section {
+        .dashboard-navigation-div {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            bottom: 0;
+            height: 100%; /* ✅ Use viewport height instead of 100% */
+            scrollbar-width: thin; /* For Firefox */
+            padding-bottom: 80px;
         }
 
-        .dashboardhome-section {
-            width: 100%;
+        /* ✅ For smooth scrollbar styling (optional) */
+        .dashboard-navigation-div::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dashboard-navigation-div::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .restaurant-admin-dashboard-home-section {
+        .dashboard-overview-div {
+            padding: 30px;
+
+            .dashboard-overview-head {
+                margin-top: 20px;
+                font-size: 25px;
+            }
+
+            .dashboard-overview-grid {
+                .dashboard-overview-card {
+                    .overview-details {
+                        .title {
+                            font-size: 18px;
+                        }
+                    }
+
+                    .icon {
+                        font-size: 40px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .restaurant-admin-dashboard-home-section {
+        .dashboard-navigation-div {
+            .dashboard-head {
+                gap: 10px;
+
+                .icon {
+                    font-size: 25px;
+                }
+
+                .heading {
+                    font-size: 18px;
+                }
+            }
+
+            .dashboard-section-grid {
+                .dashboard-menu-div {
+                    .heading {
+                        padding: 0px 20px 0px;
+                    }
+
+                    .dashboard-hr-2 {
+                        width: 270px;
+                        margin-top: 10px;
+                    }
+
+                    .menubar-ul {
+                        margin: 15px 10px 15px;
+                        width: 280px;
+                        // margin-left: 30px;
+
+                        .menubar-li {
+                            padding: 10px 30px 10px;
+                            border-left: 3px solid white;
+                        }
+
+                        .dropdown-ul {
+                            padding-left: 10px;
+
+                            .dropdown-li {
+                                padding: 10px 30px 10px;
+                            }
+                        }
+                    }
+                }
+
+                .dashboard-menu-div:last-child .dashboard-hr-2 {
+                    display: none;
+                }
+
+            }
         }
     }
 }

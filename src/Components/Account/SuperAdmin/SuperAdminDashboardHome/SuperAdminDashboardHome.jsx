@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../../Context/AuthContext"
-import { useNavigate } from "react-router-dom";
 
 import "./SuperAdminDashboardHome.scss"
 
@@ -10,13 +9,13 @@ import { MdSpaceDashboard } from "react-icons/md";
 import { HiBuildingStorefront } from "react-icons/hi2";
 import { GrMoney } from "react-icons/gr";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { localhost } from "../../../../Api/apis";
-import RestaurantDashboard from "../SuperAdminDashboardMenu/RestaurantDashboard/RestaurantDashboard";
-import ProfileDashboard from "../SuperAdminDashboardMenu/ProfileDashboard/ProfileDashboard";
-import PasswordDashboard from "../SuperAdminDashboardMenu/PasswordDashboard/PasswordDashboard";
-import RestaurantAdminListDashboard from "../SuperAdminDashboardMenu/RestaurantAdminListDashboard/RestaurantAdminListDashboard";
+
 import { startGetAllRestaurant } from "../../../../Actions/restaurantActions";
+
+import RestaurantDashboard from "../SuperAdminDashboardMenu/RestaurantDashboard/RestaurantDashboard";
+import ProfileDashboard from "../../CommonDashboard/ProfileDashboard/ProfileDashboard";
+import RestaurantAdminListDashboard from "../SuperAdminDashboardMenu/RestaurantAdminListDashboard/RestaurantAdminListDashboard";
+import PasswordDashboard from "../../CommonDashboard/PasswordDashboard/PasswordDashboard";
 
 const dashboardMenu = [
     {
@@ -161,15 +160,15 @@ export default function SuperAdminDashboardHome() {
                             <div className="dashboard-overview-card">
                                 <div className="icon"><HiBuildingStorefront /></div>
                                 <div className="overview-details">
-                                    <h1>Restuarant</h1>
-                                    <p>{restaurants.length}</p>
+                                    <h1 className="title">Restuarant</h1>
+                                    <p className="value">{restaurants.length}</p>
                                 </div>
                             </div>
                             <div className="dashboard-overview-card">
                                 <div className="icon"><GrMoney /></div>
                                 <div className="overview-details">
-                                    <h1>Sales</h1>
-                                    <p>AED 0.00</p>
+                                    <h1 className="title">Sales</h1>
+                                    <p className="value">AED 0.00</p>
                                 </div>
                             </div>
                         </div>

@@ -87,7 +87,7 @@
                         transition: .3s;
 
                         &:hover {
-                            color: #eb3424;
+                            color: var(--primary-color);
                             transition: .3s;
                         }
                     }
@@ -124,7 +124,7 @@
 
                     .product-price.strike {
                         text-decoration: line-through;
-                        color: #eb3424;
+                        color: var(--primary-color);
                         font-size: 10px;
                         margin-bottom: 1px;
                     }
@@ -139,7 +139,7 @@
                 align-items: center;
                 top: 9px;
                 left: -35px;
-                background: #eb3424;
+                background: var(--primary-color);
                 color: white;
                 font-size: 8px;
                 font-weight: 600;
@@ -188,7 +188,7 @@
 
         svg {
             font-size: 80px;
-            color: #eb3424;
+            color: var(--primary-color);
         }
     }
 
@@ -206,17 +206,9 @@
 
         svg {
             font-size: 50px;
-            color: #eb3424;
+            color: var(--primary-color);
         }
     }
-}
-
-.filtered-products-section.margin-bottom {
-    margin-bottom: 80px;
-}
-
-.filtered-products-section.margin-top {
-    margin-top: 50px;
 }
 
 @media (max-width: 1050px) {
@@ -275,7 +267,6 @@
 
 @media (max-width: 500px) {
     .filtered-products-section {
-        margin-bottom: 20px;
         .product-grid {
             gap: 15px;
             .product-card {
@@ -310,13 +301,5 @@
                 }
             }
         }
-    }
-
-    .filtered-products-section.margin-bottom {
-        margin-bottom: 100px;
-    }
-
-     .filtered-products-section.margin-top {
-        margin-top: 100px;
     }
 }

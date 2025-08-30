@@ -1,4 +1,8 @@
 .restaurant-layout {
+    :root {
+        --header-height: 80px; /* adjust based on your RestaurantHeader height */
+    }
+
      .childrens {
         display: flex;
         flex-direction: column;
@@ -12,6 +16,8 @@
 
     .childrens {
         flex: 1; // Pushes the footer to the bottom if content is small
+        padding-top: 80px;
+        padding-bottom: 80px;
     }
 
     .btn-dark {
@@ -20,6 +26,7 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
+        text-align: center;
         gap: 10px;
         align-items: center;
         border: 2px solid var(--button-color);
@@ -181,6 +188,11 @@
 
 @media (max-width: 500px) {
     .restaurant-layout {
+        .childrens {
+            padding-top: 100px;
+            padding-bottom: 100px;
+        }
+
         .common-padding {
             padding: 50px 20px 0px 20px;
         }

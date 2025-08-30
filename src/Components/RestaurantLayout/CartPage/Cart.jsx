@@ -14,10 +14,11 @@ import { localhost } from "../../../Api/apis";
 import defaultImage from "../../../Assets/Common/defaultImage.avif";
 import { startCreateOrder } from "../../../Actions/orderActions";
 import { MdTableBar } from "react-icons/md";
+import { Box, CircularProgress } from "@mui/material";
 
 export default function Cart({setIsCartSectionOpen}) {
     const dispatch = useDispatch()
-    const { setGlobalGuestId, setGlobalGuestCart } = useAuth()
+    const { setGlobalGuestId, setGlobalGuestCart, setOpenSelectTableNumberModal } = useAuth()
 
     const restaurant = useSelector((state) => {
         return state.restaurants.selected;
@@ -28,9 +29,8 @@ export default function Cart({setIsCartSectionOpen}) {
     const [ showConfirm, setShowConfirm ] = useState(false);
     const [ productToRemove, setProductToRemove ] = useState(null);
     const [ showConfirmProceedOrder, setShowConfirmProceedOrder ] = useState(false);
-    const [ openSelectTableNumberModal, setOpenSelectTableNumberModal ] = useState(false);
-    const [ restaurantTables, setRestaurantTables ] = useState("")
     const [ tableId, setTableId ] = useState("");
+    const [ orderLoading, setOrderLoading ] = useState(false)
 
     console.log(guestId)
 
@@ -42,19 +42,13 @@ export default function Cart({setIsCartSectionOpen}) {
         setGuestCart(guestCartData);
     }, []);
 
-    useEffect(()=>{
-        (async()=>{
-            if(restaurant._id) {
-                try {
-                    const response = await axios.get(`${localhost}/api/table/listByRestaurant/${restaurant._id}`)
-                    console.log(response.data.data)
-                    setRestaurantTables(response.data.data)
-                } catch(err) {
-                    console.log(err)
-                }
-            }
-        })()
-    },[restaurant._id])
+    useEffect(() => {
+        // Check if table is already selected
+        const savedTableId = localStorage.getItem("selectedTableId");
+        setTableId(savedTableId)
+    }, [setTableId]);
+
+    console.log(tableId)
 
     const handleRemoveLineItem = (product) => {
         // console.log("Hii")
@@ -153,20 +147,31 @@ export default function Cart({setIsCartSectionOpen}) {
     };
 
     const confirmProceedOrder = async () => {
-        console.log("Proceeding to Order", guestCart);
+        if(!tableId) {
+            toast.error("Please Select the table Number")
+            setOpenSelectTableNumberModal(true)
+        } else {
+            setOrderLoading(true)
+            console.log("Proceeding to Order", guestCart);
 
-        const formData = {
-            restaurantId: restaurant._id,
-            lineItems: guestCart.lineItems.map((item) => ({
-            productId: item.productId._id,
-            quantity: item.quantity,
-            })),
-            tableId,
-            guestId: guestId || undefined,
-        };
-        console.log(formData)
-
-        dispatch(startCreateOrder(formData, setGlobalGuestId, setOpenSelectTableNumberModal, setIsCartSectionOpen));
+            const formData = {
+                restaurantId: restaurant._id,
+                lineItems: guestCart.lineItems.map((item) => ({
+                productId: item.productId._id,
+                quantity: item.quantity,
+                })),
+                tableId,
+                guestId: guestId || undefined,
+            };
+            console.log(formData)
+            try {
+                await dispatch(startCreateOrder(formData, setGlobalGuestId, setIsCartSectionOpen));
+            } catch (err) {
+                console.log(err)
+            } finally {
+                setOrderLoading(false)
+            }
+        }
     };
 
     return (
@@ -260,8 +265,15 @@ export default function Cart({setIsCartSectionOpen}) {
                                     AED {totalAmount}
                                 </div>
                             </div>
-                            <div className="order-btn" onClick={() => {setOpenSelectTableNumberModal(true)}}>
-                                Proceed to Order
+                            <div className="order-btn" onClick={() => {setShowConfirmProceedOrder(true)}}>
+                                
+                                {orderLoading ? 
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        Placing Order <CircularProgress color="inherit" size={20}/>
+                                    </Box>
+                                : (
+                                    "Proceed to Order "
+                                )}
                             </div>
                         </div>
                     </div>
@@ -270,56 +282,10 @@ export default function Cart({setIsCartSectionOpen}) {
                         <h1 className="main-heading">My Cart</h1>
                         <p>Your Cart is empty</p>
                         <img src={defaultImage} alt="" />
-                        <p>Go to <a href="/collections">Collection</a> to add a new Item to the Cart</p>
+                        <p>Go to <a href={`/restaurant/${restaurant?.slug}/collections`}>Collection</a> to add a new Item to the Cart</p>
                     </div>
                 )}
             </div>
-
-            {openSelectTableNumberModal && (
-                <div className="custom-modal-overlay">
-                    <div className="custom-modal">
-                        <div className="select-table-number">
-                            <h1 className="head">Select Table Number</h1>
-                            <div className="table-number-input-div">
-                                <MdTableBar />
-                                <select
-                                    value={tableId}
-                                    onChange={(e) => setTableId(e.target.value)}
-                                >
-                                    <option value="">Select Table</option>
-                                    {restaurantTables.map((table) => (
-                                    <option key={table._id} value={table._id}>
-                                        Table {table.tableNumber}
-                                    </option>
-                                    ))}
-                                </select>
-                                </div>
-
-                            <div className="btn-div">
-                            <button
-                                className="btn-dark"
-                                onClick={() => {
-                                    if(!tableId) {
-                                        toast.error("Please select the table Number")
-                                    } else {
-                                        setShowConfirmProceedOrder(true)
-                                    }
-                                    
-                                }}
-                            >
-                                Proceed to Order
-                            </button>
-                            <button
-                                className="btn-dark"
-                                onClick={() => setOpenSelectTableNumberModal(false)}
-                            >
-                                Cancel
-                            </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
 
 
             {showConfirm && (

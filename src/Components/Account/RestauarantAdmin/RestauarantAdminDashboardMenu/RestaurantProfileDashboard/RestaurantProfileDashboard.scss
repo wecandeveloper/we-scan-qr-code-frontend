@@ -1,8 +1,8 @@
-.customer-profile-section-div {
+.restaurant-profile-section-div {
     display: block;
     padding: 30px;
 
-    .customer-profile-section {
+    .restaurant-profile-section {
         display: block;
         padding-bottom: 30px;
 
@@ -15,10 +15,16 @@
             border-radius: 10px;
             justify-content: space-between;
             align-items: center;
+            gap: 20px;
 
             .head {
                 display: flex;
                 flex-direction: column;
+                gap: 5px;
+
+                p {
+                    font-size: 14px;
+                }
             }
 
             .btn-div {
@@ -37,109 +43,146 @@
             }
         }
 
-        .customer-profile-details {
+        .restaurant-profile-details {
             margin-top: 30px;
             display: flex;
             flex-direction: column;
-            gap: 30px;       
+            gap: 30px;  
             
-            .customer-profile-info-div {
+            .restaurant-profile-theme-div {
+                margin-top: 30px;
                 display: flex;
                 flex-direction: column;
-                background: white;
-                // box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-                padding: 25px;
-                border-radius: 10px;
-                gap: 20px;
+                gap: 30px; 
 
-                .profile-info-head {
-                    font-size: 25px;
-                }
+                .restaurant-profile-info-div {
+                    display: flex;
+                    flex-direction: column;
+                    background: white;
+                    // box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                    padding: 25px;
+                    border-radius: 10px;
+                    gap: 20px;
 
-                .img-div {
-                    margin-top: 30px;
-                    width: 250px;
-                    height: 320px;
-                    position: relative;
+                    .profile-info-head {
+                        font-size: 25px;
+                    }
 
-                    #main-slider {
-                        border-radius: 10px;
-                        overflow: hidden;
+                    .img-div {
+                        // margin-top: 30px;
+                        width: 250px;
+                        height: 320px;
+                        position: relative;
 
-                        .splide__track {
-                            height: 100% !important;
+                        #main-slider {
+                            border-radius: 10px;
+                            overflow: hidden;
+
+                            .splide__track {
+                                height: 100% !important;
+                            }
+
+                            .splide__slide {
+                                height: 100%;
+
+                                img {
+                                    object-fit: cover;
+                                    border-radius: 10px;
+                                }
+                            }
+
+                            .splide__arrow {
+                                width: 10px; // smaller arrow width
+                                height: 10px; // smaller arrow height
+                                background: #1d4ed8; // optional: your custom color
+                                opacity: 0.8;
+
+                                svg {
+                                    width: 10px; // arrow icon size
+                                    height: 12px;
+                                }
+                            }
                         }
 
-                        .splide__slide {
+                        #thumbnail-slider {
+                            margin-top: 20px;
+
+                            .splide__slide {
+                                cursor: pointer;
+                                opacity: 0.7;
+                                transition: opacity 0.3s;
+
+                                &.is-active {
+                                    opacity: 1;
+                                    border: 1px solid #470531;
+                                }
+
+                                img {
+                                    border-radius: 6px;
+                                    object-fit: cover;
+                                }
+                            }
+                        }
+
+                        .img-close-btn {
+                            position: absolute;
+                            top: 20px;
+                            right: 20px;
+                            color: #1d4ed8;
+                            font-size: 50px;
+                        }
+                    }
+
+                    .profile-info-details {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 20px;
+                        width: 100%;
+
+                        .profile-details {
+                            width: 50%;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 10px;
+
+                            .profile-head {
+                                font-size: 18px;
+                            }
+
+                            .profile-value {
+                                padding: 10px 15px;
+                                border-radius: 10px;
+                                border : 2px solid #470531;
+                                width: 100%;
+                                font-size: 14px;
+                            }
+
+                            .banner-image-grid {
+                                display: grid;
+                                grid-template-columns: repeat(2, 1fr);
+                                gap: 30px;
+
+                                .banner-image-div {
+                                    width: 100%;
+                                    height: 100%;
+
+                                    img {
+                                        width: 100%;
+                                        height: 100%;
+                                    }
+                                }
+                            }
+                        }
+
+                        .logo-div {
+                            width: 250px;
                             height: 100%;
 
                             img {
-                                object-fit: cover;
-                                border-radius: 10px;
+                                width: 100%;
+                                height: 100%;
                             }
                         }
-
-                        .splide__arrow {
-                            width: 10px; // smaller arrow width
-                            height: 10px; // smaller arrow height
-                            background: #1d4ed8; // optional: your custom color
-                            opacity: 0.8;
-
-                            svg {
-                                width: 10px; // arrow icon size
-                                height: 12px;
-                            }
-                        }
-                    }
-
-                    #thumbnail-slider {
-                        margin-top: 20px;
-
-                        .splide__slide {
-                            cursor: pointer;
-                            opacity: 0.7;
-                            transition: opacity 0.3s;
-
-                            &.is-active {
-                                opacity: 1;
-                                border: 1px solid #470531;
-                            }
-
-                            img {
-                                border-radius: 6px;
-                                object-fit: cover;
-                            }
-                        }
-                    }
-
-                    .img-close-btn {
-                        position: absolute;
-                        top: 20px;
-                        right: 20px;
-                        color: #1d4ed8;
-                        font-size: 50px;
-                    }
-                }
-
-                .profile-info-details {
-                    display: flex;
-                    flex-direction: row;
-                    gap: 20px;
-                    width: 100%;
-
-                    .profile-details {
-                        width: 50%;
-                        display: flex;
-                        flex-direction: column;
-                        gap: 5px;
-
-                        .profile-value {
-                            padding: 15px 15px;
-                            border-radius: 10px;
-                            border : 2px solid #470531;
-                            width: 100%;
-                        }
-                    }
 
                         .same-line {
                             display: flex;
@@ -169,106 +212,107 @@
                                 width: 20px;
                             }
                         }
-                }
+                    }
 
-                .contact-info {
-                    display: flex;
-                    flex-direction: row;
-                    // justify-content: center;
-                    align-items: center;
-                    gap: 30px;
-                    width: 100%;
-
-                    .contact-div {
+                    .contact-info {
                         display: flex;
-                        flex-direction: column;
-                        gap: 10px;
+                        flex-direction: row;
+                        // justify-content: center;
+                        align-items: center;
+                        gap: 30px;
                         width: 100%;
 
-                        .same-line {
+                        .contact-div {
                             display: flex;
-                            flex-direction: row;
+                            flex-direction: column;
                             gap: 10px;
-                            align-items: center;
-                        }
-
-                        .btn-dark {
-                            height: 55px;
-                            width: 100px;
-                        }
-
-                        .verified-btn {
-                            width: 100px;
-                            height: 55px;
-                            margin-left: auto;
-                            background: #EDF7ED;
-                            color: #458845;
-                            border: none;
-                            display: flex;
-                            flex-direction: row;
-                            gap: 5px;
-
-                            img {
-                                width: 20px;
-                            }
-                        }
-
-                        .form-field {
                             width: 100%;
-                            // border: 2px solid #470531;
-                            border-radius: 10px;
 
-                            .MuiOutlinedInput-root {
-                                color: #470531;
-                                font-family: "Montserrat", sans-serif;
+                            .same-line {
+                                display: flex;
+                                flex-direction: row;
+                                gap: 10px;
+                                align-items: center;
+                            }
+
+                            .btn-dark {
+                                height: 55px;
+                                width: 100px;
+                            }
+
+                            .verified-btn {
+                                width: 100px;
+                                height: 55px;
+                                margin-left: auto;
+                                background: #EDF7ED;
+                                color: #458845;
+                                border: none;
+                                display: flex;
+                                flex-direction: row;
+                                gap: 5px;
+
+                                img {
+                                    width: 20px;
+                                }
+                            }
+
+                            .form-field {
+                                width: 100%;
+                                // border: 2px solid #470531;
                                 border-radius: 10px;
-                                transition: all 0.3s ease;
 
-                                fieldset {
-                                    border-color: #470531;
-                                    border-width: 1.5px;
-                                    transition: 0.3s;
+                                .MuiOutlinedInput-root {
+                                    color: #470531;
+                                    font-family: "Montserrat", sans-serif;
+                                    border-radius: 10px;
+                                    transition: all 0.3s ease;
+
+                                    fieldset {
+                                        border-color: #470531;
+                                        border-width: 1.5px;
+                                        transition: 0.3s;
+                                    }
+
+                                    &:hover fieldset {
+                                        border-color: #470531;
+                                        border-width: 2px;
+                                    }
+
+                                    &.Mui-focused fieldset {
+                                        border-color: #470531;
+                                        border-width: 2px;
+                                    }
                                 }
 
-                                &:hover fieldset {
-                                    border-color: #470531;
-                                    border-width: 2px;
+                                .MuiInputLabel-root {
+                                    color: #470531;
+                                    font-family: "Montserrat", sans-serif;
                                 }
 
-                                &.Mui-focused fieldset {
-                                    border-color: #470531;
-                                    border-width: 2px;
+                                .MuiInputLabel-root.Mui-focused {
+                                    color: #470531;
                                 }
-                            }
 
-                            .MuiInputLabel-root {
-                                color: #470531;
-                                font-family: "Montserrat", sans-serif;
-                            }
+                                .MuiInputBase-input,
+                                .MuiSelect-select {
+                                    color: #470531;
+                                    font-family: "Montserrat", sans-serif;
+                                    text-align: left;
+                                }
 
-                            .MuiInputLabel-root.Mui-focused {
-                                color: #470531;
-                            }
-
-                            .MuiInputBase-input,
-                            .MuiSelect-select {
-                                color: #470531;
-                                font-family: "Montserrat", sans-serif;
-                                text-align: left;
-                            }
-
-                            .start-adornment {
-                                font-family: "Montserrat", sans-serif;
-                                color: #470531;
-                                font-weight: 500;
+                                .start-adornment {
+                                    font-family: "Montserrat", sans-serif;
+                                    color: #470531;
+                                    font-weight: 500;
+                                }
                             }
                         }
                     }
-                }
+                }  
             }
         }
 
-        .customer-profile-info-div-empty {
+        .restaurant-profile-info-div-empty {
             margin-top: 30px;
             display: flex;
             flex-direction: column;
@@ -282,6 +326,10 @@
             padding: 30px;  
             background-color: white;
             border-radius: 10px;
+
+            .contact-info-head {
+                margin-bottom: 20px;
+            }
             
             .product-form {
                 display: flex;
@@ -289,6 +337,7 @@
                 gap: 20px;
 
                 .image-preview-container {
+                    margin-top: 20px;
                     display: flex;
                     flex-wrap: wrap;
                     gap: 20px;
@@ -297,6 +346,46 @@
                         position: relative;
                         width: 150px;
                         height: 150px;
+                        border: 1px solid #ccc;
+                        border-radius: 8px;
+                        padding: 8px;
+                        background: #f9f9f9;
+                        text-align: center;
+
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            border-radius: 4px;
+                        }
+                        .remove-btn {
+                            position: absolute;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            top: 4px;
+                            right: 4px;
+                            //   background: #470531;
+                            color: #470531;
+                            border: 2px solid #470531;
+                            border-radius: 4px;
+                            height: 20px;
+                            width: 20px;
+                            font-size: 16px;
+                            cursor: pointer;
+                            transition: .3s all;
+
+                            &:hover {
+                                background: #470531;
+                                color: #fff;
+                            }
+                        }
+                    }
+
+                    .image-box-logo {
+                        position: relative;
+                        width: 250px;
+                        height: 100%;
                         border: 1px solid #ccc;
                         border-radius: 8px;
                         padding: 8px;
@@ -405,6 +494,7 @@
 
                 .same-line.address {
                     align-items: flex-start;
+                    margin-top: -20px;
                 }
 
                 .same-row {
@@ -474,6 +564,14 @@
 
                 }
 
+                .restaurant-banner-div {
+                    margin-top: 30px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 30px; 
+
+                }
+
                 .btn-dark {
                     height: 55px;
                 }
@@ -493,6 +591,7 @@
             }
         }
     }
+    
     .verify-email-div-modal {
         position: fixed;
         top: 0;
@@ -664,6 +763,47 @@
                 }
                 to {
                     width: 0%;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .restaurant-profile-section-div {
+        padding: 20px;
+        
+        .restaurant-profile-section {
+            .head-div {
+                flex-direction: column;
+                align-items: flex-start;
+
+                .btn-div {
+                    margin-left: auto;
+                }
+            }
+
+            .restaurant-profile-details {
+                .restaurant-profile-theme-div {
+                    margin-top: 0px;
+
+                    .restaurant-profile-info-div {
+                        .profile-info-head {
+                            font-size: 22px;
+                        }
+
+                        .profile-info-details {
+                            flex-direction: column;
+
+                            .profile-details {
+                                width: 100%;
+
+                                .logo-div {
+                                    width: 200px;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

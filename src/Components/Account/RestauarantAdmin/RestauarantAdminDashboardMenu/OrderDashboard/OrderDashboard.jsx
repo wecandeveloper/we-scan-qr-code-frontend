@@ -264,7 +264,7 @@ export default function OrderDashboard({restaurant}) {
     };
 
     const confirmCancelOrder = () => {
-        dispatch(startCancelOrder(order.guestId, orderId, handleCloseAll))
+        dispatch(startCancelOrder(order?.guestId, orderId, handleCloseAll))
     }
 
     const confirmDeleteOrder = () => {
@@ -331,56 +331,58 @@ export default function OrderDashboard({restaurant}) {
                                 </button>
                             </div>
                         </div>
-                        <table className="order-table">
-                            <thead>
-                                <tr>
-                                    <th>Order Id</th>
-                                    <th>Order No</th>
-                                    <th>No.of LineItems</th>
-                                    <th>Total Amount</th>
-                                    {/* <th>Customer Name</th>
-                                    <th>Customer Email</th> */}
-                                    <th>Order Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            {getProcessedOrders()?.length > 0 ? (
-                                <tbody>
-                                    {getProcessedOrders()?.map((product) => (
-                                        <tr key={product._id}>
-                                            <td>{product._id}</td>
-                                            <td>{product.orderNo}</td>
-                                            <td>{product.lineItems.length}</td>
-                                            <td>{product.totalAmount}</td>
-                                            {/* <td>{`${product.customerId.firstName} ${product.customerId.lastName}`}</td> */}
-                                            {/* <td>{product.customerId.email.address}</td> */}
-                                            <td>{product.status}</td>
-                                            <td>
-                                                <div className="action-div">
-                                                    <button className="view-btn" onClick={() => {
-                                                        setIsViewSectionOpen(true)
-                                                        setOrderId(product._id)
-                                                        }}><MdRemoveRedEye /></button>
-                                                    <button className="delete-btn" onClick={() => {
-                                                        setShowConfirmDeleteOrder(true)
-                                                        setOrderId(product._id)
-                                                    }}><BiSolidTrash /></button>
-                                                </div>
+                        <div className="order-table-container">
+                            <table className="order-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order Id</th>
+                                        <th>Order No</th>
+                                        <th>Table No</th>
+                                        <th>No.of LineItems</th>
+                                        <th>Total Amount</th>
+                                        <th>Order Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                {getProcessedOrders()?.length > 0 ? (
+                                    <tbody>
+                                        {getProcessedOrders()?.map((product) => (
+                                            <tr key={product._id}>
+                                                <td>{product._id}</td>
+                                                <td>{product.orderNo}</td>
+                                                <td>{product?.tableId?.tableNumber}</td>
+                                                <td>{product.lineItems.length}</td>
+                                                <td>{product.totalAmount}</td>
+                                                {/* <td>{`${product.customerId.firstName} ${product.customerId.lastName}`}</td> */}
+                                                {/* <td>{product.customerId.email.address}</td> */}
+                                                <td>{product.status}</td>
+                                                <td>
+                                                    <div className="action-div">
+                                                        <button className="view-btn" onClick={() => {
+                                                            setIsViewSectionOpen(true)
+                                                            setOrderId(product._id)
+                                                            }}><MdRemoveRedEye /></button>
+                                                        <button className="delete-btn" onClick={() => {
+                                                            setShowConfirmDeleteOrder(true)
+                                                            setOrderId(product._id)
+                                                        }}><BiSolidTrash /></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                ) : (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="8" style={{ textAlign: "center" }}>
+                                                <p className="no-order-text">No Orders Data Found</p>
                                             </td>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            ) : (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="8" style={{ textAlign: "center" }}>
-                                            <p className="no-order-text">No Orders Data Found</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            )}
-                            
-                        </table>
+                                    </tbody>
+                                )}
+                                
+                            </table>
+                        </div>
                         <div className="table-footer">
                             <div className="footer-pagination">
                                 <span
@@ -454,21 +456,30 @@ export default function OrderDashboard({restaurant}) {
                                 <div className="order-content">
                                     <div>
                                         <h1 className="order-head">View Order</h1>
-                                        <div key={order._id} className="customer-order-card">
-                                            {/* {order.status} */}
+                                        <div key={order?._id} className="customer-order-card">
+                                            {/* {order?.status} */}
                                             <div className="orderId-price-div">
                                                 <div className="order-price-div">
-                                                    <h1 className="order-price">Order ID:<br/> {order._id}</h1>
-                                                    <div>{formatDeliveryDate(order.orderDate)}</div>
-                                                    <div className="order-price">Total Amount: AED {order.totalAmount}</div>
+                                                    <h1 className="order-price">Order ID:<br/> <div style={{ marginTop: "5px" }}>{order?.orderNo}</div></h1>
+                                                    <div>{formatDeliveryDate(order?.orderDate)}</div>
+                                                    <div className="item-details">
+                                                        <h5 className="head">Table No:</h5>
+                                                        <p className="value">{order?.tableId?.tableNumber}</p>
+                                                    </div>
                                                 </div>
-                                                <div className="order-status">
-                                                    <p>Order Status :</p> 
-                                                    <p>{order.status}</p>
+                                                <div className="order-status-amount-div">
+                                                    <div className="order-status">
+                                                        <p className="head">Order Status:</p> 
+                                                        <p>{order?.status}</p>
+                                                    </div>
+                                                    <div className="order-amount">
+                                                        <p className="head">Total Amount:</p> 
+                                                        <p>AED {order?.totalAmount}</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="order-details-div">
-                                                <h2>Order Details</h2>
+                                                <h2 className="head-title">Order Details</h2>
                                                 <div className="lineItems-grid">
                                                     <h1 className="linItems-head">Order Items</h1>
                                                     {order?.lineItems?.map((item) => {
@@ -479,8 +490,8 @@ export default function OrderDashboard({restaurant}) {
                                                                 </div>
                                                                 <div className="item-details-div">
                                                                     <div className="item-name-div">
-                                                                        <h1>{item.productId.name}</h1>
-                                                                        <h3>{item.productId.categoryId.name}</h3>
+                                                                        <h1 className="name">{item.productId.name}</h1>
+                                                                        <h3 className="category">{item.productId.categoryId.name}</h3>
                                                                     </div>
                                                                     <div className="price-qty-div">
                                                                         <p>Price: AED {item.price * item.quantity}</p>
@@ -498,29 +509,29 @@ export default function OrderDashboard({restaurant}) {
                                         <div className="change-status-div">
                                             <p>Change Status To:</p>
                                             <div className="same-line">
-                                            <FormControl fullWidth className="form-field">
-                                                <InputLabel>Status</InputLabel>
-                                                <Select
-                                                    value={orderStatus}
-                                                    onChange={(e) => setOrderStatus(e.target.value)}
-                                                    label="Coupon Type"
-                                                    >
-                                                        <MenuItem value="Placed">Placed</MenuItem>
-                                                        <MenuItem value="Preparing">Preparing</MenuItem>
-                                                        <MenuItem value="Ready">Ready</MenuItem>
-                                                        <MenuItem value="Cancelled">Cancelled</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                            {(alertMessage) &&
-                                                <CustomAlert
-                                                    severity="error" 
-                                                    message={alertMessage}
-                                                    className="error-message"
-                                                />
-                                            }
-                                            <button className="btn edit-btn" onClick={() => {
-                                            setShowConfirmChangeOrderStatus(true)
-                                            }}>Change<MdEditSquare /></button>
+                                                <FormControl fullWidth className="form-field">
+                                                    <InputLabel>Status</InputLabel>
+                                                    <Select
+                                                        value={orderStatus}
+                                                        onChange={(e) => setOrderStatus(e.target.value)}
+                                                        label="Coupon Type"
+                                                        >
+                                                            <MenuItem value="Placed">Placed</MenuItem>
+                                                            <MenuItem value="Preparing">Preparing</MenuItem>
+                                                            <MenuItem value="Ready">Ready</MenuItem>
+                                                            <MenuItem value="Cancelled">Cancelled</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                                {(alertMessage) &&
+                                                    <CustomAlert
+                                                        severity="error" 
+                                                        message={alertMessage}
+                                                        className="error-message"
+                                                    />
+                                                }
+                                                <button className="btn edit-btn" onClick={() => {
+                                                setShowConfirmChangeOrderStatus(true)
+                                                }}>Change<MdEditSquare /></button>
                                             </div>
                                         </div>
                                         <div className="cancel-dlt-div">

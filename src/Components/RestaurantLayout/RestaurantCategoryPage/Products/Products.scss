@@ -1,5 +1,4 @@
 .products-section {
-    margin-top: 50px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -633,11 +632,6 @@
     }
 }
 
-.products-section.no-margin-top-bottom {
-    margin-top: 0px;
-    margin-bottom: 0px;
-}
-
 @media (max-width: 1050px) {
     .products-section {
         .product-grid-div {
@@ -766,9 +760,6 @@
 
 @media (max-width: 500px) {
     .products-section {
-        margin-top: 100px;
-        margin-bottom: 120px;
-        
         .category-grid {
             .category-card {
                 width: 100px;

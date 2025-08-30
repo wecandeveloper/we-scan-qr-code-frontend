@@ -107,6 +107,7 @@ export default function ProductDashboard({restaurant}) {
         name: "",
         categoryId: "",
         isAvailable: true,
+        isFeatured: false,
         price: "",
         description: "",
         images: [],
@@ -213,6 +214,7 @@ export default function ProductDashboard({restaurant}) {
                 name: product.name,
                 categoryId: product.categoryId,
                 isAvailable: product.isAvailable || true,
+                isFeatured: product.isFeatured || false,
                 price: product.price,
                 description: product.description,
                 images: product.images,
@@ -225,6 +227,7 @@ export default function ProductDashboard({restaurant}) {
                 name: "",
                 categoryId: "",
                 isAvailable: true,
+                isFeatured: false,
                 price: "",
                 description: "",
                 images: [],
@@ -455,7 +458,8 @@ export default function ProductDashboard({restaurant}) {
             offerPrice,
             tags,
             images,
-            isAvailable
+            isAvailable,
+            isFeatured
         } = productForm;
 
         const isNameChanged = name !== product.name;
@@ -469,6 +473,7 @@ export default function ProductDashboard({restaurant}) {
         const isDiscountChanged = Number(discountPercentage) !== Number(product.discountPercentage);
         const isExpiryDateChanged = Date(offerPrice) !== Date(product.offerPrice);
         const isAvailableChanged = Boolean(isAvailable) !== Boolean(product.isAvailable);
+        const isFeaturedChanged = Boolean(isFeatured) !== Boolean(product.isFeatured);
 
         const areTagsChanged =
             Array.isArray(tags) &&
@@ -503,7 +508,8 @@ export default function ProductDashboard({restaurant}) {
             isExpiryDateChanged ||
             areTagsChanged ||
             isImagesChanged ||
-            isAvailableChanged
+            isAvailableChanged ||
+            isFeaturedChanged
         );
     };
 
@@ -539,6 +545,7 @@ export default function ProductDashboard({restaurant}) {
                 )
             formData.append("stock", productForm.stock);
             formData.append("isAvailable", productForm.isAvailable);
+            formData.append("isFeatured", productForm.isFeatured);
             formData.append("price", productForm.price);
 
             // Optional: discountPercentage
@@ -648,83 +655,87 @@ export default function ProductDashboard({restaurant}) {
                                         </div>
                                     </div>
                                 </div>
-                                <button className="export-btn">
-                                    {/* 📁  */}
-                                    Export
-                                </button>
-                                <button className="add-btn" onClick={() => {
-                                    setIsViewEditSectionOpen(true)
-                                    setIsEditProduct(true)
-                                    }}>Add Product</button>
+                                <div className="btn-div">
+                                    <button className="export-btn">
+                                        {/* 📁  */}
+                                        Export
+                                    </button>
+                                    <button className="add-btn" onClick={() => {
+                                        setIsViewEditSectionOpen(true)
+                                        setIsEditProduct(true)
+                                        }}>Add Product</button>
+                                </div>
                             </div>
                         </div>
-                        <table className="product-table">
-                            <thead>
-                                <tr>
-                                    <th>SI No</th>
-                                    <th>Name</th>
-                                    <th>Category</th>
-                                    <th>Price</th>
-                                    <th>Discount %</th>
-                                    <th>Offer Price</th>
-                                    <th>Image</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            {getProcessedProducts().length > 0 ? (
-                                <tbody>
-                                    {getProcessedProducts().map((product, index) => (
-                                        <tr key={product._id}>
-                                            <td>{index + 1}</td>
-                                            <td>{product.name}</td>
-                                            <td>{
-                                                typeof product.categoryId === 'object'
-                                                    ? product.categoryId?.name
-                                                    : categories.find(cat => cat._id === product.categoryId)?.name || '—'
-                                            }</td>
-                                            <td>{product.price}</td>
-                                            <td>{product.discountPercentage}</td>
-                                            <td>{product.offerPrice}</td>
-                                            <td>
-                                                {product.images[0] ? (
-                                                <img src={product.images[0].url} alt={product.name} className="product-img" />
-                                                ) : (
-                                                "No Image"
-                                                )}
-                                            </td>
-                                            <td>
-                                                <div className="action-div">
-                                                    <button className="view-btn" onClick={() => {
-                                                        setIsViewEditSectionOpen(true)
-                                                        setProductId(product._id)
-                                                        }}><MdRemoveRedEye /></button>
-                                                    <button className="edit-btn" onClick={() => {
-                                                        setIsViewEditSectionOpen(true)
-                                                        setIsEditProduct(true)
-                                                        setProductId(product._id)
-                                                        }}><MdEditSquare /></button>
-                                                    <button className="delete-btn" onClick={() => {
-                                                        setShowConfirmDeleteProduct(true)
-                                                        setProductId(product._id)
-                                                    }}>{(isLoading && productId === product._id) ? 
-                                                        <Box sx={{ display: 'flex', gap: 1 }}>
-                                                            <CircularProgress color="inherit" size={15}/>
-                                                        </Box> : <BiSolidTrash />}</button>
-                                                </div>
+                        <div className="product-table-container">
+                            <table className="product-table">
+                                <thead>
+                                    <tr>
+                                        <th>SI No</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Discount %</th>
+                                        <th>Offer Price</th>
+                                        <th>Image</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                {getProcessedProducts().length > 0 ? (
+                                    <tbody>
+                                        {getProcessedProducts().map((product, index) => (
+                                            <tr key={product._id}>
+                                                <td>{index + 1}</td>
+                                                <td>{product.name}</td>
+                                                <td>{
+                                                    typeof product.categoryId === 'object'
+                                                        ? product.categoryId?.name
+                                                        : categories.find(cat => cat._id === product.categoryId)?.name || '—'
+                                                }</td>
+                                                <td>{product.price}</td>
+                                                <td>{product.discountPercentage}</td>
+                                                <td>{product.offerPrice}</td>
+                                                <td>
+                                                    {product.images[0] ? (
+                                                    <img src={product.images[0].url} alt={product.name} className="product-img" />
+                                                    ) : (
+                                                    "No Image"
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    <div className="action-div">
+                                                        <button className="view-btn" onClick={() => {
+                                                            setIsViewEditSectionOpen(true)
+                                                            setProductId(product._id)
+                                                            }}><MdRemoveRedEye /></button>
+                                                        <button className="edit-btn" onClick={() => {
+                                                            setIsViewEditSectionOpen(true)
+                                                            setIsEditProduct(true)
+                                                            setProductId(product._id)
+                                                            }}><MdEditSquare /></button>
+                                                        <button className="delete-btn" onClick={() => {
+                                                            setShowConfirmDeleteProduct(true)
+                                                            setProductId(product._id)
+                                                        }}>{(isLoading && productId === product._id) ? 
+                                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                                <CircularProgress color="inherit" size={15}/>
+                                                            </Box> : <BiSolidTrash />}</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                ) : (
+                                    <tbody>
+                                        <tr>
+                                            <td colSpan="9" style={{ textAlign: "center" }}>
+                                                <p className="no-order-text">No Product Data Found</p>
                                             </td>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            ) : (
-                                <tbody>
-                                    <tr>
-                                        <td colSpan="9" style={{ textAlign: "center" }}>
-                                            <p className="no-order-text">No Product Data Found</p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            )}
-                        </table>
+                                    </tbody>
+                                )}
+                            </table>
+                        </div>
                         <div className="table-footer">
                             <div className="footer-pagination">
                                 <span
@@ -926,21 +937,37 @@ export default function ProductDashboard({restaurant}) {
                                                         className="error-message"
                                                     />
                                                 }
-                                                
-                                                <div className="isAvailable-div">
-                                                    <div className="label"> Product Available</div>
-                                                    <label className="switch">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={productForm.isAvailable}
-                                                            onChange={(e) =>
-                                                                handleChange("isAvailable")({
-                                                                    target: { value: e.target.checked },
-                                                                })
-                                                            }
-                                                        />
-                                                        <span className="slider round"></span>
-                                                    </label>
+                                                <div className="same-line isAvailable-isFeatured">
+                                                    <div className="isAvailable-div">
+                                                        <div className="label"> Product Available</div>
+                                                        <label className="switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={productForm.isAvailable}
+                                                                onChange={(e) =>
+                                                                    handleChange("isAvailable")({
+                                                                        target: { value: e.target.checked },
+                                                                    })
+                                                                }
+                                                            />
+                                                            <span className="slider round"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div className="isAvailable-div">
+                                                        <div className="label">Featured Product</div>
+                                                        <label className="switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={productForm.isFeatured}
+                                                                onChange={(e) =>
+                                                                    handleChange("isFeatured")({
+                                                                        target: { value: e.target.checked },
+                                                                    })
+                                                                }
+                                                            />
+                                                            <span className="slider round"></span>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                                 <div className="same-line">
                                                     <TextField
