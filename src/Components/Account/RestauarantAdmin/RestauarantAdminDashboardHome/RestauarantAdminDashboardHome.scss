@@ -36,7 +36,7 @@
             top: 50%;
             left: 300px;
             transform: translateY(-50%);
-            background: #470531;
+            background: var(--primary-color);
             color: white;
             height: 50px;
             width: 15px;
@@ -48,6 +48,7 @@
             cursor: pointer;
             transition: 0.5s;
             box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
 
 
             .icon {
@@ -271,6 +272,141 @@
         flex: 1;
         overflow-y: auto;
         max-height: 100%;
+    }
+
+    .restaurant-order-waiter-section {
+        margin-top: 50px;
+        display: flex;
+        flex-direction: column;
+        gap: 50px;
+
+        .restaurant-order-waiter-div {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+
+            .notifications, .waiter-calls {
+                background: #fff;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                width: fit-content;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .no-notifications, .no-waiter-calls {
+                background: #fff;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                width: fit-content;
+            }
+
+            .order-notifications {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+
+                .order-card {
+                    background: #fff;
+                    border-radius: 10px;
+                    padding: 20px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                    width: 100%;
+                }
+
+                .head-div {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    gap: 20px;
+                }
+
+                .order-head {
+                    font-size: 25px;
+                }
+
+                .order-sub-head {
+                    font-size: 20px;
+                }
+
+                .lineItems-grid {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 30px;
+                    // background: #f3f3f3;
+                    // padding: 20px;
+                    border-radius: 10px;
+                    margin-top: 30px;
+
+                    .linItems-head {
+                        margin-bottom: -10px;
+                    }
+
+                    .lineItems-card {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 20px;
+                        justify-content: flex-start;
+                        border-bottom: 2px solid #e0e0e0;
+                        padding-bottom: 20px;
+
+                        .img-div {
+                            height: 80px;
+                            width: 100px;
+
+                            img {
+                                height: 100%;
+                                width: 100%;
+                                object-fit: cover;
+                            }
+                        }
+
+                        .item-details-div {
+                            display: flex;
+                            flex-direction: row;
+                            width: 100%;
+                            justify-content: space-between;
+                            align-items: end;
+                            margin-bottom: 20px;
+                            gap: 20px;
+
+                            .item-name-div {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 5px;
+                                justify-content: flex-start;
+                                align-items: flex-start;
+
+                                .name {
+                                    font-size: 16px;
+                                }
+
+                                .category {
+                                    font-size: 14px;
+                                    opacity: .8;
+                                }
+                            }
+
+                            .price-qty-div {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 5px;
+                                align-items: flex-end;
+                                text-align: right;
+                            }
+                        }
+                    }
+
+                    .lineItems-card:last-child {
+                        border-bottom: none;
+                        padding-bottom: 0px;
+                    }
+                }
+            }
+        }
     }
 }
 

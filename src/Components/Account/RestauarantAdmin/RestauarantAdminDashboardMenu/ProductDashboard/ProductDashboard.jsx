@@ -45,8 +45,8 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const UploadButton = styled(Button)(({ theme }) => ({
-    backgroundColor: "#470531",
-    border: "1.5px solid #470531",
+    backgroundColor: "var(--primary-color)",
+    border: "1.5px solid var(--primary-color)",
     color: '#fff',
     fontFamily: "Montserrat",
     width: '250px', // reduced width
@@ -56,8 +56,8 @@ const UploadButton = styled(Button)(({ theme }) => ({
     borderRadius: '8px',
     '&:hover': {
         backgroundColor: "white",
-        color: "#470531",
-        border: "1.5px solid #470531",
+        color: "var(--primary-color)",
+        border: "1.5px solid var(--primary-color)",
     },
 }))
 
@@ -985,28 +985,28 @@ export default function ProductDashboard({restaurant}) {
                                                         message={`${formErrors.stock || ''}${formErrors.stock && formErrors.price ? ' | ' : ''}${formErrors.price || ''}`}
                                                     />
                                                 }
-                                                <div className="same-line">
-                                                    <TextField
-                                                        label="Discount Percentage"
-                                                        variant="outlined"
-                                                        value={productForm.discountPercentage}
-                                                        onChange={handleChange('discountPercentage')}
-                                                        fullWidth
-                                                        className="form-field small"
-                                                    />
-                                                    <TextField
-                                                        label="Discount Expiry Date"
-                                                        type="date"
-                                                        variant="outlined"
-                                                        value={formatDateToYYYYMMDD(productForm.discountExpiry)}  // make sure this is in 'YYYY-MM-DD' format
-                                                        onChange={handleChange('discountExpiry')}
-                                                        fullWidth
-                                                        className="form-field small"
-                                                        InputLabelProps={{
-                                                            shrink: true, // ensures the label stays above the input when a date is selected
-                                                        }}
-                                                    />
-                                                </div>
+                                                <TextField
+                                                    label="Discount Percentage"
+                                                    variant="outlined"
+                                                    value={productForm.discountPercentage}
+                                                    onChange={handleChange('discountPercentage')}
+                                                    fullWidth
+                                                    className="form-field small"
+                                                />
+                                                {/* <div className="same-line"> */}
+                                                <TextField
+                                                    label="Discount Expiry Date"
+                                                    type="date"
+                                                    variant="outlined"
+                                                    value={formatDateToYYYYMMDD(productForm.discountExpiry)}  // make sure this is in 'YYYY-MM-DD' format
+                                                    onChange={handleChange('discountExpiry')}
+                                                    fullWidth
+                                                    className="form-field small"
+                                                    InputLabelProps={{
+                                                        shrink: true, // ensures the label stays above the input when a date is selected
+                                                    }}
+                                                />
+                                                {/* </div> */}
                                                 {(formErrors.discountPercentage || formErrors.offerPrice) &&
                                                     <CustomAlert 
                                                         severity="error" 

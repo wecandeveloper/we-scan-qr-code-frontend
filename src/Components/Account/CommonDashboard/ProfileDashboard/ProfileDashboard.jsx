@@ -34,8 +34,8 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const UploadButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "#470531",
-  border: "1.5px solid #470531",
+  backgroundColor: "var(--primary-color)",
+  border: "1.5px solid var(--primary-color)",
   color: '#fff',
   fontFamily: "Montserrat",
   width: '250px', // reduced width
@@ -45,8 +45,8 @@ const UploadButton = styled(Button)(({ theme }) => ({
   borderRadius: '8px',
   '&:hover': {
     backgroundColor: "white",
-    color: "#470531",
-    border: "1.5px solid #470531",
+    color: "var(--primary-color)",
+    border: "1.5px solid var(--primary-color)",
   },
 }));
 
@@ -400,14 +400,14 @@ export default function ProfileDashboard() {
                     </div>
                     <div className="btn-div">
                         {openEditProfileSection &&
-                            <div className="btn-dark" onClick={() => {setShowConfirmCancel(true)}}>
+                            <div className="btn btn-primary" onClick={() => {setShowConfirmCancel(true)}}>
                                 Cancel
                             </div>
                         }
                         {openEditProfileSection ?
                             <div
                                 onClick={handleUpdateProfile}
-                                className="btn-dark save"
+                                className="btn btn-primary save"
                             >
                                 {loading ? 
                                     <Box sx={{ display: 'flex' }} className="save-btn">
@@ -418,7 +418,7 @@ export default function ProfileDashboard() {
                             :
                             <div
                                 onClick={() => {setOpenEditProfileSection(true)}}
-                                className="btn-dark"
+                                className="btn btn-primary"
                             > Edit Profile
                             </div>
                         }
@@ -568,16 +568,16 @@ export default function ProfileDashboard() {
                                                 autoFocus: true,
                                                 style: {
                                                     fontFamily: '"Montserrat", sans-serif',
-                                                    color: '#470531',
+                                                    color: 'black',
                                                     borderRadius: 10,
-                                                    border: '1.5px solid #470531',
+                                                    border: '1.5px solid black',
                                                     padding: '10px 50px',
                                                     width: isMobile ? '100%' : '350px',
                                                     height: '57px',
                                                 }
                                             }}
                                             buttonStyle={{
-                                                border: '1.5px solid #470531',
+                                                border: '1.5px solid black',
                                                 borderRadius: '10px 0 0 10px',
                                                 boxShadow: 'none',
                                             }}

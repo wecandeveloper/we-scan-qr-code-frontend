@@ -34,8 +34,8 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const UploadButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "#470531",
-  border: "1.5px solid #470531",
+  backgroundColor: "var(--primary-color)",
+  border: "1.5px solid var(--primary-color)",
   color: '#fff',
   fontFamily: "Montserrat",
   width: '250px', // reduced width
@@ -45,8 +45,8 @@ const UploadButton = styled(Button)(({ theme }) => ({
   borderRadius: '8px',
   '&:hover': {
     backgroundColor: "white",
-    color: "#470531",
-    border: "1.5px solid #470531",
+    color: "var(--primary-color)",
+    border: "1.5px solid var(--primary-color)",
   },
 }))
 

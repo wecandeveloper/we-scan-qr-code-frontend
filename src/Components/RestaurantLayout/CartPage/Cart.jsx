@@ -9,11 +9,8 @@ import { useAuth } from "../../../Context/AuthContext";
 import { toast } from "react-toastify";
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import ConfirmToast from "../../../Designs/ConfirmToast/ConfirmToast";
-import axios from "axios";
-import { localhost } from "../../../Api/apis";
 import defaultImage from "../../../Assets/Common/defaultImage.avif";
 import { startCreateOrder } from "../../../Actions/orderActions";
-import { MdTableBar } from "react-icons/md";
 import { Box, CircularProgress } from "@mui/material";
 
 export default function Cart({setIsCartSectionOpen}) {
@@ -166,6 +163,8 @@ export default function Cart({setIsCartSectionOpen}) {
             console.log(formData)
             try {
                 await dispatch(startCreateOrder(formData, setGlobalGuestId, setIsCartSectionOpen));
+                localStorage.removeItem("guestCart")
+                setGlobalGuestCart("")
             } catch (err) {
                 console.log(err)
             } finally {

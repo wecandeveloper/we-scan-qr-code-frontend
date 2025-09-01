@@ -47,6 +47,33 @@
         }
     }
 
+    .btn-dark-fill {
+        border-radius: 30px;
+        padding: 10px 15px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        text-align: center;
+        gap: 10px;
+        align-items: center;
+        border: 2px solid var(--button-color);
+        color: white;
+        background: var(--button-color);
+        transition: .3s all;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+
+        svg {
+            font-size: 20px;
+        }
+
+        &:hover {
+            background: white;
+            color: var(--button-color);
+        }
+    }
+
     button {
         font-family: "Montserrat", sans-serif;
     }
@@ -203,7 +230,7 @@
             letter-spacing: 0px;
         }
 
-        .btn-dark {
+        .btn-dark, .btn-dark-fill {
             padding: 8px 12px;
             gap: 10px;
             border: 1.5px solid var(--button-color);
@@ -211,11 +238,6 @@
 
             svg {
                 font-size: 18px;
-            }
-
-            &:hover {
-                background: var(--button-color);
-                color: white;
             }
         }
     }

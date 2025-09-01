@@ -77,7 +77,7 @@ export default function PasswordDashboard() {
                         <h2>Manage Password</h2>
                         <p>Change your password to keep your account secure</p>
                     </div>
-                    <div onClick={handlePasswordChange} className="btn-dark">
+                    <div onClick={handlePasswordChange} className="btn btn-primary">
                         Change Password
                     </div>
                 </div>

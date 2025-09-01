@@ -46,10 +46,39 @@
             display: none;
         }
 
-        .waiter-bell {
+        .waiter-bell-wrapper {
             position: fixed;
             bottom: 30px;
             right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* The hint text */
+        .waiter-hint {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transform: translateX(50%);
+            pointer-events: none;
+            transition: all 0.5s ease-in-out;
+            z-index: 999;
+        }
+
+        /* When showing the hint */
+        .waiter-hint.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Keep your existing .waiter-bell styles */
+        .waiter-bell {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -64,6 +93,7 @@
             border: 2px solid var(--primary-color);
             cursor: pointer;
             transition: transform 0.2s ease-in-out;
+            z-index: 1000;
         }
 
         /* 🔹 Hover Animation → Continuous Ring */
@@ -331,10 +361,18 @@
             margin: auto;
             padding: 10px 20px;
 
+            .waiter-bell-wrapper {
+                bottom: 80px;
+            }
+
             .waiter-bell {
                 bottom: 80px;
                 font-size: 27px;
-                border: 1.5px solid var(--primary-color);
+            }
+
+            .waiter-hint {
+                padding: 6px 12px;
+                font-size: 12px;
             }
 
             .logo-div {

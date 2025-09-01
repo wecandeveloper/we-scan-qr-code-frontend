@@ -47,6 +47,8 @@ export default function RestaurantHeader() {
     const [ isOrderSectionOpen, setIsOrderSectionOpen ] = useState(false)
     const [ showModal, setShowModal ] = useState(false);
     const [ clickBell, setClickBell ] = useState(false)
+    const [showHint, setShowHint] = useState(false);
+
     const [ tableId, setTableId ] = useState("")
 
     const toggleMenu = () => {
@@ -62,7 +64,7 @@ export default function RestaurantHeader() {
         const savedTableId = localStorage.getItem("selectedTableId");
         setTableId(savedTableId)
         if (!savedTableId) {
-            toast.error("Please Select the table Number");
+            toast.error("Please Select the table Number from the Dine In option");
             setOpenSelectTableNumberModal(true);
         } else {
             setClickBell(true);
@@ -79,14 +81,21 @@ export default function RestaurantHeader() {
             }
         }
     };
+
+    // Show hint every 12 seconds automatically
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setShowHint(true);
+            setTimeout(() => setShowHint(false), 3000); // Hide after 3 seconds
+        }, 10000); // Every 12 seconds
+
+        return () => clearInterval(interval);
+    }, []);
      
     useEffect(() => {
         const guestCartData = JSON.parse(localStorage.getItem("guestCart")) || [];
         setGlobalGuestCart(guestCartData);
     }, [setGlobalGuestCart]);
-
-    const totalAmount = globalGuestCart?.totalAmount
-    console.log(totalAmount)
 
     return (
         <nav className="restaurant-nav">
@@ -148,7 +157,7 @@ export default function RestaurantHeader() {
                             <BiSolidCart /> 
                             <div className="symbol-amount-div">
                                 {isSymbolHover ? <img className="aed-symbol" src={aedWhite} alt="" /> : <img className="aed-symbol black" src={aedBlack } alt="" />}
-                                <span>{Number(totalAmount?.toFixed(2)) || "0.00"}</span>
+                                <span>{Number(globalGuestCart?.totalAmount?.toFixed(2)) || "0.00"}</span>
                             </div>
                         </div>
                         <div className="btn-dark" onClick={() => setIsOrderSectionOpen(true)}>
@@ -177,7 +186,7 @@ export default function RestaurantHeader() {
                             <div className="icon"><BiSolidCart /></div>
                             <div className="menu">
                                 <img className="aed-symbol" src={aedWhite} alt="" />
-                                <span className="aed-amount">{Number(totalAmount?.toFixed(2)) || "0.00"}</span>
+                                <span className="aed-amount">{Number(globalGuestCart?.totalAmount?.toFixed(2)) || "0.00"}</span>
                             </div>
                         </div>
                     </div>
@@ -203,11 +212,19 @@ export default function RestaurantHeader() {
                         </a> */}
                     </div>
                 </div>
-                <div
-                    onClick={handleToggleBell}
-                    className={`waiter-bell ${clickBell ? "tap" : ""}`}
-                >
-                    <FaBell />
+                <div className="waiter-bell-wrapper">
+                    {/* Floating Hint */}
+                    <div className={`waiter-hint ${showHint ? "show" : ""}`}>
+                        Call Waiter!
+                    </div>
+
+                    {/* Bell Button */}
+                    <div
+                        onClick={handleToggleBell}
+                        className={`waiter-bell ${clickBell ? "tap" : ""}`}
+                    >
+                        <FaBell />
+                    </div>
                 </div>
 
             </div>

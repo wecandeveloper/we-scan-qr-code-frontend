@@ -40,8 +40,8 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const UploadButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "#470531",
-  border: "1.5px solid #470531",
+  backgroundColor: "var(--primary-color)",
+  border: "1.5px solid var(--primary-color)",
   color: '#fff',
   fontFamily: "Montserrat",
   width: '250px', // reduced width
@@ -51,8 +51,8 @@ const UploadButton = styled(Button)(({ theme }) => ({
   borderRadius: '8px',
   '&:hover': {
     backgroundColor: "white",
-    color: "#470531",
-    border: "1.5px solid #470531",
+    color: "var(--primary-color)",
+    border: "1.5px solid var(--primary-color)",
   },
 }));
 
@@ -688,21 +688,21 @@ export default function RestaurantProfileDashboard() {
                     </div>
                 <div className="btn-div">
                     {openEditProfileSection ? (
-                        <div className="btn-dark" onClick={() => setShowConfirmCancel(true)}>
+                        <div className="btn btn-primary" onClick={() => setShowConfirmCancel(true)}>
                             Cancel
                         </div>
                     ) : (
                         user.restaurantId ? (
                             <div
                                 onClick={() => setOpenEditProfileSection(true)}
-                                className="btn-dark"
+                                className="btn btn-primary"
                             >
                                 Edit Profile
                             </div>
                         ) : (
                             <div
                                 onClick={() => setOpenEditProfileSection(true)}
-                                className="btn-dark"
+                                className="btn btn-primary"
                             >
                                 Add Profile
                             </div>
@@ -1283,7 +1283,7 @@ export default function RestaurantProfileDashboard() {
                         <div className="button-div">
                             <div
                                 onClick={() => setShowConfirmDeleteProfile(true)}
-                                className="btn-dark save"
+                                className="btn btn-primary save"
                             >
                                 {loadingDelete ? 
                                     <Box sx={{ display: 'flex' }} className="save-btn">
@@ -1293,7 +1293,7 @@ export default function RestaurantProfileDashboard() {
                             </div>
                             <div
                                 onClick={handleSubmitProfile}
-                                className="btn-dark save"
+                                className="btn btn-primary save"
                             >
                                 {loading ? 
                                     <Box sx={{ display: 'flex' }} className="save-btn">

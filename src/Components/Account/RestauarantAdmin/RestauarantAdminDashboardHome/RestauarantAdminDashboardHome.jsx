@@ -25,13 +25,13 @@ import { startGetCategories } from "../../../../Actions/categoryActions";
 import { startGetAllProducts } from "../../../../Actions/productActions";
 import { startGetRestaurantOrders } from "../../../../Actions/orderActions";
 import PasswordDashboard from "../../CommonDashboard/PasswordDashboard/PasswordDashboard";
-import RestaurantNotification from "../RestauarantAdminDashboardMenu/RestaurantNotification/RestaurantNotification";
 import { initSocket } from "../../../../Services/SocketService";
 import { localhost } from "../../../../Api/apis";
-
-import notification1 from "../../../../Assets/Notifications/notification-1.mp3";
-import bellNotification from "../../../../Assets/Notifications/bell.mp3";
 import { toast } from "react-toastify";
+
+import notification1 from "../../../../Assets/Notifications/notification-2.mp3";
+import bellNotification from "../../../../Assets/Notifications/bell.mp3";
+import ConfirmToast2 from "../../../../Designs/ConfirmToast/ConfirmToast2";
 
 export default function RestauarantAdminDashboardHome() {
     const navigate = useNavigate()
@@ -157,7 +157,7 @@ export default function RestauarantAdminDashboardHome() {
     ];
 
     const [ openDashboardMenu, setOpenDashboardMenu ] = useState(true)
-    console.log(user.restaurantId)
+    console.log(restaurant)
 
     useEffect(() => {
         (async () => {
@@ -184,21 +184,25 @@ export default function RestauarantAdminDashboardHome() {
 
     const socket = useRef(null);
 
-    const [notifications, setNotifications] = useState([]);
+    const [orderNotifications, setOrderNotifications] = useState([]);
     const [waiterCalls, setWaiterCalls] = useState([]);
 
     // ✅ Preload audios separately
     const orderAudioRef = useRef(null);
     const waiterAudioRef = useRef(null);
 
+    const [showOrderAlert, setShowOrderAlert] = useState(false);
+    const [orderAlertMessage, setOrderAlertMessage] = useState("");
+    const [currentOrderData, setCurrentOrderData] = useState(null);
+
     // ✅ Initialize socket only once
     useEffect(() => {
         socket.current = initSocket(localhost);
 
-        orderAudioRef.current = new Audio(notification1);
+        orderAudioRef.current = new Audio(bellNotification);
         orderAudioRef.current.load();
 
-        waiterAudioRef.current = new Audio(bellNotification);
+        waiterAudioRef.current = new Audio(notification1);
         waiterAudioRef.current.load();
 
         // return () => {
@@ -213,17 +217,20 @@ export default function RestauarantAdminDashboardHome() {
         socket.current.on("restaurant-order-notification", (data) => {
             if (data.restaurantId && restaurant?._id && data.restaurantId !== restaurant._id) return;
 
-            toast.info(data.message, { autoClose: 5000 });
+            setOrderAlertMessage(data.message);
+            setCurrentOrderData(data);
+            setShowOrderAlert(true);
 
-            // Play order notification sound
+            // Play sound in loop until user responds
             if (orderAudioRef.current) {
-                orderAudioRef.current.currentTime = 0;
-                orderAudioRef.current.play().catch(() => {
-                    console.warn("User interaction required before playing audio");
-                });
+            orderAudioRef.current.loop = true;
+            orderAudioRef.current.currentTime = 0;
+            orderAudioRef.current.play().catch(() => {
+                console.warn("User interaction required before playing audio");
+            });
             }
 
-            setNotifications((prev) => [data, ...prev]);
+            setOrderNotifications((prev) => [data, ...prev]);
         });
 
         return () => socket.current.off("restaurant-order-notification");
@@ -250,6 +257,34 @@ export default function RestauarantAdminDashboardHome() {
 
         return () => socket.current.off("call-waiter");
     }, [restaurant?._id]);
+
+    const handleOrderConfirm = () => {
+        console.log("Order accepted:", currentOrderData);
+
+        // Stop the sound
+        if (orderAudioRef.current) {
+            orderAudioRef.current.pause();
+            orderAudioRef.current.currentTime = 0;
+            orderAudioRef.current.loop = false;
+        }
+
+        setShowOrderAlert(false);
+    };
+
+    const handleOrderDecline = () => {
+        console.log("Order declined:", currentOrderData);
+
+        // Stop the sound
+        if (orderAudioRef.current) {
+            orderAudioRef.current.pause();
+            orderAudioRef.current.currentTime = 0;
+            orderAudioRef.current.loop = false;
+        }
+
+        setShowOrderAlert(false);
+    };
+
+    console.log(orderNotifications)
 
     return (
         <section className="restaurant-admin-dashboard">
@@ -355,12 +390,35 @@ export default function RestauarantAdminDashboardHome() {
                             <div className="restaurant-order-waiter-section">
                                 <div className="restaurant-order-waiter-div">
                                     <h2>New Orders</h2>
-                                    {notifications.length > 0 ? (
-                                        <ul className="notifications">
-                                        {notifications.map((n, i) => (
-                                            <li key={i}>
-                                                {n.type} - Table {n.tableNo}{" "}
-                                                {n.orderId && `(Order ID: ${n.orderId})`}
+                                    {orderNotifications.length > 0 ? (
+                                        <ul className="order-notifications">
+                                        {orderNotifications.map((order, i) => (
+                                            <li key={i} className="order-card">
+                                                <div className="head-div">
+                                                    <h2 className="order-head">{order.type} - {order.orderNo}</h2>
+                                                    <h3 className="order-sub-head">Table {order.tableNo}</h3>
+                                                </div>
+                                                <div className="lineItems-grid">
+                                                    {order?.orderDetails?.lineItems?.map((item) => {
+                                                        return (
+                                                            <div key={item._id} className="lineItems-card">
+                                                                <div className="img-div">
+                                                                    <img src={item.productId.images[0].url} alt={item.name} />
+                                                                </div>
+                                                                <div className="item-details-div">
+                                                                    <div className="item-name-div">
+                                                                        <h1 className="name">{item.productId.name}</h1>
+                                                                        <h3 className="category">{item.productId.categoryId.name}</h3>
+                                                                    </div>
+                                                                    <div className="price-qty-div">
+                                                                        <p>Price: AED {item.price * item.quantity}</p>
+                                                                        <p>Qty: {item.quantity}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
                                             </li>
                                         ))}
                                     </ul>
@@ -380,7 +438,7 @@ export default function RestauarantAdminDashboardHome() {
                                         </ul>
                                     ) : (
                                         <div className="no-waiter-calls">
-                                            No current Order is Placed
+                                            No table Requested for Waiter
                                         </div>
                                     )}
                                     
@@ -397,6 +455,13 @@ export default function RestauarantAdminDashboardHome() {
                         
                 )}
             </div>
+            {showOrderAlert && (
+                <ConfirmToast2
+                    message={orderAlertMessage}
+                    onConfirm={handleOrderConfirm}
+                    onCancel={handleOrderDecline}
+                />
+            )}
         </section>
     )
 }
