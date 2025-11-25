@@ -145,25 +145,10 @@
         }
     }
 
-    // .btn {
-    //     width: 150px;
-    //     margin-left: auto;
-    //     margin-right: auto;
-    //     font-weight: normal;
-    //     background-color: #470531;
-    //     color: white;
-    //     border: 2px solid #470531;
-    //     border-radius: 6px;
-    //     padding: 8px 16px;
-    //     cursor: pointer;
-    //     transition: 0.3s;
-
-    //     &:hover {
-    //         background-color: white;
-    //         color: #470531;
-    //         border: 2px solid #470531;
-    //     }
-    // }
+    .btn-dark {
+        width: 150px;
+        height: 57px;
+    }
 
     .verify-email-div {
         display: flex;
@@ -273,5 +258,78 @@
                 align-items: center;
             }
         }
+
+        // .form-field {
+        //     width: 100%;
+        //     // border: 2px solid black;
+        //     border-radius: 10px;
+        //     font-size: 14px;
+
+        //     .MuiOutlinedInput-root {
+        //         color: black;
+        //         border-radius: 30px;
+        //         transition: all 0.3s ease;
+
+        //         fieldset {
+        //             border-color: black;
+        //             border-width: 1.5px;
+        //             transition: 0.3s;
+        //         }
+
+        //         &:hover fieldset {
+        //             border-color: black;
+        //             border-width: 2px;
+        //         }
+
+        //         &.Mui-focused fieldset {
+        //             border-color: black;
+        //             border-width: 2px;
+        //         }
+
+        //         /* ↓ Reduce internal padding of the input */
+        //         .MuiInputBase-input {
+        //             padding: 12px 12px; /* default is usually ~16px, adjust as needed */
+        //             font-size: 14px;
+        //         }
+
+        //         /* If you have multiline TextField */
+        //         .MuiInputBase-input.MuiOutlinedInput-inputMultiline {
+        //             padding: 12px 12px;
+        //             font-size: 14px;
+        //         }
+        //     }
+
+        //     /* Adjust label position */
+        //     .MuiInputLabel-root {
+        //         top: 50%;
+        //         padding-left: 20px;
+        //         transform: translateY(-50%); /* center label vertically */
+        //     }
+
+        //     .MuiInputLabel-root.Mui-focused {
+        //         color: black;
+        //         top: -8px; /* normal position when focused */
+        //         transform: translateY(0) scale(0.75); /* match MUI shrink style */
+        //     }
+
+        //     .MuiInputLabel-root {
+        //         color: black;
+        //     }
+
+        //     .MuiInputLabel-root.Mui-focused {
+        //         color: black;
+        //     }
+
+        //     .MuiInputBase-input,
+        //     .MuiSelect-select {
+        //         color: black;
+        //         text-align: left;
+        //     }
+
+        //     .start-adornment {
+        //         color: black;
+        //         font-weight: 500;
+        //     }
+        // }
     }
 }

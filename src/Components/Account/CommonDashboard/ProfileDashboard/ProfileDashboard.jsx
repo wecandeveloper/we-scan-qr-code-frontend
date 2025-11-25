@@ -374,6 +374,7 @@ export default function ProfileDashboard() {
                     toast.success(response.data.message)
                     setLoading(false)
                     setOpenEditProfileSection(false)
+                    window.location.reload()
                 } catch (error) {
                     console.error("Update failed:", error);
                     setServerErrors(error.response.data.message)
@@ -450,8 +451,8 @@ export default function ProfileDashboard() {
                                     <div className="same-line">
                                         <div className="profile-value">{formData.email.address || "Not Updated"} </div>
                                         {formData?.email?.isVerified ? 
-                                            <div className="btn-dark verified-btn"><img src={checkIcon} alt="" /> Verified</div> : 
-                                            <div className="btn-dark" onClick={() => {
+                                            <div className="btn btn-primary verified-btn"><img src={checkIcon} alt="" /> Verified</div> : 
+                                            <div className="btn btn-primary" onClick={() => {
                                                 setVerifyEmailModal(true)
                                                 handleSendEmailOtp()
                                             }}>Verify</div> 
@@ -463,8 +464,8 @@ export default function ProfileDashboard() {
                                     <div className="same-line">
                                         <div className="profile-value">{formData.phone.countryCode + " " + formData.phone.number || "Not Updated"} </div>
                                         {formData?.phone?.isVerified ? 
-                                            <div className="btn-dark verified-btn"><img src={checkIcon} alt="" /> Verified</div> : 
-                                            <div className="btn-dark" onClick={() => {
+                                            <div className="btn btn-primary verified-btn"><img src={checkIcon} alt="" /> Verified</div> : 
+                                            <div className="btn btn-primary" onClick={() => {
                                                 setVerifyPhoneModal(true)
                                                 handleSendPhoneOtp()
                                             }}>Verify</div> 
@@ -565,7 +566,7 @@ export default function ProfileDashboard() {
                                             inputProps={{
                                                 name: 'phone',
                                                 required: true,
-                                                autoFocus: true,
+                                                // autoFocus: true,
                                                 style: {
                                                     fontFamily: '"Montserrat", sans-serif',
                                                     color: 'black',
@@ -646,7 +647,7 @@ export default function ProfileDashboard() {
                             />
                             <button
                                     type="submit"
-                                    className="btn-dark submit"
+                                    className="btn btn-primary submit"
                                     onClick={handleVerifyEmailOtp}
                                 >
                                     {loading ? 
@@ -667,7 +668,7 @@ export default function ProfileDashboard() {
                             <div className="otp-container">
                                 <button
                                     type="button"
-                                    className="btn-resend"
+                                    className="btn btn-primary"
                                     onClick={handleResendEmailOtp}
                                     disabled={cooldown > 0}
                                 >
@@ -705,7 +706,7 @@ export default function ProfileDashboard() {
                             />
                             <button
                                     type="submit"
-                                    className="btn-dark submit"
+                                    className="btn btn-primary submit"
                                     onClick={handleVerifyPhoneOtp}
                                 >
                                     {loading ? 
@@ -726,7 +727,7 @@ export default function ProfileDashboard() {
                             <div className="otp-container">
                                 <button
                                     type="button"
-                                    className="btn-resend"
+                                    className="btn btn-primary"
                                     onClick={handleResendPhoneOtp}
                                     disabled={cooldown > 0}
                                 >

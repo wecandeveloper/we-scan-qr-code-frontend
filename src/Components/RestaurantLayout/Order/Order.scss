@@ -1,5 +1,64 @@
+.order-section-container {
+    position: relative;
+
+    // Refresh Button Styles
+    .refresh-orders-btn {
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, color-mix(in srgb, var(--primary-color) 80%, #000) 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        // padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        z-index: 1005;
+        width: 50px;
+        height: 50px;
+        justify-content: center;
+
+        &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        &.refreshing {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+
+        .refresh-icon {
+            font-size: 25px;
+            transition: transform 0.3s ease;
+
+            &.spinning {
+                animation: spin 1s linear infinite;
+            }
+        }
+
+        .refresh-text {
+            white-space: nowrap;
+        }
+    }
+}
+
 .order-section {
-    z-index: 1005 !important;
+    z-index: 1;
     padding: 50px 50px 0px 50px;
     display: flex;
     flex-direction: column;
@@ -112,6 +171,58 @@
                         font-size: 18px;
                         font-weight: 700;
                     }
+
+                    .payment-status-info {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 5px;
+                        margin-top: 10px;
+                        padding: 10px;
+                        background: #f8f9fa;
+                        border-radius: 8px;
+                        border: 1px solid #e9ecef;
+
+                        .payment-label {
+                            font-size: 14px;
+                            font-weight: 600;
+                            color: #6c757d;
+                        }
+
+                        .payment-status {
+                            font-size: 14px;
+                            font-weight: 600;
+                            padding: 4px 8px;
+                            border-radius: 4px;
+                            display: inline-block;
+                            width: fit-content;
+
+                            &.payment-paid {
+                                color: #28a745;
+                                background: #d4edda;
+                            }
+
+                            &.payment-pending {
+                                color: #ffc107;
+                                background: #fff3cd;
+                            }
+
+                            &.payment-failed {
+                                color: #dc3545;
+                                background: #f8d7da;
+                            }
+
+                            &.payment-refunded {
+                                color: #6c757d;
+                                background: #e9ecef;
+                            }
+                        }
+
+                        .payment-option {
+                            font-size: 12px;
+                            color: #6c757d;
+                            font-style: italic;
+                        }
+                    }
                 }
 
                 .order-status {
@@ -145,12 +256,77 @@
                     }
                 }
 
+                .btn-dark.cancel {
+                    background: var(--primary-color);
+                    color: white;
+
+                    &:hover {
+                        cursor: not-allowed;
+                        background: var(--primary-color);
+                        color: white;
+                    }
+                }
+
             }
 
             .lineItems-grid {
                 display: flex;
                 flex-direction: column;
                 gap: 30px;
+
+                // Compact Add-Ons Section
+                .addons-compact-section {
+                    margin-top: 20px;
+                    padding: 15px;
+                    background: #fff;
+                    border-radius: 8px;
+                    border-left: 4px solid #ff9800;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+                    .addons-compact-title {
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #666;
+                        margin-bottom: 10px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+
+                    .addons-compact-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 8px;
+
+                        .addon-compact-item {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 8px 12px;
+                            background: #f9f9f9;
+                            border-radius: 6px;
+                            font-size: 13px;
+
+                            .addon-name {
+                                flex: 1;
+                                font-weight: 500;
+                                color: #333;
+                            }
+
+                            .addon-qty {
+                                margin: 0 15px;
+                                color: #666;
+                                font-size: 12px;
+                            }
+
+                            .addon-price {
+                                font-weight: 600;
+                                color: #ff9800;
+                                min-width: 80px;
+                                text-align: right;
+                            }
+                        }
+                    }
+                }
 
                 .lineItems-card {
                     display: flex;
@@ -175,8 +351,7 @@
                         flex-direction: row;
                         width: 100%;
                         justify-content: space-between;
-                        align-items: end;
-                        margin-bottom: 20px;
+                        align-items: flex-end;
                         gap: 30px;
 
                         .item-name-div {
@@ -233,6 +408,46 @@
 
                 &:hover {
                     color: #eb3424;
+                }
+            }
+        }
+    }
+}
+
+.order-section.ar {
+    .customer-order-grid {
+        .customer-order-card {
+            // text-align: right;
+
+            .order-no-status-div {
+                align-items: flex-end;
+
+                .order-no-div {
+                    text-align: right;
+                }
+
+                .order-status {
+                    text-align: left;
+                }
+
+            }
+
+            .lineItems-grid {
+
+                .lineItems-card {
+                    justify-content: flex-end;
+
+                    .item-details-div {
+                        align-items: end;
+
+                        .item-name-div {
+                            text-align: right;
+                        }
+
+                        .price-qty-div {
+                            text-align: left;
+                        }
+                    }
                 }
             }
         }
@@ -334,6 +549,16 @@
                         }
                     }
 
+                    .btn-dark.cancel {
+                        background: var(--primary-color);
+                        color: white;
+
+                        &:hover {
+                            cursor: not-allowed;
+                            background: var(--primary-color);
+                            color: white;
+                        }
+                    }
                 }
             }
         }
@@ -345,4 +570,9 @@
             }
         }
     }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

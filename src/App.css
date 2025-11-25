@@ -5,6 +5,10 @@
   text-align: center;
 }
 
+.app.ar {
+  text-align: right;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

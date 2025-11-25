@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import './ConfirmToast.scss';
 import { createPortal } from 'react-dom';
 import { IoClose } from 'react-icons/io5';
+import { useTranslation } from 'react-i18next';
 
 const ConfirmToast = ({ message, onConfirm, onCancel }) => {
   const [exiting, setExiting] = useState(false);
+  const {t} = useTranslation()
 
   useEffect(() => {
     const timer = setTimeout(() => {
       handleCancel(); // call handler instead of directly using onCancel to ensure exit transition
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -36,8 +38,8 @@ const ConfirmToast = ({ message, onConfirm, onCancel }) => {
       <div className="confirm-toast">
         <p className="message">{message}</p>
         <div className="buttons">
-          <button className="yes-btn" onClick={handleConfirm}>Yes</button>
-          <button className="no-btn" onClick={handleCancel}>No</button>
+          <button className="yes-btn" onClick={handleConfirm}>{t("yes")}</button>
+          <button className="no-btn" onClick={handleCancel}>{t("no")}</button>
         </div>
         <div className="bottom-line progress-bar"></div>
       </div>

@@ -1,8 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { createContext, useContext, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { startGetOneRestaurant } from "../Actions/restaurantActions";
+// import { startGetOneRestaurant } from "../Actions/restaurantActions";
 
 const AuthContext = createContext()
 
@@ -15,6 +14,7 @@ export const AuthProvider = ({ children }) => {
     const [ user, setUser ] = useState(null)
     const [ restaurant, setRestaurant ] = useState(null)
     const [ restaurantId, setRestaurantId ] = useState(null)
+    const [ globalOrderType , setGlobalOrderType ] = useState("")
     const [ globalTableId, setGlobalTableId ] = useState("")
     const [ globalGuestId, setGlobalGuestId ] = useState("")
     const [ globalGuestCart, setGlobalGuestCart ] = useState(null)
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
     const [ selectedCategory, setSelectedCategory ] = useState("")
     const [ openDashboardModal, setOpenDashboardModal ] = useState(false)
     const [ searchProduct, setSearchProduct ] = useState("")
-    const [ openSelectTableNumberModal, setOpenSelectTableNumberModal ] = useState(false);
+    const [ openSelectOrderTypeModal, setOpenSelectOrderTypeModal ] = useState(false);
     const openDashboardModalFunc = () => setOpenDashboardModal(true);
     const closeDashboardModalFunc = () => setOpenDashboardModal(false);
 
@@ -43,6 +43,17 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("restaurantId")
         setGlobalGuestId("")
         localStorage.removeItem("globalGuestId")
+        // Clear restaurant data from Redux store
+        // Note: This will be handled in the component that uses this context
+        setRestaurant(null)
+        setRestaurantId(null)
+        setGlobalGuestId("")
+        setGlobalGuestCart(null)
+        setSelectedDashboardMenu("")
+        setSelectedCategory("")
+        setOpenDashboardModal(false)
+        setSearchProduct("")
+        setOpenSelectOrderTypeModal(false)
     }
 
     const handleCategoryChange = (category) => {
@@ -53,6 +64,13 @@ export const AuthProvider = ({ children }) => {
         } else {
             localStorage.removeItem("category"); // Clear it if no category
         }
+    };
+
+    const setGlobalGuestIdWithEvent = (guestId) => {
+        setGlobalGuestId(guestId);
+        localStorage.setItem("guestId", guestId);
+        // Trigger socket room rejoining
+        window.dispatchEvent(new CustomEvent('guestIdSet', { detail: { guestId } }));
     };
 
     // console.log(selectedCategory)
@@ -76,6 +94,8 @@ export const AuthProvider = ({ children }) => {
                 restaurantId,
                 setRestaurantId,
                 restaurantSlug,
+                globalOrderType,
+                setGlobalOrderType,
                 globalTableId,
                 setGlobalTableId,
                 handleLogin, 
@@ -83,7 +103,7 @@ export const AuthProvider = ({ children }) => {
                 selectedCategory,
                 handleCategoryChange,
                 globalGuestId,
-                setGlobalGuestId,
+                setGlobalGuestId: setGlobalGuestIdWithEvent,
                 globalGuestCart,
                 setGlobalGuestCart,
                 selectedDashboardMenu,
@@ -93,8 +113,8 @@ export const AuthProvider = ({ children }) => {
                 closeDashboardModalFunc,
                 searchProduct,
                 setSearchProduct,
-                openSelectTableNumberModal, 
-                setOpenSelectTableNumberModal
+                openSelectOrderTypeModal, 
+                setOpenSelectOrderTypeModal
             }}>
             { children }
         </AuthContext.Provider>

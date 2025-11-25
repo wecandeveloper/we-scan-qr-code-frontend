@@ -1,11 +1,9 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import AppLoader from './Components/AppLoader/AppLoader';
 import AppRouter from './Components/AppRouter/AppRouter';
 import routes from './Routes/routes';
-import { startGetCategories } from './Actions/categoryActions';
 import { useDispatch } from 'react-redux';
-import { startGetAllProducts } from './Actions/productActions';
 import { useAuth } from './Context/AuthContext';
 
 import { ToastContainer } from 'react-toastify';
@@ -15,27 +13,28 @@ import { localhost } from './Api/apis';
 import { startCreateOrder } from './Actions/orderActions';
 import { startGetOneRestaurant } from './Actions/restaurantActions';
 // import Footer from './Components/Footer/Footer';
+import i18n from './Services/i18n_new';
+import DynamicMetaTags from './Components/DynamicMetaTags/DynamicMetaTags';
 
 export default function App() {
-  const location = useLocation();
-  const path = location.pathname;
+  // const path = location.pathname;
   const { restaurantSlug } = useParams();
+  const currentLang = (i18n.language || "en").slice(0, 2);
 
   // detect if route is restaurant-specific
-  const isRestaurantRoute = path.startsWith("/restaurant/");
+  // const isRestaurantRoute = path.startsWith("/restaurant/");
 
-  // detect if admin
-  const isAdminRoute = path.startsWith("/admin/");
+  // // detect if admin
+  // const isAdminRoute = path.startsWith("/admin/");
 
-  // main site routes (home, collections, etc.)
-  const isMainRoute = !isRestaurantRoute && !isAdminRoute;
+  // // main site routes (home, collections, etc.)
+  // const isMainRoute = !isRestaurantRoute && !isAdminRoute;
 
   const dispatch = useDispatch();
   const calledRef = useRef(false)
   const [pageLoading, setPageLoading] = useState(true); // True initially for pre-loader
 
-  const { user, handleLogin, handleCategoryChange, handleDashboardMenuChange } =useAuth()
-  const isLoggedIn = Boolean(user && user._id);
+  const {  handleLogin, handleCategoryChange, handleDashboardMenuChange } = useAuth()
 
   useEffect(() => {
       if(restaurantSlug) {
@@ -44,14 +43,31 @@ export default function App() {
   }, [restaurantSlug, dispatch]);
 
   useEffect(() => {
+    // Initialize app language from localStorage if present
+    const savedLang = localStorage.getItem("lang") || "en";
+  
+    if (savedLang && savedLang !== i18n.language) {
+      i18n.changeLanguage(savedLang);
+    }
+  
+    // ✅ Set the direction immediately on load
+    document.documentElement.setAttribute("lang", savedLang);
+    document.documentElement.setAttribute("dir", savedLang === "ar" ? "rtl" : "ltr");
+    
+    // Disable browser scroll restoration globally
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+  
     setPageLoading(true);
-
+  
     const timeout = setTimeout(() => {
       setPageLoading(false);
     }, 500); // Adjust loader duration
-
+  
     return () => clearTimeout(timeout);
-  }, [location.pathname]);
+  }, []);
+  
 
   useEffect(() => {
     const storedCategory = localStorage.getItem("category");
@@ -75,7 +91,7 @@ export default function App() {
         localStorage.removeItem("dashboardMenu");
       }
     }
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -145,10 +161,11 @@ export default function App() {
   return (
     <Fragment>
       <AppLoader isVisible={false} />
-      <div className="app">
+      <DynamicMetaTags />
+      <div className={`app ${currentLang === "ar" ? "ar" : ""}`}>
         <ToastContainer
-          position="top-right"
-          autoClose={3000}
+          position={currentLang === "ar" ? "top-left" : "top-right"}
+          autoClose={5000}
           hideProgressBar={false}
           newestOnTop={true}
           closeOnClick
@@ -157,7 +174,6 @@ export default function App() {
           toastClassName="custom-toast"
           bodyClassName="custom-toast-body"
         />
-
         {/* Main Router */}
         <AppRouter routes={routes} />
       </div>

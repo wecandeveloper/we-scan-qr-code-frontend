@@ -2,7 +2,8 @@ const initialState = {
     data: [],
     serverErrors: [],
     selected: null,
-    loading: false
+    loading: false,
+    bulkDeleteLoading: false
 }
 
 export default function productReducers(state = initialState, action){
@@ -35,6 +36,20 @@ export default function productReducers(state = initialState, action){
                     return ele 
                 }
             })}
+        }
+        case "BULK_DELETE_PRODUCTS": {
+            return {
+                ...state,
+                data: state.data.filter((ele) => {
+                    return !action.payload.includes(ele._id);
+                })
+            }
+        }
+        case "SET_BULK_DELETE_LOADING": {
+            return {
+                ...state,
+                bulkDeleteLoading: action.payload
+            }
         }
         default: {
             return state

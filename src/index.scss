@@ -13,6 +13,17 @@ html, body {
   padding: 0;
 }
 
+html {
+  /* scroll-snap-type: y mandatory; */
+  scroll-behavior: smooth;
+  scroll-snap-type: none;
+}
+
+section{
+  height: 100%;
+  scroll-snap-align: center;
+}
+
 
 body {
   margin: 0;
@@ -69,4 +80,68 @@ a:hover {
 
 button, input {
   font-family: "Montserrat", sans-serif;
-} 
+}
+
+// React-toastify RTL and mobile styling
+.Toastify__toast-container {
+  font-family: "Montserrat", sans-serif;
+  
+  // RTL support for Arabic
+  [dir="rtl"] & {
+    .Toastify__toast {
+      text-align: right;
+      direction: rtl;
+    }
+    
+    .Toastify__close-button {
+      left: 8px;
+      right: auto;
+    }
+  }
+}
+
+// Mobile responsiveness for react-toastify
+@media (max-width: 600px) {
+  .Toastify__toast-container {
+    width: 70% !important;
+    left: 20px !important;
+    right: 20px !important;
+    margin-right: auto;
+  }
+  
+  .Toastify__toast {
+    width: 100% !important;
+    padding: 20px !important;
+    font-size: 14px !important;
+    margin-bottom: 15px !important;
+  }
+  
+  .Toastify__toast:not(:last-child) {
+    margin-bottom: 15px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .Toastify__toast-container {
+    width: 80% !important;
+    top: 20px !important;
+    left: 20px !important;
+    right: 20px !important;
+    margin-right: auto;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  
+  .Toastify__toast {
+    width: 100% !important;
+    padding: 20px !important;
+    font-size: 13px !important;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-bottom: 10px !important;
+  }
+  
+  .Toastify__toast:not(:last-child) {
+    margin-bottom: 10px !important;
+  }
+}

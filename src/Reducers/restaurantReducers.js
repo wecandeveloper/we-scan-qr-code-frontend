@@ -61,6 +61,26 @@ export default function restaurantReducers(state = initialState, action){
                 )
             };
         }
+        case "UPDATE_RESTAURANT_SUBSCRIPTION" : {
+            const restaurantId = action.payload._id; // expecting _id
+            return {
+                ...state,
+                data: state.data.map(restaurant =>
+                    restaurant._id === restaurantId
+                        ? { ...restaurant, subscription: action.payload.subscription }
+                        : restaurant
+                )
+            };
+        }
+        case "CLEAR_RESTAURANT_DATA": {
+            return {
+                ...state,
+                selected: null,
+                data: [],
+                serverErrors: [],
+                loading: false
+            };
+        }
         default: {
             return state
         }

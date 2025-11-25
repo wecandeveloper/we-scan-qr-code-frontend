@@ -16,43 +16,45 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Button } from '@mui/material';
 import ConfirmToast from "../../../../../Designs/ConfirmToast/ConfirmToast"
 import { BiSolidTrash } from "react-icons/bi"
-import { startCreateCategory, startDeleteCategory, startUpdateCategory } from "../../../../../Actions/categoryActions"
+import { startCreateCategory, startDeleteCategory, startUpdateCategory, startBulkDeleteCategories, startGetCategories } from "../../../../../Actions/categoryActions"
+import { hasMultiLanguageAccess } from "../../../../../Utils/subscriptionUtils"
 import CustomAlert from "../../../../../Designs/CustomAlert"
 import { toast } from "react-toastify"
 import { useAuth } from "../../../../../Context/AuthContext"
+import { LuDot } from "react-icons/lu"
 
 const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    height: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    whiteSpace: 'nowrap',
+    width: 1,
 });
 
 const UploadButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "var(--primary-color)",
-  border: "1.5px solid var(--primary-color)",
-  color: '#fff',
-  fontFamily: "Montserrat",
-  width: '250px', // reduced width
-  padding: '6px 10px',
-  textTransform: 'none',
-  fontWeight: 500,
-  borderRadius: '8px',
-  '&:hover': {
-    backgroundColor: "white",
-    color: "var(--primary-color)",
+    backgroundColor: "var(--primary-color)",
     border: "1.5px solid var(--primary-color)",
-  },
+    color: '#fff',
+    fontFamily: "Montserrat",
+    width: '250px', // reduced width
+    padding: '6px 10px',
+    textTransform: 'none',
+    fontWeight: 500,
+    borderRadius: '8px',
+    '&:hover': {
+        backgroundColor: "white",
+        color: "var(--primary-color)",
+        border: "1.5px solid var(--primary-color)",
+    },
 }))
 
 export default function CategoryDashboard({restaurant}) {
     const dispatch = useDispatch()
-    const { restaurantId } = useAuth()
+    const { restaurantId, handleDashboardMenuChange } = useAuth()
     const categories = useSelector((state) => {
         return state.categories.data
     })
@@ -66,6 +68,7 @@ export default function CategoryDashboard({restaurant}) {
         name: "",
         description: "",
         image: "",
+        translations: {}
     })
 
     const [ previewImage, setPreviewImage ] = useState("")
@@ -81,20 +84,32 @@ export default function CategoryDashboard({restaurant}) {
     const validateErrors = () => {
         const errors = {};
 
+        // Validate name
         if (!categoryForm?.name?.trim()) {
             errors.name = "Category name is required";
         }
-        if (!categoryForm?.description?.trim()) {
-            errors.description = "Category description is required";
-        }
+
+        // Validate description
+        // if (!categoryForm?.description?.trim()) {
+        //     errors.description = "Category description is required";
+        // }
+
+        // Validate image
         if (!categoryForm?.image) {
             errors.image = "Category image is required";
         } else if (typeof categoryForm.image !== "string") {
             const validTypes = ["image/png", "image/jpeg", "image/jpg"];
             const fileType = categoryForm.image.type;
 
+            // Check file type
             if (!validTypes.includes(fileType)) {
                 errors.image = "Only JPG, JPEG, or PNG formats are allowed";
+            }
+
+            // ✅ Check file size (less than 1MB)
+            const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+            if (categoryForm.image.size > maxSizeInBytes) {
+                errors.image = "Image size should be less than 1 MB";
             }
         }
 
@@ -103,7 +118,12 @@ export default function CategoryDashboard({restaurant}) {
 
     const [ showConfirmDeleteCategory, setShowConfirmDeleteCategory ] = useState(false)
     const [ showConfirmCancel, setShowConfirmCancel ] = useState(false)
-    const [deletingCategoryId, setDeletingCategoryId] = useState(null);
+    const [ deletingCategoryId, setDeletingCategoryId ] = useState(null);
+    
+    // Bulk delete state
+    const [ selectedCategories, setSelectedCategories ] = useState([])
+    const [ selectAll, setSelectAll ] = useState(false)
+    const [ showBulkDeleteConfirm, setShowBulkDeleteConfirm ] = useState(false)
 
     useEffect(() => {
         if (categoryId && categories.length > 0) {
@@ -118,17 +138,26 @@ export default function CategoryDashboard({restaurant}) {
                 name: category.name,
                 description: category.description,
                 image: category.image,
+                translations: category.translations || {}
             })
         } else {
             setCategoryForm({
                 name: "",
                 description: "",
                 image: "",
+                translations: {}
             })
         }
     }, [category])
 
-    // console.log(category)
+    // Fetch categories data when component mounts or restaurant changes
+    useEffect(() => {
+        if (restaurant?.slug) {
+            dispatch(startGetCategories(restaurant.slug));
+        }
+    }, [dispatch, restaurant?.slug]);
+
+    console.log(categories)
 
     const handleChange = (field) => (event) => {
         const inputValue = event.target.value;
@@ -145,11 +174,24 @@ export default function CategoryDashboard({restaurant}) {
             return;
         }
 
-        console.log(categoryForm.image)
+        // console.log(categoryForm.image)
 
         setCategoryForm((prev) => ({
             ...prev,
             [field]: inputValue,
+        }));
+    };
+
+    const handleTranslationChange = (language, field, value) => {
+        setCategoryForm((prev) => ({
+            ...prev,
+            translations: {
+                ...prev.translations,
+                [language]: {
+                    ...prev.translations[language],
+                    [field]: value
+                }
+            }
         }));
     };
 
@@ -271,7 +313,34 @@ export default function CategoryDashboard({restaurant}) {
             isImageChanged = true; // new file uploaded
         }
 
-        return isNameChanged || isDescriptionChanged || isImageChanged;
+        // Check if translations have changed
+        const areTranslationsChanged = () => {
+            const formTranslations = categoryForm.translations || {};
+            const originalTranslations = category.translations || {};
+            
+            // Check if the number of translation languages changed
+            const formLanguages = Object.keys(formTranslations);
+            const originalLanguages = Object.keys(originalTranslations);
+            
+            if (formLanguages.length !== originalLanguages.length) {
+                return true;
+            }
+            
+            // Check if any translation content changed
+            for (const lang of formLanguages) {
+                const formTranslation = formTranslations[lang] || {};
+                const originalTranslation = originalTranslations[lang] || {};
+                
+                if (formTranslation.name !== originalTranslation.name || 
+                    formTranslation.description !== originalTranslation.description) {
+                    return true;
+                }
+            }
+            
+            return false;
+        };
+
+        return isNameChanged || isDescriptionChanged || isImageChanged || areTranslationsChanged();
     };
 
     const confirmDeleteCategory = async () => {
@@ -296,8 +365,13 @@ export default function CategoryDashboard({restaurant}) {
         if (Object.keys(errors).length === 0) {
             const formData = new FormData();
             formData.append("name", categoryForm.name);
-            formData.append("description", categoryForm.description);
+            formData.append("description", categoryForm.description || "");
             formData.append("restaurantId", restaurantId._id);
+
+            // Add translations if any exist
+            if (Object.keys(categoryForm.translations).length > 0) {
+                formData.append("translations", JSON.stringify(categoryForm.translations));
+            }
 
             if (categoryForm.image) {
                 formData.append("image", categoryForm.image);
@@ -319,7 +393,6 @@ export default function CategoryDashboard({restaurant}) {
             } finally {
                 setIsLoading(false); // ✅ Only runs after API call completes
             }
-
             setFormErrors("");
         } else {
             setFormErrors(errors);
@@ -339,12 +412,54 @@ export default function CategoryDashboard({restaurant}) {
             name: "",
             description: "",
             image: "",
+            translations: {}
         })
         setFormErrors({})
         setServerErrors({})
     }
 
-    console.log(restaurant)
+    // console.log(restaurant)
+
+    // Bulk delete functions
+    const handleSelectCategory = (categoryId) => {
+        setSelectedCategories(prev => {
+            if (prev.includes(categoryId)) {
+                return prev.filter(id => id !== categoryId);
+            } else {
+                return [...prev, categoryId];
+            }
+        });
+    };
+
+    const handleSelectAll = () => {
+        if (selectAll) {
+            setSelectedCategories([]);
+            setSelectAll(false);
+        } else {
+            const allCategoryIds = getProcessedCategories().map(category => category._id);
+            setSelectedCategories(allCategoryIds);
+            setSelectAll(true);
+        }
+    };
+
+    const handleBulkDelete = () => {
+        if (selectedCategories.length === 0) {
+            toast.error("Please select categories to delete");
+            return;
+        }
+        setShowBulkDeleteConfirm(true);
+    };
+
+    const confirmBulkDelete = async () => {
+        try {
+            await dispatch(startBulkDeleteCategories(selectedCategories));
+            setSelectedCategories([]);
+            setSelectAll(false);
+            setShowBulkDeleteConfirm(false);
+        } catch (error) {
+            console.error("Bulk delete failed:", error);
+        }
+    };
 
     return (
         <section>
@@ -352,7 +467,9 @@ export default function CategoryDashboard({restaurant}) {
                 <div className="category-dashboard-head">
                     <h1 className="dashboard-head">Category Dashboard</h1>
                 </div>
-                {restaurant?.isApproved && !restaurant?.isBlocked ? 
+
+                {restaurant ?
+                    restaurant?.isApproved && !restaurant?.isBlocked ? 
                     <div className="category-dashboard-body">
                         <div className="table-header">
                             <div className="search-bar">
@@ -379,10 +496,28 @@ export default function CategoryDashboard({restaurant}) {
                                     </div>
                                 </div>
                                 <div className="btn-div">
-                                    <button className="export-btn">
-                                        {/* 📁  */}
+                                    {/* <button className="export-btn">
+                                        📁 
                                         Export
-                                    </button>
+                                    </button> */}
+                                    {selectedCategories.length > 0 && (
+                                        <button 
+                                            className="bulk-delete-btn" 
+                                            onClick={handleBulkDelete}
+                                            style={{ 
+                                                backgroundColor: '#dc3545', 
+                                                color: 'white',
+                                                marginRight: '10px',
+                                                padding: '8px 16px',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <FaTrashAlt />
+                                            Delete Selected ({selectedCategories.length})
+                                        </button>
+                                    )}
                                     <button className="add-btn" onClick={() => {
                                         setIsViewEditSectionOpen(true)
                                         setIsEditCategory(true)
@@ -394,6 +529,13 @@ export default function CategoryDashboard({restaurant}) {
                             <table className="category-table">
                                 <thead>
                                     <tr>
+                                        <th>
+                                            <input 
+                                                type="checkbox" 
+                                                checked={selectAll}
+                                                onChange={handleSelectAll}
+                                            />
+                                        </th>
                                         <th>SI No</th>
                                         <th>Name</th>
                                         <th>Description</th>
@@ -405,7 +547,14 @@ export default function CategoryDashboard({restaurant}) {
                                     <tbody>
                                         {getProcessedCategories().map((category, index) => (
                                             <tr key={category._id}>
-                                                <td>{index + 1}</td>
+                                                <td>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={selectedCategories.includes(category._id)}
+                                                        onChange={() => handleSelectCategory(category._id)}
+                                                    />
+                                                </td>
+                                                <td>{(currentPage - 1) * showNo + index + 1}</td>
                                                 <td>{category.name}</td>
                                                 <td>{category.description || "—"}</td>
                                                 <td>
@@ -508,6 +657,12 @@ export default function CategoryDashboard({restaurant}) {
                             <p>Your restaurant profile has been created. Once it's approved by the admin, you can create a new category.</p>
                             <p>You will recieve an email once your profile is approved.</p>
                         </div>
+                :
+                    <div className="details-div">
+                        <p>It looks like you haven't created the restaurants profile yet. Let's get started!<br/>
+                        Create a restaurant profile to unlock the full dashboard experience.</p>
+                        <span>Go to <a onClick={() => {handleDashboardMenuChange("restaurant-profile")}}>Restaurant Profile</a></span>
+                    </div>
                 }
             </div>
             <AnimatePresence mode="wait">
@@ -548,9 +703,18 @@ export default function CategoryDashboard({restaurant}) {
                                                     <VisuallyHiddenInput
                                                         type="file"
                                                         onChange={handleChange("image")}
-                                                        multiple
+                                                        single
                                                     />
                                                 </UploadButton>
+                                                <div className="logo-upload-guidelines">
+                                                    <h2 className="head">Image Upload Guidelines:</h2>
+                                                    <ul>
+                                                        <li><LuDot className="icon"/><p>Recommended size: <span>500 × 500 px / Ratio 1 : 1</span> for best quality.</p></li>
+                                                        <li><LuDot className="icon"/><p>Supported format: <span>PNG, JPG and JPEG</span> (PNG preferred).</p></li>
+                                                        <li><LuDot className="icon"/><p>Use a <span>transparent background</span> for a cleaner look, or{" "}<span>white background</span> if transparency is not possible.</p></li>
+                                                        <li><LuDot className="icon"/><p>Maximum file size: <span>1 MB</span> for optimal performance.</p></li>
+                                                    </ul>
+                                                </div>
                                                 {(formErrors.image) &&
                                                     <CustomAlert
                                                         severity="error" 
@@ -602,14 +766,148 @@ export default function CategoryDashboard({restaurant}) {
                                                         className="error-message"
                                                     />
                                                 }
+
+                                                {/* Multi-Language Translation Fields */}
+                                                {hasMultiLanguageAccess(restaurant) && restaurant?.languages && restaurant.languages.length > 0 && (
+                                                    <div className="translation-section">
+                                                        <h3 className="translation-heading">Translations (Optional)</h3>
+                                                        <p className="translation-subtitle">Add translations for your selected languages</p>
+                                                        
+                                                        {restaurant.languages.map((lang) => {
+                                                            const languageNames = {
+                                                                'ar': { name: 'Arabic', native: 'العربية' },
+                                                                'fr': { name: 'French', native: 'Français' },
+                                                                'es': { name: 'Spanish', native: 'Español' },
+                                                                'en': { name: 'English', native: 'English' }
+                                                            };
+                                                            
+                                                            const langInfo = languageNames[lang] || { name: lang.toUpperCase(), native: lang };
+                                                            
+                                                            return (
+                                                                <div key={lang} className="translation-group">
+                                                                    <h4 className="translation-language">
+                                                                        {langInfo.name} ({langInfo.native})
+                                                                    </h4>
+                                                                    <TextField
+                                                                        label={`${langInfo.name} Name`}
+                                                                        variant="outlined"
+                                                                        value={categoryForm.translations?.[lang]?.name || ""}
+                                                                        onChange={(e) => handleTranslationChange(lang, 'name', e.target.value)}
+                                                                        fullWidth
+                                                                        className="form-field"
+                                                                    />
+                                                                    <TextField
+                                                                        label={`${langInfo.name} Description`}
+                                                                        variant="outlined"
+                                                                        value={categoryForm.translations?.[lang]?.description || ""}
+                                                                        onChange={(e) => handleTranslationChange(lang, 'description', e.target.value)}
+                                                                        multiline
+                                                                        rows={2}
+                                                                        fullWidth
+                                                                        className="form-field"
+                                                                    />
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+
+                                                {/* For general errors (no path available) */}
+                                                {Array.isArray(serverErrors) &&
+                                                !serverErrors.getError("name") &&
+                                                serverErrors.map((err, i) => (
+                                                    <CustomAlert 
+                                                    key={i} 
+                                                    severity="error" 
+                                                    message={err.msg} 
+                                                    className="error-message"
+                                                    />
+                                                ))}
                                             </div>
                                         ) : (
                                             <div className="category-details">
-                                                <div className="image-div">
-                                                    <img src={category.image} alt="Category Image" />
+                                                <div className="category-view-header">
+                                                    {category.image && (
+                                                        <div className="category-image-div">
+                                                            <img src={category.image} alt="Category Image" />
+                                                        </div>
+                                                    )}
+                                                    <div className="category-basic-info">
+                                                        <h2 className="category-name">{category.name}</h2>
+                                                        {category.description && (
+                                                            <p className="category-description">{category.description}</p>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                <h2 className="category-name">{category.name}</h2>
-                                                <p className="category-description">{category.description}</p>
+
+                                                {/* Translations Section */}
+                                                {hasMultiLanguageAccess(restaurant) && restaurant?.languages && restaurant.languages.length > 0 && (
+                                                    <div className="category-translations-section">
+                                                        <h3 className="section-title">Translations</h3>
+                                                        {(() => {
+                                                            // Convert translations Map to object if needed
+                                                            let translationsObj = {};
+                                                            if (category.translations) {
+                                                                if (category.translations.get && typeof category.translations.get === 'function') {
+                                                                    // It's a Map
+                                                                    for (const [lang, data] of category.translations.entries()) {
+                                                                        translationsObj[lang] = data;
+                                                                    }
+                                                                } else {
+                                                                    // It's already an object
+                                                                    translationsObj = category.translations;
+                                                                }
+                                                            }
+
+                                                            const hasTranslations = Object.keys(translationsObj).length > 0 && 
+                                                                Object.values(translationsObj).some(t => (t?.name && t.name.trim()) || (t?.description && t.description.trim()));
+
+                                                            const languageNames = {
+                                                                'ar': { name: 'Arabic', native: 'العربية' },
+                                                                'fr': { name: 'French', native: 'Français' },
+                                                                'es': { name: 'Spanish', native: 'Español' },
+                                                                'en': { name: 'English', native: 'English' }
+                                                            };
+
+                                                            return hasTranslations ? (
+                                                                <div className="translations-display">
+                                                                    {restaurant.languages.map((lang) => {
+                                                                        const langInfo = languageNames[lang] || { name: lang.toUpperCase(), native: lang };
+                                                                        const translation = translationsObj[lang];
+                                                                        const hasName = translation?.name && translation.name.trim();
+                                                                        const hasDescription = translation?.description && translation.description.trim();
+
+                                                                        if (!hasName && !hasDescription) return null;
+
+                                                                        return (
+                                                                            <div key={lang} className="translation-card">
+                                                                                <div className="translation-header">
+                                                                                    <span className="translation-language">{langInfo.name} ({langInfo.native})</span>
+                                                                                </div>
+                                                                                {hasName && (
+                                                                                    <div className="translation-item">
+                                                                                        <span className="translation-label">Name:</span>
+                                                                                        <span className="translation-value">{translation.name}</span>
+                                                                                    </div>
+                                                                                )}
+                                                                                {hasDescription && (
+                                                                                    <div className="translation-item">
+                                                                                        <span className="translation-label">Description:</span>
+                                                                                        <span className="translation-value">{translation.description}</span>
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            ) : (
+                                                                <div className="no-translations-message">
+                                                                    <p>No translations have been added to this category.</p>
+                                                                </div>
+                                                            );
+                                                        })()}
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -693,6 +991,13 @@ export default function CategoryDashboard({restaurant}) {
                     message="You have unsaved changes. Are you sure you want to cancel?"
                     onConfirm={handleCloseAll}
                     onCancel={() => {setShowConfirmCancel(false)}}
+                />
+            )}
+            {showBulkDeleteConfirm && (
+                <ConfirmToast
+                    message={`Are you sure you want to delete ${selectedCategories.length} selected category(ies)? This action cannot be undone.`}
+                    onConfirm={confirmBulkDelete}
+                    onCancel={() => {setShowBulkDeleteConfirm(false)}}
                 />
             )}
         </section>

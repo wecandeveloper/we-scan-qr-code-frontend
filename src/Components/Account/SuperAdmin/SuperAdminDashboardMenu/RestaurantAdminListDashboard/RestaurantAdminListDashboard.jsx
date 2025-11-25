@@ -6,11 +6,10 @@ import "./RestaurantAdminListDashboard.scss"
 
 import { RiExpandUpDownFill } from "react-icons/ri"
 import { FaCaretLeft, FaCaretRight } from "react-icons/fa6"
-import { MdRemoveRedEye } from "react-icons/md"
+import { MdRemoveRedEye, MdSave } from "react-icons/md"
 import { IoIosClose, IoMdEye, IoMdEyeOff } from "react-icons/io";
 
-import { styled } from '@mui/material/styles';
-import { Button, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Box, Button, CircularProgress, IconButton, InputAdornment, TextField } from '@mui/material';
 import ConfirmToast from "../../../../../Designs/ConfirmToast/ConfirmToast"
 import { BiSolidTrash } from "react-icons/bi"
 import CustomAlert from "../../../../../Designs/CustomAlert"
@@ -18,9 +17,10 @@ import { toast } from "react-toastify"
 import { useAuth } from "../../../../../Context/AuthContext";
 import axios from "axios"
 import { localhost } from "../../../../../Api/apis"
-import { startDeleteCustomer, startGetAllCustomers, startToggleBlockUser } from "../../../../../Actions/userActions"
+import { startAddUser, startDeleteUser, startGetAllUsers, startToggleBlockUser } from "../../../../../Actions/userActions"
 
 import defaultPic from "../../../../../Assets/Common/account-icon.png"
+import PhoneInput from "react-phone-input-2"
 
 export default function RestaurantAdminListDashboard() {
     const dispatch = useDispatch()
@@ -44,12 +44,31 @@ export default function RestaurantAdminListDashboard() {
     const [ confirmPassword, setConfirmPassword ] = useState("")
     const [ showPassword1, setShowPassword1 ] = useState(false)
     const [ showPassword2, setShowPassword2 ] = useState(false)
+    const [ showAddUserPassword, setShowAddUserPassword ] = useState(false)
+    const [ showAddUserConfirmPassword, setShowAddUserConfirmPassword ] = useState(false)
     const [ formErrors, setFormErrors ] = useState({})
     const [ serverErrors, setServerErrors ] = useState({})
 
     const [ showConfirmToggleBlockCustomer, setShowConfirmToggleBlockCustomer ] = useState(false)
     const [ showConfirmDeleteCustomer, setShowConfirmDeleteCustomer ] = useState(false)
     const [ showConfirmCancel, setShowConfirmCancel ] = useState(false)
+    const [ isAddUser, setIsAddUser ] = useState(false)
+    const [ isLoading, setIsLoading ] = useState(false)
+    const [ deleteLoading, setDeleteLoading ] = useState(false)
+
+    const [registerFormData, setRegisterFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: {
+            countryCode: "",
+            number: "",
+        },
+        role: "",
+        isApproved: "",
+        password: "",
+        confirmPassword: ""
+    });
 
     const errors = {}
 
@@ -62,9 +81,36 @@ export default function RestaurantAdminListDashboard() {
         }
     }
 
+    const regsiterErrors = {}
+
+    const validateRegsiterErrors = () => {
+        if(registerFormData.firstName.trim().length === 0){
+            regsiterErrors.firstName = "First Name is Required"
+        }
+        if(registerFormData.lastName.trim().length === 0){
+            regsiterErrors.lastName = "Last Name is Required"
+        }
+        if(registerFormData.password.trim().length === 0){
+            regsiterErrors.password = "Password is Required"
+        }
+        if(registerFormData.password !== registerFormData.confirmPassword) {
+            regsiterErrors.confirmPassword = "Passwords do not match"
+        }
+        if(registerFormData.email.trim().length === 0){
+            regsiterErrors.email = "Email is Required"
+        }
+        if(registerFormData.phone.countryCode.trim().length === 0){
+            regsiterErrors.countryCode = "Country Code is Required"
+        }
+        if(registerFormData.phone.number.trim().length === 0){
+            regsiterErrors.number = "Number is Required"
+        }
+    }
+    validateRegsiterErrors()
+
     useEffect(() => {
         if(isLoggedIn) {
-            dispatch(startGetAllCustomers())
+            dispatch(startGetAllUsers())
         }
     }, [isLoggedIn, dispatch])
     console.log(customerUsers)
@@ -82,7 +128,7 @@ export default function RestaurantAdminListDashboard() {
     const getProcessedProducts = () => {
         // Apply category and price filters
         let filteredArray = customerUsers.filter((ele) => {
-            const fullName = `${ele.firstName}${ele.lastName}`
+            const fullName = `${ele?.firstName}${ele?.lastName}`
             if (searchText.trim() && !fullName.trim()?.toLowerCase().includes(searchText.trim()?.toLowerCase())) {
                 return false;
             }
@@ -136,7 +182,7 @@ export default function RestaurantAdminListDashboard() {
     // console.log("filtered Products", getProcessedProducts())
 
     const totalFilteredItems = customerUsers.filter((ele) => {
-        const fullName = `${ele.firstName}${ele.lastName}`
+        const fullName = `${ele?.firstName}${ele?.lastName}`
         if (searchText.trim() && !fullName.trim()?.toLowerCase().includes(searchText.trim()?.toLowerCase())) {
             return false;
         }
@@ -205,9 +251,29 @@ export default function RestaurantAdminListDashboard() {
         setCurrentPage(page);
     };
 
+    const handleRegisterChange = (field) => (event) => {
+        const inputValue = event.target.value;
+
+        if (field.startsWith("phone.")) {
+            const key = field.split(".")[1]; // either 'number' or 'countryCode'
+            setRegisterFormData((prev) => ({
+                ...prev,
+                phone: {
+                    ...prev.phone,
+                    [key]: inputValue,
+                },
+            }));
+        } else {
+            setRegisterFormData((prev) => ({
+                ...prev,
+                [field]: inputValue,
+            }));
+        }
+    };
+
     const confirmToggleBlockUser = () => {
         console.log(customerId)
-        if(customer.isBlocked) {
+        if(customer?.isBlocked) {
             const body = {
                 isBlocked: false
             }
@@ -220,9 +286,23 @@ export default function RestaurantAdminListDashboard() {
         }
     }
 
-    const confirmDeleteUser = () => {
-        dispatch(startDeleteCustomer(customerId, handleCloseAll))
-    }
+    const confirmDeleteUser = async (userId) => {
+        if (!customerId) return;
+
+        setDeleteLoading(true);
+        try {
+            await dispatch(startDeleteUser(userId, handleCloseAll));
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setDeleteLoading(false);
+            window.location.reload()
+        }
+    };
+
+    // const confirmDeleteUser = (id) => {
+    //     dispatch(startDeleteUser(id, handleCloseAll))
+    // }
 
     const hanldeChangePassword = async () => {
         validateErrors()
@@ -250,6 +330,48 @@ export default function RestaurantAdminListDashboard() {
         }
     }
 
+    const handleRegisterSubmit = async (e) => {
+        e.preventDefault();
+        if(Object.keys(regsiterErrors).length === 0){
+            setIsLoading(true)
+            const { firstName, lastName, email, phone, password } = registerFormData;
+
+            const user = {
+                firstName,
+                lastName,
+                email: {
+                    address: email.toLocaleLowerCase()
+                },
+                phone,
+                password,
+            }
+
+            console.log(user)
+
+            try {
+                dispatch(startAddUser(user, setServerErrors, handleCloseAll))
+                setIsLoading(false)
+                setServerErrors(false)
+                setFormErrors(false)
+            } catch(err) {
+                console.log(err)
+                setFormErrors({})
+                const errors = Array.isArray(err.response?.data?.message)
+                    ? err.response.data.message
+                    : [];
+                setServerErrors(errors);
+                console.log(err.response.data.message)
+                console.log(serverErrors)
+                setIsLoading(false)
+            }
+        } else {
+            setIsLoading(false)
+            setFormErrors(regsiterErrors);
+            console.log(regsiterErrors)
+            setServerErrors([])
+        }
+    };
+
     const handleCloseAll = () => {
         setCustomerId("")
         setCustomer("")
@@ -259,7 +381,43 @@ export default function RestaurantAdminListDashboard() {
         setConfirmPassword("")
         setFormErrors({})
         setServerErrors("")
+        setIsAddUser(false)
+        setShowAddUserPassword(false)
+        setShowAddUserConfirmPassword(false)
+        setRegisterFormData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            phone: {
+                countryCode: "",
+                number: "",
+            },
+            role: "",
+            isApproved: "",
+            password: "",
+            confirmPassword: ""
+        })
     }
+
+    // Auto password generator function
+    const generatePassword = () => {
+        const length = 12;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+        let password = "";
+        for (let i = 0; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        return password;
+    };
+
+    const handleGeneratePassword = () => {
+        const newPassword = generatePassword();
+        setRegisterFormData(prev => ({
+            ...prev,
+            password: newPassword,
+            confirmPassword: newPassword
+        }));
+    };
 
     // console.log(serverErrors)
 
@@ -299,6 +457,13 @@ export default function RestaurantAdminListDashboard() {
                                 {/* 📁  */}
                                 Export
                             </button>
+                            <button className="add-btn" onClick={() => {
+                                setIsViewSectionOpen(true)
+                                setIsAddUser(true)
+                            }}>
+                                {/* 📁  */}
+                                Add User
+                            </button>
                         </div>
                     </div>
                     <div className="restaurant-admin-table-container">
@@ -310,6 +475,7 @@ export default function RestaurantAdminListDashboard() {
                                     <th>Email</th>
                                     <th>Phone Number</th>
                                     <th>Role</th>
+                                    <th>Restaurant</th>
                                     <th>Status</th>
                                     <th>Verification</th>
                                     <th>Action</th>
@@ -317,25 +483,29 @@ export default function RestaurantAdminListDashboard() {
                             </thead>
                             <tbody>
                                 {getProcessedProducts().map((customer, index) => (
-                                    <tr key={customer._id}>
-                                        <td>{index + 1}</td>
-                                        <td>{`${customer.firstName} ${customer.lastName}`}</td>
+                                    <tr key={customer?._id}>
+                                        <td>{(currentPage - 1) * showNo + index + 1}</td>
+                                        <td>{`${customer?.firstName} ${customer?.lastName}`}</td>
                                         <td>{customer?.email.address}</td>
                                         <td>{customer?.phone.countryCode} {customer?.phone.number}</td>
-                                        <td>{customer.role}</td>
-                                        <td>{customer.isBlocked ? "Blocked" : "Active"}</td>
-                                        <td>{customer.isVerified ? "Verified" : "Not Verified"}</td>
+                                        <td>{customer?.role}</td>
+                                        <td>{customer?.restaurantId?.name || "N/A"}</td>
+                                        <td>{customer?.isBlocked ? "Blocked" : "Active"}</td>
+                                        <td>{customer?.isVerified ? "Verified" : "Not Verified"}</td>
                                         
                                         <td>
                                             <div className="action-div">
                                                 <button className="view-btn" onClick={() => {
                                                     setIsViewSectionOpen(true)
-                                                    setCustomerId(customer._id)
+                                                    setCustomerId(customer?._id)
                                                     }}><MdRemoveRedEye /></button>
                                                 <button className="delete-btn" onClick={() => {
                                                     setShowConfirmDeleteCustomer(true)
-                                                    setCustomerId(customer._id)
-                                                }}><BiSolidTrash /></button>
+                                                    setCustomerId(customer?._id)
+                                                }}>{(deleteLoading && customerId === customer._id) ? 
+                                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                                        <CircularProgress color="inherit" size={15}/>
+                                                    </Box> : <BiSolidTrash />}</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -402,141 +572,334 @@ export default function RestaurantAdminListDashboard() {
                                 <div className="close-btn" onClick={handleCloseAll}><IoIosClose className="icon"/></div>
                                 <div className="customer-details-div">
                                     <div className="customer-details">
-                                        <h1 className="customer-head">View Customer {isChangePasswordSectionOpen && <span>- Change Password</span>}</h1>
-                                        {!isChangePasswordSectionOpen ? 
-                                            <div className="details-div">
-                                                <div className="customer-detail profile">
-                                                    <span className="head">Profile Pic</span>
-                                                    <div className="value img-div">
-                                                        <img className="value profile-pic" src={customer.profilePic || defaultPic} alt="Profile Pic"/>
-                                                    </div>
+                                        <h1 className="customer-head">{isAddUser ? "Add User" : isChangePasswordSectionOpen ? "Change Password" : "View User"}</h1>
+                                        {isAddUser ?
+                                            <div
+                                                component="form"
+                                                onSubmit={handleRegisterSubmit}
+                                                className="contact-form"
+                                                >
+                                                <div className="sameline">
+                                                    <TextField
+                                                        label="First Name"
+                                                        variant="outlined"
+                                                        value={registerFormData.firstName}
+                                                        onChange={handleRegisterChange('firstName')}
+                                                        fullWidth
+                                                        className="form-field"
+                                                    />
+                                                    <TextField
+                                                        label="Last Name"
+                                                        variant="outlined"
+                                                        value={registerFormData.lastName}
+                                                        onChange={handleRegisterChange('lastName')}
+                                                        fullWidth
+                                                        className="form-field"
+                                                    />
                                                 </div>
-                                                <div className="customer-detail name">
-                                                    <span className="head">First Name</span>
-                                                    <span className="value">{customer.firstName}</span>
+                                                {(formErrors.firstName || formErrors.lastName) &&
+                                                    <CustomAlert 
+                                                        severity="error" 
+                                                        message={`${formErrors.firstName || ''}${formErrors.firstName && formErrors.lastName ? ' | ' : ''}${formErrors.lastName || ''}`}
+                                                    />
+                                                }
+                                                <div className="sameline phone">
+                                                    <PhoneInput
+                                                        country={"ae"}              // default country
+                                                        value={registerFormData.phone.countryCode + registerFormData.phone.number} 
+                                                        onChange={(phone) => {
+                                                            // phone will be full number with country code e.g. "971501234567"
+                                                            // Parse country code and number from this string:
+                                                            const countryCode = "+" + phone.slice(0, phone.length - 9);  // adjust length for your phone number format
+                                                            const number = phone.slice(phone.length - 9);
+
+                                                            setRegisterFormData((prev) => ({
+                                                            ...prev,
+                                                            phone: {
+                                                                countryCode,
+                                                                number,
+                                                            }
+                                                            }));
+                                                        }}
+                                                        inputProps={{
+                                                            name: 'phone',
+                                                            required: true,
+                                                            // autoFocus: true,
+                                                            style: {
+                                                            fontFamily: '"Montserrat", sans-serif',
+                                                            color: '#470531',
+                                                            borderRadius: 10,
+                                                            border: '1.5px solid #470531',
+                                                            padding: '10px 50px',
+                                                            width: '100%',
+                                                            height: '57px',
+                                                            }
+                                                        }}
+                                                        buttonStyle={{
+                                                            border: '1.5px solid #470531',
+                                                            borderRadius: '10px 0 0 10px',
+                                                            boxShadow: 'none',
+                                                        }}
+                                                        containerStyle={{
+                                                            width: '100%',
+                                                        }}
+                                                    />
+
+                                                    <TextField
+                                                        label="Email"
+                                                        variant="outlined"
+                                                        value={registerFormData.email.toLocaleLowerCase()}
+                                                        onChange={handleRegisterChange('email')}
+                                                        fullWidth
+                                                        className="form-field"
+                                                    />
                                                 </div>
-                                                <div className="customer-detail name">
-                                                    <span className="head">Last Name</span>
-                                                    <span className="value">{customer.lastName}</span>
-                                                </div>
-                                                <div className="customer-detail email">
-                                                    <span className="head">Email</span>
-                                                    <span className="value">
-                                                        {customer.email?.address}
-                                                        {customer.email?.isVerified ? 
-                                                            <CustomAlert
-                                                                severity="success" 
-                                                                message="Verified"
-                                                                className="error-message"
-                                                            /> : 
-                                                            <CustomAlert
-                                                                severity="error" 
-                                                                message="Not Verified"
-                                                                className="error-message"
-                                                            />
-                                                        }
-                                                    </span>
-                                                </div>
-                                                <div className="customer-detail price">
-                                                    <span className="head">Phone</span>
-                                                    <span className="value">
-                                                        {customer.phone?.countryCode} {customer.phone?.number}
-                                                        {customer.phone?.isVerified ? 
-                                                            <CustomAlert
-                                                                severity="success" 
-                                                                message="Verified"
-                                                                className="error-message"
-                                                            /> : 
-                                                            <CustomAlert
-                                                                severity="error" 
-                                                                message="Not Verified"
-                                                                className="error-message"
-                                                            />
-                                                        }
-                                                    </span>
-                                                </div>
-                                                <div className="customer-detail description">
-                                                    <span className="head">Role</span>
-                                                    <span className="value">{customer.role}</span>
-                                                </div>
-                                                <div className="customer-detail offer">
-                                                    <span className="head">Account Status</span>
-                                                    <span className="value">{customer.isBlocked ? "Blocked" : "Active"}</span>
-                                                </div>
-                                            </div>
-                                        :
-                                            <div className="change-password-div">
-                                                <div className="form-group">
-                                                    <label htmlFor="password">New Password:</label>
+                                                {(formErrors.number || formErrors.email) &&
+                                                    <CustomAlert 
+                                                        severity="error" 
+                                                        message={`${formErrors.countryCode || ''}${formErrors.countryCode && formErrors.number ? ' | ' : ''}${formErrors.number || ''}`}
+                                                    />
+                                                }
+                                                {Array.isArray(serverErrors) && (serverErrors.getError("phone.number") || serverErrors.getError("email.address")) && (
+                                                    <CustomAlert 
+                                                        severity="error" 
+                                                        message={`${serverErrors.getError("phone.number") || ''}${serverErrors.getError("phone.number") && serverErrors.getError("email.address") ? ' | ' : ''}${serverErrors.getError("email.address") || ''}`}
+                                                    />
+                                                )}
+                                                {/* <div className="sameline phone">
+                                                    <FormControl fullWidth className="form-field medium">
+                                                        <InputLabel>Role</InputLabel>
+                                                        <Select
+                                                            value={registerFormData.role | ""}
+                                                            onChange={() => {handleRegisterChange("role")}}
+                                                            label="Role"
+                                                            >
+                                                            {roles.map((role) => (
+                                                                <MenuItem key={role._id} value={role.role}>
+                                                                {role.name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+                                                </div> */}
+
+                                                <div className="sameline">
                                                     <TextField
                                                         label="Password"
                                                         variant="outlined"
-                                                        type={showPassword1 ? 'text' : 'password'}
-                                                        value={newPassword}
-                                                        onChange={(e) => setNewPassword(e.target.value)}
+                                                        type={showAddUserPassword ? 'text' : 'password'}
+                                                        value={registerFormData.password}
+                                                        onChange={handleRegisterChange('password')}
                                                         fullWidth
                                                         className="form-field"
                                                         InputProps={{
                                                             endAdornment: (
-                                                            <InputAdornment position="end">
-                                                                <IconButton onClick={() => setShowPassword1(!showPassword1)} edge="end">
-                                                                {showPassword1 ? <IoMdEyeOff /> : <IoMdEye />}
-                                                                </IconButton>
-                                                            </InputAdornment>
+                                                                <InputAdornment position="end">
+                                                                    <IconButton onClick={() => setShowAddUserPassword(!showAddUserPassword)} edge="end">
+                                                                        {showAddUserPassword ? <IoMdEyeOff /> : <IoMdEye />}
+                                                                    </IconButton>
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                    />
+                                                    <TextField
+                                                        label="Confirm Password"
+                                                        variant="outlined"
+                                                        type={showAddUserConfirmPassword ? 'text' : 'password'}
+                                                        value={registerFormData.confirmPassword}
+                                                        onChange={handleRegisterChange('confirmPassword')}
+                                                        fullWidth
+                                                        className="form-field"
+                                                        InputProps={{
+                                                            endAdornment: (
+                                                                <InputAdornment position="end">
+                                                                    <IconButton onClick={() => setShowAddUserConfirmPassword(!showAddUserConfirmPassword)} edge="end">
+                                                                        {showAddUserConfirmPassword ? <IoMdEyeOff /> : <IoMdEye />}
+                                                                    </IconButton>
+                                                                </InputAdornment>
                                                             ),
                                                         }}
                                                     />
                                                 </div>
-                                                {(formErrors.newPassword) &&
-                                                    <CustomAlert
+                                                <Button
+                                                    variant="outlined"
+                                                    onClick={handleGeneratePassword}
+                                                    className="btn-dark"
+                                                    size="small"
+                                                >
+                                                    Generate
+                                                </Button>
+                                                {(formErrors.password ||formErrors.confirmPassword) &&
+                                                    <CustomAlert 
                                                         severity="error" 
-                                                        message={formErrors.newPassword}
-                                                        className="error-message"
+                                                        message={`${formErrors.password || ''}${formErrors.password && formErrors.confirmPassword ? ' | ' : ''}${formErrors.confirmPassword || ''}`}
                                                     />
                                                 }
-                                                <div className="form-group">
-                                                    <label htmlFor="password">Confirm Password:</label>
+                                            </div>
+                                        : 
+                                            isChangePasswordSectionOpen ?
+                                                <div className="change-password-div">
+                                                    <div className="form-group">
+                                                        <label htmlFor="password">New Password:</label>
                                                         <TextField
                                                             label="Password"
                                                             variant="outlined"
-                                                            type={showPassword2 ? 'text' : 'password'}
-                                                            value={confirmPassword}
-                                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                                            type={showPassword1 ? 'text' : 'password'}
+                                                            value={newPassword}
+                                                            onChange={(e) => setNewPassword(e.target.value)}
                                                             fullWidth
                                                             className="form-field"
                                                             InputProps={{
                                                                 endAdornment: (
                                                                 <InputAdornment position="end">
-                                                                    <IconButton onClick={() => setShowPassword2(!showPassword2)} edge="end">
-                                                                    {showPassword2 ? <IoMdEyeOff /> : <IoMdEye />}
+                                                                    <IconButton onClick={() => setShowPassword1(!showPassword1)} edge="end">
+                                                                    {showPassword1 ? <IoMdEyeOff /> : <IoMdEye />}
                                                                     </IconButton>
                                                                 </InputAdornment>
                                                                 ),
                                                             }}
                                                         />
+                                                    </div>
+                                                    {(formErrors.newPassword) &&
+                                                        <CustomAlert
+                                                            severity="error" 
+                                                            message={formErrors.newPassword}
+                                                            className="error-message"
+                                                        />
+                                                    }
+                                                    <div className="form-group">
+                                                        <label htmlFor="password">Confirm Password:</label>
+                                                            <TextField
+                                                                label="Password"
+                                                                variant="outlined"
+                                                                type={showPassword2 ? 'text' : 'password'}
+                                                                value={confirmPassword}
+                                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                                fullWidth
+                                                                className="form-field"
+                                                                InputProps={{
+                                                                    endAdornment: (
+                                                                    <InputAdornment position="end">
+                                                                        <IconButton onClick={() => setShowPassword2(!showPassword2)} edge="end">
+                                                                        {showPassword2 ? <IoMdEyeOff /> : <IoMdEye />}
+                                                                        </IconButton>
+                                                                    </InputAdornment>
+                                                                    ),
+                                                                }}
+                                                            />
+                                                    </div>
+                                                    
+                                                    {(formErrors.confirmPassword) &&
+                                                        <CustomAlert
+                                                            severity="error" 
+                                                            message={formErrors?.confirmPassword}
+                                                            className="error-message"
+                                                        />
+                                                    }
+                                                    {serverErrors && (
+                                                        <CustomAlert
+                                                            severity="error"
+                                                            message={typeof serverErrors === "string" ? serverErrors : JSON.stringify(serverErrors)}
+                                                            className="error-message"
+                                                        />
+                                                    )}
                                                 </div>
-                                                
-                                                {(formErrors.confirmPassword) &&
-                                                    <CustomAlert
-                                                        severity="error" 
-                                                        message={formErrors?.confirmPassword}
-                                                        className="error-message"
-                                                    />
-                                                }
-                                                {serverErrors && (
-  <CustomAlert
-    severity="error"
-    message={typeof serverErrors === "string" ? serverErrors : JSON.stringify(serverErrors)}
-    className="error-message"
-  />
-)}
-
-                                            </div>
+                                            :
+                                                <div className="details-div">
+                                                    <div className="customer-detail profile">
+                                                        <span className="head">Profile Pic</span>
+                                                        <div className="value img-div">
+                                                            <img className="value profile-pic" src={customer?.profilePic || defaultPic} alt="Profile Pic"/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="customer-detail name">
+                                                        <span className="head">First Name</span>
+                                                        <span className="value">{customer?.firstName}</span>
+                                                    </div>
+                                                    <div className="customer-detail name">
+                                                        <span className="head">Last Name</span>
+                                                        <span className="value">{customer?.lastName}</span>
+                                                    </div>
+                                                    <div className="customer-detail email">
+                                                        <span className="head">Email</span>
+                                                        <span className="value">
+                                                            {customer?.email?.address}
+                                                            {customer?.email?.isVerified ? 
+                                                                <CustomAlert
+                                                                    severity="success" 
+                                                                    message="Verified"
+                                                                    className="error-message"
+                                                                /> : 
+                                                                <CustomAlert
+                                                                    severity="error" 
+                                                                    message="Not Verified"
+                                                                    className="error-message"
+                                                                />
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    <div className="customer-detail price">
+                                                        <span className="head">Phone</span>
+                                                        <span className="value">
+                                                            {customer?.phone?.countryCode} {customer?.phone?.number}
+                                                            {customer?.phone?.isVerified ? 
+                                                                <CustomAlert
+                                                                    severity="success" 
+                                                                    message="Verified"
+                                                                    className="error-message"
+                                                                /> : 
+                                                                <CustomAlert
+                                                                    severity="error" 
+                                                                    message="Not Verified"
+                                                                    className="error-message"
+                                                                />
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    <div className="customer-detail description">
+                                                        <span className="head">Role</span>
+                                                        <span className="value">{customer?.role}</span>
+                                                    </div>
+                                                    <div className="customer-detail offer">
+                                                        <span className="head">Account Status</span>
+                                                        <span className="value">{customer?.isBlocked ? "Blocked" : "Active"}</span>
+                                                    </div>
+                                                </div>
                                         }
                                     </div>
-                                    {!isChangePasswordSectionOpen ?
+                                    {isAddUser ?
                                         <div className="action-div">
-                                            {customer.isBlocked ? 
+                                            <button
+                                                type="submit"
+                                                className="btn password-btn"
+                                                onClick={handleRegisterSubmit}
+                                            >
+                                                {isLoading ? 
+                                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                                        <CircularProgress color="inherit" size={20}/>
+                                                    </Box>
+                                                : (
+                                                    <>
+                                                    Register <MdSave/>
+                                                    </>
+                                                )}
+                                            </button>
+                                            <button className="btn delete-btn" onClick={() => {
+                                                setShowConfirmCancel(true)
+                                            }}>Cancel <BiSolidTrash /></button>
+                                        </div>
+                                    : isChangePasswordSectionOpen ?
+                                        <div className="action-div">
+                                            <button className="btn password-btn" 
+                                                onClick={hanldeChangePassword}
+                                            >Submit<BiSolidTrash /></button>
+                                            <button className="btn delete-btn" onClick={() => {
+                                                setShowConfirmCancel(true)
+                                            }}>Cancel <BiSolidTrash /></button>
+                                        </div>
+                                        :
+                                        <div className="action-div">
+                                            {customer?.isBlocked ? 
                                                 <button className="btn unblock-btn" onClick={() => {
                                                     setShowConfirmToggleBlockCustomer(true)
                                                 }}>UnBlock <BiSolidTrash /></button>
@@ -550,16 +913,8 @@ export default function RestaurantAdminListDashboard() {
                                             }}>Delete <BiSolidTrash /></button>
                                             <button className="btn password-btn" onClick={() => {
                                                 setIsChangePasswordSectionOpen(true)
+                                                setIsAddUser(false)
                                             }}>Change Password <BiSolidTrash /></button>
-                                        </div>
-                                    : 
-                                        <div className="action-div">
-                                            <button className="btn password-btn" 
-                                                onClick={hanldeChangePassword}
-                                            >Submit<BiSolidTrash /></button>
-                                            <button className="btn delete-btn" onClick={() => {
-                                                setShowConfirmCancel(true)
-                                            }}>Cancel <BiSolidTrash /></button>
                                         </div>
                                     }
                                 </div>
@@ -570,13 +925,13 @@ export default function RestaurantAdminListDashboard() {
             {showConfirmDeleteCustomer && (
                 <ConfirmToast
                     message="Are you sure you want to Delete this User?"
-                    onConfirm={confirmDeleteUser}
+                    onConfirm={() => confirmDeleteUser(customerId)} 
                     onCancel={() => {setShowConfirmDeleteCustomer(false)}}
                 />
             )}
             {showConfirmToggleBlockCustomer && (
                 <ConfirmToast
-                    message={`Are you sure you want to ${customer.isBlocked ? "UnBlock" : "Block"} this User?`}
+                    message={`Are you sure you want to ${customer?.isBlocked ? "UnBlock" : "Block"} this User?`}
                     onConfirm={confirmToggleBlockUser}
                     onCancel={() => {setShowConfirmToggleBlockCustomer(false)}}
                 />

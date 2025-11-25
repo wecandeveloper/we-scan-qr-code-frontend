@@ -1,0 +1,271 @@
+.customer-cancel-toast-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+
+  &.exit {
+    animation: fadeOut 0.3s ease-in;
+  }
+}
+
+.customer-cancel-toast {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-width: 450px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-left: 8px solid #f59e0b;
+  animation: slideInScale 0.3s ease-out;
+
+  .toast-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #e5e7eb;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .icon-wrapper {
+        width: 40px;
+        height: 40px;
+        background: #fffbeb;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #f59e0b;
+
+        .cancel-icon {
+          font-size: 20px;
+        }
+      }
+
+      .toast-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+      }
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #f3f4f6;
+        color: #374151;
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .toast-body {
+    padding: 20px 24px;
+
+    .order-no {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #374151;
+
+      strong {
+        color: #1f2937;
+        font-weight: 600;
+      }
+    }
+
+    .order-type {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #374151;
+
+      strong {
+        color: #1f2937;
+        font-weight: 600;
+      }
+    }
+
+    .order-info,
+    .customer-info {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #374151;
+
+      strong {
+        color: #1f2937;
+        font-weight: 600;
+      }
+    }
+
+    .customer-details,
+    .customer-phone {
+      margin-bottom: 8px;
+    }
+
+    .cancellation-reason {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #374151;
+
+      strong {
+        color: #1f2937;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .reason-text {
+        background: #fffbeb;
+        border: 1px solid #fed7aa;
+        border-radius: 8px;
+        padding: 12px;
+        color: #92400e;
+        font-style: italic;
+        line-height: 1.5;
+      }
+    }
+  }
+
+  .toast-footer {
+    padding: 16px 24px 20px;
+    display: flex;
+    justify-content: center;
+
+    .acknowledge-btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      min-width: 120px;
+      justify-content: center;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .check-icon {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .customer-cancel-toast {
+    width: 95%;
+    max-width: none;
+    margin: 0 10px;
+
+    .toast-header {
+      padding: 16px 20px 12px;
+
+      .header-content {
+        gap: 10px;
+
+        .icon-wrapper {
+          width: 36px;
+          height: 36px;
+
+          .cancel-icon {
+            font-size: 18px;
+          }
+        }
+
+        .toast-title {
+          font-size: 16px;
+        }
+      }
+    }
+
+    .toast-body {
+      padding: 16px 20px;
+    }
+
+    .toast-footer {
+      padding: 12px 20px 16px;
+
+      .acknowledge-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+        min-width: 100px;
+      }
+    }
+  }
+}

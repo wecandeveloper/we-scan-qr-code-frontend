@@ -1,22 +1,25 @@
 import axios from "axios"
-import {render, localhost} from "../Api/apis"
+import { localhost } from "../Api/apis"
 import { toast } from "react-toastify"
 
-export const startCreateOrder = (formData, setGlobalGuestId, setIsCartSectionOpen) => {
-    return async (dispatch) => {
+export const startCreateOrder = (formData, setGlobalGuestId, setIsCartSectionOpen, setGlobalGuestCart) => {
+    return async () => {
         try {
             const orderResponse = await axios.post(`${localhost}/api/order/create`, formData, )
-            const order = orderResponse.data.data
-            setGlobalGuestId(order.guestId)
-            localStorage.setItem("guestId", order.guestId)
-            localStorage.removeItem("guestCart")
-            setIsCartSectionOpen(false)
-            dispatch(addOrder(order))
-            // console.log(order)
-            toast.success("Your Order Placed Successfully")
+            const { guestId, message } = orderResponse.data
+            
+            // Save guestId for tracking and notifications
+            setGlobalGuestId(guestId)
+            localStorage.setItem("guestId", guestId)
+            
+            // Don't clear cart yet - order is pending approval
+            // Cart will be cleared only when order is accepted
+            
+            // Show appropriate message
+            toast.success(message)
         } catch(err) {
             console.log(err)
-            toast.error("Unable to Place the Order")
+            toast.error(err.response.data.message || "Unable to Place the Order")
             // alert(err.message)
         }
     }
@@ -29,15 +32,58 @@ const addOrder = (order) => {
     }
 }
 
-export const startGetRestaurantOrders = () => {
+export const startAcceptOrder = (orderDetails, onSuccess) => {
     return async (dispatch) => {
         try {
-            const response = await axios.get(`${localhost}/api/order/listRestaurantOrders`, {
+            const response = await axios.post(`${localhost}/api/order/accept`, { orderDetails }, {
+                headers: {
+                    "Authorization": localStorage.getItem("token")
+                }
+            });
+            const order = response.data.data;
+
+            // Dispatch to store if needed
+            dispatch(addOrder(order));
+
+            // Optional callback to close popup / stop sound
+            // Pass the complete order data to the callback
+            if (onSuccess) onSuccess(order);
+
+            toast.success("Order accepted successfully!");
+        } catch (err) {
+            console.log(err);
+            toast.error(err.response?.data?.message || "Unable to accept order");
+        }
+    }
+}
+
+export const startDeclineOrder = (orderDetails, onSuccess) => {
+    return async () => {
+        try {
+            await axios.post(`${localhost}/api/order/decline`, { orderDetails }, {
+                headers: {
+                    "Authorization": localStorage.getItem("token")
+                }
+            });
+
+            if (onSuccess) onSuccess();
+            toast.info("Order declined successfully");
+        } catch (err) {
+            console.log(err);
+            toast.error(err.response?.data?.message || "Unable to decline order");
+        }
+    }
+}
+
+export const startGetRestaurantOrders = (url) => {
+    return async (dispatch) => {
+        try {
+            const response = await axios.get(`${localhost}/api/order/listRestaurantOrders${url}`, {
                 headers: {
                     "Authorization": localStorage.getItem("token")
                 }
             })
-            // console.log(response.data.data)
+            console.log(response.data.data)
             dispatch(setRestaurantOrders(response.data.data))
         } catch(err) {
             console.log(err)
@@ -57,6 +103,25 @@ export const startGetMyOrders = (guestId) => {
     return async (dispatch) => {
         try {
             const response = await axios.get(`${localhost}/api/order/myOrders/${guestId}`)
+            console.log(response.data.data)
+            dispatch(setOrders(response.data.data))
+        } catch(err) {
+            console.log(err)
+            // alert(err.message)
+        }
+    }
+}
+
+export const startGetMyRestaurantOrders = (guestId, restaurantId) => {
+    return async (dispatch) => {
+        // Validate inputs before making API call
+        if (!guestId || !restaurantId) {
+            console.warn('startGetMyRestaurantOrders: Missing guestId or restaurantId', { guestId, restaurantId });
+            return;
+        }
+        
+        try {
+            const response = await axios.get(`${localhost}/api/order/myRestaurantOrders/${guestId}/${restaurantId}`)
             console.log(response.data.data)
             dispatch(setOrders(response.data.data))
         } catch(err) {
@@ -97,20 +162,26 @@ const getOneOrder = (order) => {
     }
 }
 
-export const startCancelOrder = (guestId, orderId) => {
+export const startCancelOrder = (guestId, orderId, cancellationReason, handleCloseAll) => {
     return async (dispatch) => {
         try {
-            const orderResponse = await axios.put(`${localhost}/api/order/cancel/${guestId}/${orderId}`, { status : "Cancelled"}, {
+            const orderResponse = await axios.put(`${localhost}/api/order/cancel/${guestId}/${orderId}`, { 
+                status: "Cancelled",
+                cancellationReason: cancellationReason
+            }, {
                 headers:{
                     'Authorization' : localStorage.getItem('token')
                 }
             })
             dispatch(cancelOrder(orderResponse.data.data))
             toast.success("Order Cancelled Successfully")
+            if (handleCloseAll) handleCloseAll()
             console.log(orderResponse.data)
+            return orderResponse.data; // Return data for promise resolution
         } catch(err) {
             console.log(err)
-            // alert(err.message)
+            toast.error(err.response?.data?.message || "Unable to cancel order")
+            throw err; // Re-throw error for promise rejection
         }
     }
 }
@@ -172,3 +243,30 @@ const deleteOrder = (order)=>{
         payload: order
     }
 }
+
+export const startBulkDeleteOrders = (orderIds) => {
+    return async (dispatch) => {
+        try {
+            const response = await axios.delete(`${localhost}/api/order/bulk-delete`, {
+                data: { orderIds },
+                headers: {
+                    "Authorization": localStorage.getItem("token")
+                }
+            });
+            
+            dispatch(bulkDeleteOrders(response.data.data));
+            toast.success(response.data.message);
+            console.log(response.data.data);
+        } catch (err) {
+            console.log(err);
+            toast.error(err.response?.data?.message || "Failed to delete orders");
+        }
+    };
+};
+
+const bulkDeleteOrders = (data) => {
+    return {
+        type: "BULK_DELETE_ORDERS",
+        payload: data
+    };
+};

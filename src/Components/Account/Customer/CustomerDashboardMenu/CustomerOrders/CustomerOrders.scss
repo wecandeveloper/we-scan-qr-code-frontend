@@ -86,9 +86,9 @@
                     justify-content: space-between;
                     padding: 10px 20px;
                     gap: 10px;
-                    background: #470531;
+                    // background: #470531;
                     color: white;
-                    border: 2px solid #470531;
+                    // border: 2px solid #470531;
                     border-radius: 10px;
                     transition: .5s;
                     cursor: pointer;
@@ -100,7 +100,7 @@
 
                     &.cancel {
                         cursor: not-allowed;
-                        background: #e0e0e0;
+                        // background: ;
                         // pointer-events: none;
                     }
                 }

@@ -1,0 +1,18 @@
+{
+    "restaurant_not_found_title": "المطعم غير موجود",
+    "restaurant_not_found_message": "رمز الاستجابة السريعة أو رابط المطعم الذي تحاول الوصول إليه غير صالح أو لم يعد نشطًا. يرجى التحقق مع موظفي المطعم أو محاولة مسح رمز QR الصحيح.",
+    "go_to_home": "العودة إلى الصفحة الرئيسية",
+    "restaurant_loading": "جارٍ تحميل المطعم",
+    "please_wait": "يرجى الانتظار",
+    "search_placeholder": "بحث",
+    "please_enter_search_term": "يرجى إدخال مصطلح البحث.",
+    "orders": "الطلبات",
+    "change_table_or_order_type": "تغيير رقم الطاولة / نوع الطلب",
+    "google_review_link": "رابط مراجعة جوجل",
+    "call_waiter_hint": "استدعاء النادل!",
+    "waiter_call_select_order_type": "يرجى اختيار نوع الطلب أولاً!",
+    "waiter_call_home_delivery_error": "استدعاء النادل متاح فقط لطلبات تناول الطعام في المطعم!",
+    "waiter_call_select_table_error": "يرجى اختيار رقم طاولة من خيار تناول الطعام في المطعم",
+    "waiter_call_success": "تم استدعاء النادل بنجاح!",
+    "waiter_call_failed": "فشل في استدعاء النادل. حاول مرة أخرى!"
+}

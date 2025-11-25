@@ -10,12 +10,14 @@ import { HiBuildingStorefront } from "react-icons/hi2";
 import { GrMoney } from "react-icons/gr";
 import { useDispatch, useSelector } from "react-redux";
 
-import { startGetAllRestaurant } from "../../../../Actions/restaurantActions";
+import { startGetAllRestaurant, clearRestaurantData } from "../../../../Actions/restaurantActions";
 
 import RestaurantDashboard from "../SuperAdminDashboardMenu/RestaurantDashboard/RestaurantDashboard";
 import ProfileDashboard from "../../CommonDashboard/ProfileDashboard/ProfileDashboard";
 import RestaurantAdminListDashboard from "../SuperAdminDashboardMenu/RestaurantAdminListDashboard/RestaurantAdminListDashboard";
 import PasswordDashboard from "../../CommonDashboard/PasswordDashboard/PasswordDashboard";
+import { FaUser } from "react-icons/fa6";
+import { startGetAllUsers } from "../../../../Actions/userActions";
 
 const dashboardMenu = [
     {
@@ -88,11 +90,16 @@ export default function SuperAdminDashboardHome() {
         return state.restaurants.data
     })
 
+    const users = useSelector((state) => {
+        return state.users.data
+    })
+    console.log(users)
     const [ openDashboardMenu, setOpenDashboardMenu ] = useState(true)
     console.log(selectedDashboardMenu)
 
     useEffect(() => {
         dispatch(startGetAllRestaurant())
+        dispatch(startGetAllUsers())
     }, [dispatch])
 
     return (
@@ -135,6 +142,8 @@ export default function SuperAdminDashboardHome() {
                     <hr className="dashboard-hr-1"/>
                     <div className="logout-div" onClick={() => {
                         handleLogout()
+                        // Clear restaurant data from Redux store
+                        dispatch(clearRestaurantData())
                         // navigate("/")
                         localStorage.removeItem("token")
                     }}><TbLogout className="icon"/> <p>Log Out</p></div>
@@ -157,14 +166,29 @@ export default function SuperAdminDashboardHome() {
                             Dashboard Overview
                         </h1>
                         <div className="dashboard-overview-grid">
-                            <div className="dashboard-overview-card">
+                            <div className="dashboard-overview-card" onClick={() => {
+                                handleDashboardMenuChange("user-list")
+                            }}>
+                                <div className="icon"><FaUser /></div>
+                                <div className="overview-details">
+                                    <h1 className="title">Users</h1>
+                                    <p className="value">{users.length}</p>
+                                </div>
+                            </div>
+                            <div className="dashboard-overview-card" onClick={() => {
+                                handleDashboardMenuChange("restaurants")
+                            }}>
                                 <div className="icon"><HiBuildingStorefront /></div>
                                 <div className="overview-details">
                                     <h1 className="title">Restuarant</h1>
                                     <p className="value">{restaurants.length}</p>
                                 </div>
                             </div>
-                            <div className="dashboard-overview-card">
+                            <div className="dashboard-overview-card"
+                                // onClick={() => {
+                                //     handleDashboardMenuChange("sales")
+                                // }}
+                            >
                                 <div className="icon"><GrMoney /></div>
                                 <div className="overview-details">
                                     <h1 className="title">Sales</h1>

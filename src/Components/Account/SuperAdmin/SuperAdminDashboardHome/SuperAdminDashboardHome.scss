@@ -219,11 +219,12 @@
                 justify-content: flex-start;
                 width: 250px;
                 height: 100px;
-                background: var(--primary-color);
+                background: #FE931D;
                 color: white;
                 padding: 20px 30px;
                 border-radius: 10px;
                 gap: 20px;
+                cursor: pointer;
 
                 .icon {
                     font-size: 40px;
@@ -243,6 +244,12 @@
                         font-size: 18px;
                         font-weight: 600;
                     }
+                }
+
+                &:hover {
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                    transform: translateY(-5px);
+                    transition: all 0.3s ease;
                 }
             }
         }

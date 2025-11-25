@@ -29,8 +29,10 @@ import { BiSolidTrash } from "react-icons/bi"
 import CustomAlert from "../../../../../Designs/CustomAlert"
 import { toast } from "react-toastify"
 import { IoClose } from "react-icons/io5";
-import { startCreateProduct, startDeleteProduct, startUpdateProduct } from "../../../../../Actions/productActions";
+import { startCreateProduct, startDeleteProduct, startUpdateProduct, startBulkDeleteProducts, startGetAllProducts } from "../../../../../Actions/productActions";
+import { hasMultiLanguageAccess, hasSizesAndAddOnsAccess } from "../../../../../Utils/subscriptionUtils";
 import { useAuth } from "../../../../../Context/AuthContext";
+import { LuDot } from "react-icons/lu";
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -89,7 +91,7 @@ function formatDateToDDMMYYYY(dateString) {
 
 export default function ProductDashboard({restaurant}) {
     const dispatch = useDispatch()
-    const { restaurantId } = useAuth()
+    const { restaurantId, handleDashboardMenuChange } = useAuth()
     const products = useSelector((state) => {
         return state.products.data
     })
@@ -114,7 +116,9 @@ export default function ProductDashboard({restaurant}) {
         discountPercentage: "",
         discountExpiry: "",
         tags: [],
-
+        translations: {},
+        sizes: [],
+        addOns: []
     })
 
     const tagSuggestions = ["Organic", "New Arrival", "Popular", "Discounted", "Eco-Friendly"];
@@ -154,21 +158,33 @@ export default function ProductDashboard({restaurant}) {
         }
 
         // Description
-        if (!productForm?.description?.trim()) {
-            errors.description = "Product description is required";
-        }
+        // if (!productForm?.description?.trim()) {
+        //     errors.description = "Product description is required";
+        // }
 
         // Images
         if (!productForm?.images || productForm.images.length === 0) {
             errors.images = "At least one product image is required";
         } else {
+            const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+
             const invalidImages = productForm.images.filter((img) => {
-                if (typeof img.url === "string") return false; // Existing URL from backend
-                return !validImageTypes.includes(img.type);
+                // ✅ Skip validation for existing images coming from backend
+                if (typeof img.url === "string") return false;
+
+                // ✅ Check file type and size
+                const isValidType = validImageTypes.includes(img.type);
+                const isValidSize = img.size <= maxSizeInBytes;
+
+                return !isValidType || !isValidSize;
             });
 
             if (invalidImages.length > 0) {
-                errors.images = "Only JPG, JPEG, or PNG formats are allowed";
+                // Check if any invalid images exceed size limit
+                const oversized = invalidImages.some((img) => img.size > maxSizeInBytes);
+                errors.images = oversized
+                    ? "Each image must be less than 1 MB"
+                    : "Only JPG, JPEG, or PNG formats are allowed";
             }
         }
 
@@ -195,11 +211,24 @@ export default function ProductDashboard({restaurant}) {
             errors.tags = "Tags must be an array";
         }
 
+        // Sizes validation - if sizes exist, at least one must be default
+        if (productForm.sizes && productForm.sizes.length > 0) {
+            const hasDefault = productForm.sizes.some(size => size.isDefault === true);
+            if (!hasDefault) {
+                errors.sizes = "At least one size must be set as default";
+            }
+        }
+
         return errors;
     };
 
     const [ showConfirmDeleteProduct, setShowConfirmDeleteProduct ] = useState(false)
     const [ showConfirmCancel, setShowConfirmCancel ] = useState(false)
+    
+    // Bulk delete state
+    const [ selectedProducts, setSelectedProducts ] = useState([])
+    const [ selectAll, setSelectAll ] = useState(false)
+    const [ showBulkDeleteConfirm, setShowBulkDeleteConfirm ] = useState(false)
 
     useEffect(() => {
         if (productId && products.length > 0) {
@@ -210,6 +239,48 @@ export default function ProductDashboard({restaurant}) {
 
     useEffect(() => {
         if(product) {
+            // Convert sizes and addOns Maps to arrays/objects for form handling
+            const sizesArray = product.sizes ? product.sizes.map(size => {
+                // Convert translations Map to object if needed
+                let translationsObj = {};
+                if (size.translations) {
+                    if (size.translations.get && typeof size.translations.get === 'function') {
+                        for (const [lang, name] of size.translations.entries()) {
+                            translationsObj[lang] = name;
+                        }
+                    } else {
+                        translationsObj = size.translations;
+                    }
+                }
+                return {
+                    name: size.name,
+                    price: size.price,
+                    isDefault: size.isDefault || false,
+                    isAvailable: size.isAvailable !== undefined ? size.isAvailable : true,
+                    translations: translationsObj
+                };
+            }) : [];
+
+            const addOnsArray = product.addOns ? product.addOns.map(addOn => {
+                // Convert translations Map to object if needed
+                let translationsObj = {};
+                if (addOn.translations) {
+                    if (addOn.translations.get && typeof addOn.translations.get === 'function') {
+                        for (const [lang, name] of addOn.translations.entries()) {
+                            translationsObj[lang] = name;
+                        }
+                    } else {
+                        translationsObj = addOn.translations;
+                    }
+                }
+                return {
+                    name: addOn.name,
+                    price: addOn.price || 0,
+                    isAvailable: addOn.isAvailable !== undefined ? addOn.isAvailable : true,
+                    translations: translationsObj
+                };
+            }) : [];
+
             setProductForm({
                 name: product.name,
                 categoryId: product.categoryId,
@@ -221,6 +292,9 @@ export default function ProductDashboard({restaurant}) {
                 discountPercentage: product.discountPercentage,
                 discountExpiry: product.discountExpiry,
                 tags: product.tags,
+                translations: product.translations || {},
+                sizes: sizesArray,
+                addOns: addOnsArray
             })
         } else {
             setProductForm({
@@ -234,11 +308,14 @@ export default function ProductDashboard({restaurant}) {
                 discountPercentage: "",
                 discountExpiry: "",
                 tags: [],
+                translations: {},
+                sizes: [],
+                addOns: []
             })
         }
     }, [product])
 
-    console.log(products)
+    console.log(product)
 
     useEffect(() => {
         if (product && product.images?.length > 0) {
@@ -284,6 +361,13 @@ export default function ProductDashboard({restaurant}) {
             }
         }
     }, [product]);
+
+    // Fetch products data when component mounts or restaurant changes
+    useEffect(() => {
+        if (restaurant?.slug) {
+            dispatch(startGetAllProducts(restaurant.slug));
+        }
+    }, [dispatch, restaurant?.slug]);
 
     // console.log(product)
 
@@ -402,18 +486,18 @@ export default function ProductDashboard({restaurant}) {
     const handleChange = (field) => (event) => {
         if (field === "images") {
             const files = event.target.files;
-            if (files && files.length > 0) {
-                const fileArray = Array.from(files);
 
+            if (files && files.length > 0) {
+                const file = files[0]; // take only the first file
+
+                // Update form with only the latest image
                 setProductForm((prev) => ({
                     ...prev,
-                    images: [...(prev.images || []), ...fileArray] // store File objects directly
+                    images: [file]
                 }));
 
-                const previewUrls = fileArray.map((file) => ({
-                    url: URL.createObjectURL(file) // for UI preview
-                }));
-                setPreviewImage((prev) => [...(prev || []), ...previewUrls]);
+                // Update preview with only the latest image
+                setPreviewImage([{ url: URL.createObjectURL(file) }]);
 
                 return;
             }
@@ -423,6 +507,122 @@ export default function ProductDashboard({restaurant}) {
                 [field]: event.target.value
             }));
         }
+    };
+
+    const handleTranslationChange = (language, field, value) => {
+        setProductForm((prev) => ({
+            ...prev,
+            translations: {
+                ...prev.translations,
+                [language]: {
+                    ...prev.translations[language],
+                    [field]: value
+                }
+            }
+        }));
+    };
+
+    // Handle Sizes Management
+    const handleAddSize = () => {
+        setProductForm((prev) => ({
+            ...prev,
+            sizes: [...prev.sizes, {
+                name: "",
+                price: "",
+                isDefault: false,
+                isAvailable: true,
+                translations: {}
+            }]
+        }));
+    };
+
+    const handleRemoveSize = (index) => {
+        setProductForm((prev) => ({
+            ...prev,
+            sizes: prev.sizes.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleSizeChange = (index, field, value) => {
+        setProductForm((prev) => {
+            const newSizes = [...prev.sizes];
+            newSizes[index] = {
+                ...newSizes[index],
+                [field]: value
+            };
+            return {
+                ...prev,
+                sizes: newSizes
+            };
+        });
+    };
+
+    const handleSizeTranslationChange = (sizeIndex, language, value) => {
+        setProductForm((prev) => {
+            const newSizes = [...prev.sizes];
+            newSizes[sizeIndex] = {
+                ...newSizes[sizeIndex],
+                translations: {
+                    ...newSizes[sizeIndex].translations,
+                    [language]: value
+                }
+            };
+            return {
+                ...prev,
+                sizes: newSizes
+            };
+        });
+    };
+
+    // Handle AddOns Management
+    const handleAddAddOn = () => {
+        setProductForm((prev) => ({
+            ...prev,
+            addOns: [...prev.addOns, {
+                name: "",
+                price: 0,
+                isAvailable: true,
+                translations: {}
+            }]
+        }));
+    };
+
+    const handleRemoveAddOn = (index) => {
+        setProductForm((prev) => ({
+            ...prev,
+            addOns: prev.addOns.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleAddOnChange = (index, field, value) => {
+        setProductForm((prev) => {
+            const newAddOns = [...prev.addOns];
+            newAddOns[index] = {
+                ...newAddOns[index],
+                [field]: value
+            };
+            return {
+                ...prev,
+                addOns: newAddOns
+            };
+        });
+    };
+
+    const handleAddOnTranslationChange = (addOnIndex, language, value) => {
+        setProductForm((prev) => {
+            const newAddOns = [...prev.addOns];
+            newAddOns[addOnIndex] = {
+                ...newAddOns[addOnIndex],
+                translations: {
+                    ...newAddOns[addOnIndex].translations,
+                    [language]: value
+                }
+            };
+            return {
+                ...prev,
+                addOns: newAddOns
+            };
+        });
     };
 
     const handleRemoveImage = (indexToRemove) => {
@@ -459,7 +659,9 @@ export default function ProductDashboard({restaurant}) {
             tags,
             images,
             isAvailable,
-            isFeatured
+            isFeatured,
+            sizes,
+            addOns
         } = productForm;
 
         const isNameChanged = name !== product.name;
@@ -499,6 +701,159 @@ export default function ProductDashboard({restaurant}) {
             }
         }
 
+        // Check if translations have changed
+        const areTranslationsChanged = () => {
+            const formTranslations = productForm.translations || {};
+            const originalTranslations = product.translations || {};
+            
+            // Check if the number of translation languages changed
+            const formLanguages = Object.keys(formTranslations);
+            const originalLanguages = Object.keys(originalTranslations);
+            
+            if (formLanguages.length !== originalLanguages.length) {
+                return true;
+            }
+            
+            // Check if any translation content changed
+            for (const lang of formLanguages) {
+                const formTranslation = formTranslations[lang] || {};
+                const originalTranslation = originalTranslations[lang] || {};
+                
+                if (formTranslation.name !== originalTranslation.name || 
+                    formTranslation.description !== originalTranslation.description) {
+                    return true;
+                }
+            }
+            
+            return false;
+        };
+
+        // Check if sizes have changed
+        const areSizesChanged = () => {
+            const formSizes = sizes || [];
+            const originalSizes = product.sizes || [];
+            
+            // Convert original sizes Maps to objects for comparison
+            const originalSizesArray = originalSizes.map(size => {
+                let translationsObj = {};
+                if (size.translations) {
+                    if (size.translations.get && typeof size.translations.get === 'function') {
+                        for (const [lang, name] of size.translations.entries()) {
+                            translationsObj[lang] = name;
+                        }
+                    } else {
+                        translationsObj = size.translations;
+                    }
+                }
+                return {
+                    name: size.name,
+                    price: size.price,
+                    isDefault: size.isDefault || false,
+                    isAvailable: size.isAvailable !== undefined ? size.isAvailable : true,
+                    translations: translationsObj
+                };
+            });
+            
+            if (formSizes.length !== originalSizesArray.length) {
+                return true;
+            }
+            
+            // Deep compare each size
+            for (let i = 0; i < formSizes.length; i++) {
+                const formSize = formSizes[i];
+                const originalSize = originalSizesArray[i];
+                
+                if (!originalSize) return true;
+                
+                if (formSize.name !== originalSize.name ||
+                    Number(formSize.price) !== Number(originalSize.price) ||
+                    Boolean(formSize.isDefault) !== Boolean(originalSize.isDefault) ||
+                    Boolean(formSize.isAvailable) !== Boolean(originalSize.isAvailable)) {
+                    return true;
+                }
+                
+                // Compare translations
+                const formTranslations = formSize.translations || {};
+                const originalTranslations = originalSize.translations || {};
+                const formTransKeys = Object.keys(formTranslations);
+                const originalTransKeys = Object.keys(originalTranslations);
+                
+                if (formTransKeys.length !== originalTransKeys.length) {
+                    return true;
+                }
+                
+                for (const lang of formTransKeys) {
+                    if (formTranslations[lang] !== originalTranslations[lang]) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        };
+
+        // Check if addOns have changed
+        const areAddOnsChanged = () => {
+            const formAddOns = addOns || [];
+            const originalAddOns = product.addOns || [];
+            
+            // Convert original addOns Maps to objects for comparison
+            const originalAddOnsArray = originalAddOns.map(addOn => {
+                let translationsObj = {};
+                if (addOn.translations) {
+                    if (addOn.translations.get && typeof addOn.translations.get === 'function') {
+                        for (const [lang, name] of addOn.translations.entries()) {
+                            translationsObj[lang] = name;
+                        }
+                    } else {
+                        translationsObj = addOn.translations;
+                    }
+                }
+                return {
+                    name: addOn.name,
+                    price: addOn.price || 0,
+                    isAvailable: addOn.isAvailable !== undefined ? addOn.isAvailable : true,
+                    translations: translationsObj
+                };
+            });
+            
+            if (formAddOns.length !== originalAddOnsArray.length) {
+                return true;
+            }
+            
+            // Deep compare each addOn
+            for (let i = 0; i < formAddOns.length; i++) {
+                const formAddOn = formAddOns[i];
+                const originalAddOn = originalAddOnsArray[i];
+                
+                if (!originalAddOn) return true;
+                
+                if (formAddOn.name !== originalAddOn.name ||
+                    Number(formAddOn.price) !== Number(originalAddOn.price) ||
+                    Boolean(formAddOn.isAvailable) !== Boolean(originalAddOn.isAvailable)) {
+                    return true;
+                }
+                
+                // Compare translations
+                const formTranslations = formAddOn.translations || {};
+                const originalTranslations = originalAddOn.translations || {};
+                const formTransKeys = Object.keys(formTranslations);
+                const originalTransKeys = Object.keys(originalTranslations);
+                
+                if (formTransKeys.length !== originalTransKeys.length) {
+                    return true;
+                }
+                
+                for (const lang of formTransKeys) {
+                    if (formTranslations[lang] !== originalTranslations[lang]) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        };
+
         return (
             isNameChanged ||
             isDescriptionChanged ||
@@ -509,7 +864,10 @@ export default function ProductDashboard({restaurant}) {
             areTagsChanged ||
             isImagesChanged ||
             isAvailableChanged ||
-            isFeaturedChanged
+            isFeaturedChanged ||
+            areTranslationsChanged() ||
+            areSizesChanged() ||
+            areAddOnsChanged()
         );
     };
 
@@ -527,6 +885,7 @@ export default function ProductDashboard({restaurant}) {
         };
     
     const handleAddProduct = async () => {
+        console.log("Submitting form:", productForm);
         setIsLoading(true)
         const errors = validateErrors();
         console.log(productForm)
@@ -544,8 +903,8 @@ export default function ProductDashboard({restaurant}) {
                     : productForm.categoryId?._id || ""
                 )
             formData.append("stock", productForm.stock);
-            formData.append("isAvailable", productForm.isAvailable);
-            formData.append("isFeatured", productForm.isFeatured);
+            formData.append("isAvailable", productForm.isAvailable || true);
+            formData.append("isFeatured", productForm.isFeatured || false);
             formData.append("price", productForm.price);
 
             // Optional: discountPercentage
@@ -564,6 +923,22 @@ export default function ProductDashboard({restaurant}) {
                     formData.append(`tags[${index}]`, tag);
                 });
             }
+
+            // Add translations if any exist
+            if (Object.keys(productForm.translations).length > 0) {
+                formData.append("translations", JSON.stringify(productForm.translations));
+            }
+
+            // Add sizes if any exist
+            if (Array.isArray(productForm.sizes) && productForm.sizes.length > 0) {
+                formData.append("sizes", JSON.stringify(productForm.sizes));
+            }
+
+            // Add addOns if any exist
+            if (Array.isArray(productForm.addOns) && productForm.addOns.length > 0) {
+                formData.append("addOns", JSON.stringify(productForm.addOns));
+            }
+
 
             // Handle images: can be a mix of File and string
             if (Array.isArray(productForm.images)) {
@@ -597,6 +972,7 @@ export default function ProductDashboard({restaurant}) {
             setFormErrors("")
         } else {
             setFormErrors(errors)
+            toast.error("Please fill all the required details correctly")
             console.log(errors)
             setServerErrors("")
             setIsLoading(false);
@@ -611,8 +987,19 @@ export default function ProductDashboard({restaurant}) {
         setIsViewEditSectionOpen(false)
         setProductForm({
             name: "",
+            categoryId: "",
+            isAvailable: true,
+            isFeatured: false,
+            price: "",
             description: "",
-            image: "",
+            images: [],
+            discountPercentage: "",
+            discountExpiry: "",
+            tags: [],
+            translations: {},
+            sizes: [],
+            addOns: [],
+            allowCommonAddOns: true
         })
         setFormErrors({})
         setServerErrors({})
@@ -620,180 +1007,261 @@ export default function ProductDashboard({restaurant}) {
 
     // console.log(serverErrors)
 
+    // Bulk delete functions
+    const handleSelectProduct = (productId) => {
+        setSelectedProducts(prev => {
+            if (prev.includes(productId)) {
+                return prev.filter(id => id !== productId);
+            } else {
+                return [...prev, productId];
+            }
+        });
+    };
+
+    const handleSelectAll = () => {
+        if (selectAll) {
+            setSelectedProducts([]);
+            setSelectAll(false);
+        } else {
+            const allProductIds = getProcessedProducts().map(product => product._id);
+            setSelectedProducts(allProductIds);
+            setSelectAll(true);
+        }
+    };
+
+    const handleBulkDelete = () => {
+        if (selectedProducts.length === 0) {
+            toast.error("Please select products to delete");
+            return;
+        }
+        setShowBulkDeleteConfirm(true);
+    };
+
+    const confirmBulkDelete = async () => {
+        try {
+            await dispatch(startBulkDeleteProducts(selectedProducts));
+            setSelectedProducts([]);
+            setSelectAll(false);
+            setShowBulkDeleteConfirm(false);
+        } catch (error) {
+            console.error("Bulk delete failed:", error);
+        }
+    };
+
     return (
         <section>
             <div className="product-dashboard-section">
                 <div className="product-dashboard-head">
                     <h1 className="dashboard-head">Product Dashboard</h1>
                 </div>
-                {restaurant?.isApproved && !restaurant?.isBlocked ? 
-                    <div className="product-dashboard-body">
-                        <div className="table-header">
-                            <div className="search-bar">
-                                <input
-                                    type="text"
-                                    placeholder="Search Products..."
-                                    value={searchText}
-                                    onChange={(e) => setSearchText(e.target.value)}
-                                />
-                            </div>
-                            <div className="table-actions">
-                                <div className="product_filters">
-                                    <div className="sort-show">
-                                        <label htmlFor="sort-select">Sort:</label>
-                                        <div className="sort-select-div">
-                                            <select id="sort-select" value={sortBy} onChange={(e) => {setSortBy(e.target.value)}}>
-                                                <option value="">Default</option>
-                                                <option value="Name">Name</option>
-                                                <option value="Category">Category</option>
-                                                <option value="Price:L-H">Price: L-H</option>
-                                                <option value="Price:H-L">Price: H-L</option>
-                                                <option value="Available">Available</option>
-                                                <option value="Offered">Offered</option>
-                                            </select>
-                                            <RiExpandUpDownFill/>
+                {restaurant ? (
+                    restaurant?.isApproved && !restaurant?.isBlocked ? 
+                        <div className="product-dashboard-body">
+                            <div className="table-header">
+                                <div className="search-bar">
+                                    <input
+                                        type="text"
+                                        placeholder="Search Products..."
+                                        value={searchText}
+                                        onChange={(e) => setSearchText(e.target.value)}
+                                    />
+                                </div>
+                                <div className="table-actions">
+                                    <div className="product_filters">
+                                        <div className="sort-show">
+                                            <label htmlFor="sort-select">Sort:</label>
+                                            <div className="sort-select-div">
+                                                <select id="sort-select" value={sortBy} onChange={(e) => {setSortBy(e.target.value)}}>
+                                                    <option value="">Default</option>
+                                                    <option value="Name">Name</option>
+                                                    <option value="Category">Category</option>
+                                                    <option value="Price:L-H">Price: L-H</option>
+                                                    <option value="Price:H-L">Price: H-L</option>
+                                                    <option value="Available">Available</option>
+                                                    <option value="Offered">Offered</option>
+                                                </select>
+                                                <RiExpandUpDownFill/>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="btn-div">
-                                    <button className="export-btn">
-                                        {/* 📁  */}
-                                        Export
-                                    </button>
-                                    <button className="add-btn" onClick={() => {
-                                        setIsViewEditSectionOpen(true)
-                                        setIsEditProduct(true)
-                                        }}>Add Product</button>
+                                    <div className="btn-div">
+                                        {/* <button className="export-btn">
+                                            📁 
+                                            Export
+                                        </button> */}
+                                        {selectedProducts.length > 0 && (
+                                            <button 
+                                                className="bulk-delete-btn" 
+                                                onClick={handleBulkDelete}
+                                                style={{ 
+                                                    backgroundColor: '#dc3545', 
+                                                    color: 'white',
+                                                    marginRight: '10px',
+                                                    padding: '8px 16px',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                <FaTrashAlt />
+                                                Delete Selected ({selectedProducts.length})
+                                            </button>
+                                        )}
+                                        <button className="add-btn" onClick={() => {
+                                            setIsViewEditSectionOpen(true)
+                                            setIsEditProduct(true)
+                                            }}>Add Product</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="product-table-container">
-                            <table className="product-table">
-                                <thead>
-                                    <tr>
-                                        <th>SI No</th>
-                                        <th>Name</th>
-                                        <th>Category</th>
-                                        <th>Price</th>
-                                        <th>Discount %</th>
-                                        <th>Offer Price</th>
-                                        <th>Image</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                {getProcessedProducts().length > 0 ? (
-                                    <tbody>
-                                        {getProcessedProducts().map((product, index) => (
-                                            <tr key={product._id}>
-                                                <td>{index + 1}</td>
-                                                <td>{product.name}</td>
-                                                <td>{
-                                                    typeof product.categoryId === 'object'
-                                                        ? product.categoryId?.name
-                                                        : categories.find(cat => cat._id === product.categoryId)?.name || '—'
-                                                }</td>
-                                                <td>{product.price}</td>
-                                                <td>{product.discountPercentage}</td>
-                                                <td>{product.offerPrice}</td>
-                                                <td>
-                                                    {product.images[0] ? (
-                                                    <img src={product.images[0].url} alt={product.name} className="product-img" />
-                                                    ) : (
-                                                    "No Image"
-                                                    )}
-                                                </td>
-                                                <td>
-                                                    <div className="action-div">
-                                                        <button className="view-btn" onClick={() => {
-                                                            setIsViewEditSectionOpen(true)
-                                                            setProductId(product._id)
-                                                            }}><MdRemoveRedEye /></button>
-                                                        <button className="edit-btn" onClick={() => {
-                                                            setIsViewEditSectionOpen(true)
-                                                            setIsEditProduct(true)
-                                                            setProductId(product._id)
-                                                            }}><MdEditSquare /></button>
-                                                        <button className="delete-btn" onClick={() => {
-                                                            setShowConfirmDeleteProduct(true)
-                                                            setProductId(product._id)
-                                                        }}>{(isLoading && productId === product._id) ? 
-                                                            <Box sx={{ display: 'flex', gap: 1 }}>
-                                                                <CircularProgress color="inherit" size={15}/>
-                                                            </Box> : <BiSolidTrash />}</button>
-                                                    </div>
+                            <div className="product-table-container">
+                                <table className="product-table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={selectAll}
+                                                    onChange={handleSelectAll}
+                                                />
+                                            </th>
+                                            <th>SI No</th>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Price</th>
+                                            <th>Discount %</th>
+                                            <th>Offer Price</th>
+                                            <th>Image</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    {getProcessedProducts().length > 0 ? (
+                                        <tbody>
+                                            {getProcessedProducts().map((product, index) => (
+                                                <tr key={product._id}>
+                                                    <td>
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={selectedProducts.includes(product._id)}
+                                                            onChange={() => handleSelectProduct(product._id)}
+                                                        />
+                                                    </td>
+                                                    <td>{(currentPage - 1) * showNo + index + 1}</td>
+                                                    <td>{product.name}</td>
+                                                    <td>{
+                                                        typeof product.categoryId === 'object'
+                                                            ? product.categoryId?.name
+                                                            : categories.find(cat => cat._id === product.categoryId)?.name || '—'
+                                                    }</td>
+                                                    <td>{product.price}</td>
+                                                    <td>{product.discountPercentage}</td>
+                                                    <td>{product.offerPrice}</td>
+                                                    <td>
+                                                        {product.images[0] ? (
+                                                        <img src={product.images[0].url} alt={product.name} className="product-img" />
+                                                        ) : (
+                                                        "No Image"
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        <div className="action-div">
+                                                            <button className="view-btn" onClick={() => {
+                                                                setIsViewEditSectionOpen(true)
+                                                                setProductId(product._id)
+                                                                }}><MdRemoveRedEye size={15} /></button>
+                                                            <button className="edit-btn" onClick={() => {
+                                                                setIsViewEditSectionOpen(true)
+                                                                setIsEditProduct(true)
+                                                                setProductId(product._id)
+                                                                }}><MdEditSquare size={15} /></button>
+                                                            <button className="delete-btn" onClick={() => {
+                                                                setShowConfirmDeleteProduct(true)
+                                                                setProductId(product._id)
+                                                            }}>{(isLoading && productId === product._id) ? 
+                                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                                    <CircularProgress color="inherit" size={15}/>
+                                                                </Box> : <BiSolidTrash size={15} />}</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    ) : (
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan="9" style={{ textAlign: "center" }}>
+                                                    <p className="no-order-text">No Product Data Found</p>
                                                 </td>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                ) : (
-                                    <tbody>
-                                        <tr>
-                                            <td colSpan="9" style={{ textAlign: "center" }}>
-                                                <p className="no-order-text">No Product Data Found</p>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                )}
-                            </table>
-                        </div>
-                        <div className="table-footer">
-                            <div className="footer-pagination">
-                                <span
-                                    disabled={currentPage === 1}
-                                    className={`prev ${currentPage === 1 ? "disabled" : ""}`}
-                                    onClick={handlePrev}
-                                >
-                                    <FaCaretLeft />
-                                </span>
-                                {pageNumbers.map((page) => (
+                                        </tbody>
+                                    )}
+                                </table>
+                            </div>
+                            <div className="table-footer">
+                                <div className="footer-pagination">
                                     <span
-                                        key={page}
-                                        className={`page-number ${page === currentPage ? "active" : ""}`}
-                                        onClick={() => handlePageClick(page)}
+                                        disabled={currentPage === 1}
+                                        className={`prev ${currentPage === 1 ? "disabled" : ""}`}
+                                        onClick={handlePrev}
                                     >
-                                        {page}
+                                        <FaCaretLeft />
                                     </span>
-                                ))}
-                                <span
-                                    disabled={currentPage === totalPages}
-                                    className={`next ${currentPage === totalPages ? "disabled" : ""}`}
-                                    onClick={handleNext}
-                                >
-                                    <FaCaretRight />
-                                </span>
-                            </div>
-                            <div className="footer-details">
-                                Showing {(currentPage - 1) * showNo + 1}-
-                                {Math.min(currentPage * showNo, totalFilteredItems)} of {totalFilteredItems} Products
-                            </div>
-                            <div className="sort-show">
-                                <label htmlFor="show-select">Show:</label>
-                                <div className="sort-select-div">
-                                    <select id="show-select" value={showNo} onChange={handleShow}>
-                                        {getShowOptions().map((value, index) => (
-                                            <option key={index} value={value}>
-                                                {value === products.length ? "All" : value}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <RiExpandUpDownFill/>
+                                    {pageNumbers.map((page) => (
+                                        <span
+                                            key={page}
+                                            className={`page-number ${page === currentPage ? "active" : ""}`}
+                                            onClick={() => handlePageClick(page)}
+                                        >
+                                            {page}
+                                        </span>
+                                    ))}
+                                    <span
+                                        disabled={currentPage === totalPages}
+                                        className={`next ${currentPage === totalPages ? "disabled" : ""}`}
+                                        onClick={handleNext}
+                                    >
+                                        <FaCaretRight />
+                                    </span>
+                                </div>
+                                <div className="footer-details">
+                                    Showing {(currentPage - 1) * showNo + 1}-
+                                    {Math.min(currentPage * showNo, totalFilteredItems)} of {totalFilteredItems} Products
+                                </div>
+                                <div className="sort-show">
+                                    <label htmlFor="show-select">Show:</label>
+                                    <div className="sort-select-div">
+                                        <select id="show-select" value={showNo} onChange={handleShow}>
+                                            {getShowOptions().map((value, index) => (
+                                                <option key={index} value={value}>
+                                                    {value === products.length ? "All" : value}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <RiExpandUpDownFill/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                :
-                    restaurant?.isBlocked ? 
+                    :
+                    restaurant?.isBlocked ? (
                         <div className="product-dashboard-body-empty">
                             
                             <p>Your account is currently blocked. You can contact the admin to resolve this issue.</p>
                             <p>Once it's Solved, you can create a new Product.</p>
                         </div>
-                    :
+                    ) : (
                         <div className="product-dashboard-body-empty">
                             <p>Your restaurant profile has been created. Once it's approved by the admin, you can create a new Product.</p>
                             <p>You will recieve an email once your profile is approved.</p>
                         </div>
-                }
+                    )
+                ) : (
+                    <div className="details-div">
+                        <p>It looks like you haven't created the restaurants profile yet. Let's get started!<br/>
+                        Create a restaurant profile to unlock the full dashboard experience.</p>
+                        <span>Go to <a onClick={() => {handleDashboardMenuChange("restaurant-profile")}}>Restaurant Profile</a></span>
+                    </div>
+                )}
             </div>
             <AnimatePresence mode="wait">
                 {isViewEditSectionOpen && (
@@ -850,9 +1318,18 @@ export default function ProductDashboard({restaurant}) {
                                                     <VisuallyHiddenInput
                                                         type="file"
                                                         onChange={handleChange("images")}
-                                                        multiple
+                                                        single
                                                     />
                                                 </UploadButton>
+                                                <div className="logo-upload-guidelines">
+                                                    <h2 className="head">Image Upload Guidelines:</h2>
+                                                    <ul>
+                                                        <li><LuDot className="icon"/><p>Recommended size: <span>500 × 500 px / Ratio 1 : 1</span> for best quality.</p></li>
+                                                        <li><LuDot className="icon"/><p>Supported format: <span>PNG, JPG and JPEG</span> (PNG preferred).</p></li>
+                                                        <li><LuDot className="icon"/><p>Use a <span>transparent background</span> for a cleaner look, or{" "}<span>white background</span> if transparency is not possible.</p></li>
+                                                        <li><LuDot className="icon"/><p>Maximum file size: <span>1 MB</span> for optimal performance.</p></li>
+                                                    </ul>
+                                                </div>
                                                 {(formErrors.images) &&
                                                     <CustomAlert
                                                         severity="error" 
@@ -937,6 +1414,51 @@ export default function ProductDashboard({restaurant}) {
                                                         className="error-message"
                                                     />
                                                 }
+
+                                                {/* Multi-Language Translation Fields */}
+                                                {hasMultiLanguageAccess(restaurant) && restaurant?.languages && restaurant.languages.length > 0 && (
+                                                    <div className="translation-section">
+                                                        <h3 className="translation-heading">Translations (Optional)</h3>
+                                                        <p className="translation-subtitle">Add translations for your selected languages</p>
+                                                        
+                                                        {restaurant.languages.map((lang) => {
+                                                            const languageNames = {
+                                                                'ar': { name: 'Arabic', native: 'العربية' },
+                                                                'fr': { name: 'French', native: 'Français' },
+                                                                'es': { name: 'Spanish', native: 'Español' },
+                                                                'en': { name: 'English', native: 'English' }
+                                                            };
+                                                            
+                                                            const langInfo = languageNames[lang] || { name: lang.toUpperCase(), native: lang };
+                                                            
+                                                            return (
+                                                                <div key={lang} className="translation-group">
+                                                                    <h4 className="translation-language">
+                                                                        {langInfo.name} ({langInfo.native})
+                                                                    </h4>
+                                                                    <TextField
+                                                                        label={`${langInfo.name} Name`}
+                                                                        variant="outlined"
+                                                                        value={productForm.translations?.[lang]?.name || ""}
+                                                                        onChange={(e) => handleTranslationChange(lang, 'name', e.target.value)}
+                                                                        fullWidth
+                                                                        className="form-field"
+                                                                    />
+                                                                    <TextField
+                                                                        label={`${langInfo.name} Description`}
+                                                                        variant="outlined"
+                                                                        value={productForm.translations?.[lang]?.description || ""}
+                                                                        onChange={(e) => handleTranslationChange(lang, 'description', e.target.value)}
+                                                                        multiline
+                                                                        rows={2}
+                                                                        fullWidth
+                                                                        className="form-field"
+                                                                    />
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
                                                 <div className="same-line isAvailable-isFeatured">
                                                     <div className="isAvailable-div">
                                                         <div className="label"> Product Available</div>
@@ -979,6 +1501,11 @@ export default function ProductDashboard({restaurant}) {
                                                         className="form-field small"
                                                     />
                                                 </div>
+                                                {hasSizesAndAddOnsAccess(restaurant) && productForm.sizes && productForm.sizes.length > 0 && (
+                                                    <div className="price-note" style={{ marginTop: '-10px', marginBottom: '10px', fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
+                                                        Note: If sizes are available, this price will be used as the default size price.
+                                                    </div>
+                                                )}
                                                 {(formErrors.stock || formErrors.price) &&
                                                     <CustomAlert 
                                                         severity="error" 
@@ -1062,79 +1589,446 @@ export default function ProductDashboard({restaurant}) {
                                                         className="error-message"
                                                     />
                                                 }
+
+                                                {/* Sizes Management Section - Premium/Advanced Only */}
+                                                {hasSizesAndAddOnsAccess(restaurant) && (
+                                                    <div className="sizes-section">
+                                                        <div className="section-header">
+                                                            <h3 className="section-title">Product Sizes</h3>
+                                                            <button 
+                                                                type="button" 
+                                                                className="add-size-btn"
+                                                                onClick={handleAddSize}
+                                                            >
+                                                                + Add Size
+                                                            </button>
+                                                        </div>
+                                                    {productForm.sizes.length > 0 && (
+                                                        <div className="sizes-list">
+                                                            {productForm.sizes.map((size, index) => (
+                                                                <div key={index} className="size-item">
+                                                                    <div className="size-item-header">
+                                                                        <h4>Size {index + 1}</h4>
+                                                                        <button 
+                                                                            type="button"
+                                                                            className="remove-size-btn"
+                                                                            onClick={() => handleRemoveSize(index)}
+                                                        >
+                                                                            <IoClose />
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="size-fields">
+                                                                        <TextField
+                                                                            label="Size Name"
+                                                                            variant="outlined"
+                                                                            value={size.name}
+                                                                            onChange={(e) => handleSizeChange(index, 'name', e.target.value)}
+                                                                            className="form-field small"
+                                                                        />
+                                                                        <TextField
+                                                                            label="Price"
+                                                                            type="number"
+                                                                            variant="outlined"
+                                                                            value={size.price}
+                                                                            onChange={(e) => handleSizeChange(index, 'price', parseFloat(e.target.value) || 0)}
+                                                                            className="form-field small"
+                                                                        />
+                                                                        <div className="size-options-row">
+                                                                            <div className="isAvailable-div">
+                                                                                <div className="label">Default Size</div>
+                                                                                <label className="switch">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        checked={size.isDefault || false}
+                                                                                        onChange={(e) => {
+                                                                                            // If setting this as default, unset others
+                                                                                            if (e.target.checked) {
+                                                                                                setProductForm((prev) => {
+                                                                                                    const newSizes = prev.sizes.map((s, i) => ({
+                                                                                                        ...s,
+                                                                                                        isDefault: i === index
+                                                                                                    }));
+                                                                                                    return { ...prev, sizes: newSizes };
+                                                                                                });
+                                                                                            } else {
+                                                                                                handleSizeChange(index, 'isDefault', false);
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                    <span className="slider round"></span>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div className="isAvailable-div">
+                                                                                <div className="label">Available</div>
+                                                                                <label className="switch">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        checked={size.isAvailable !== false}
+                                                                                        onChange={(e) => handleSizeChange(index, 'isAvailable', e.target.checked)}
+                                                                                    />
+                                                                                    <span className="slider round"></span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    {/* Size Translations */}
+                                                                    {hasMultiLanguageAccess(restaurant) && restaurant?.languages && restaurant.languages.length > 0 && (
+                                                                        <div className="size-translations">
+                                                                            {restaurant.languages.map((lang) => {
+                                                                                const languageNames = {
+                                                                                    'ar': { name: 'Arabic', native: 'العربية' },
+                                                                                    'fr': { name: 'French', native: 'Français' },
+                                                                                    'es': { name: 'Spanish', native: 'Español' },
+                                                                                    'en': { name: 'English', native: 'English' }
+                                                                                };
+                                                                                const langInfo = languageNames[lang] || { name: lang.toUpperCase(), native: lang };
+                                                                                return (
+                                                                                    <TextField
+                                                                                        key={lang}
+                                                                                        label={`${langInfo.name} Name`}
+                                                                                        variant="outlined"
+                                                                                        value={size.translations?.[lang] || ""}
+                                                                                        onChange={(e) => handleSizeTranslationChange(index, lang, e.target.value)}
+                                                                                        className="form-field small"
+                                                                                    />
+                                                                                );
+                                                                            })}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    {formErrors.sizes && (
+                                                        <CustomAlert 
+                                                            severity="error" 
+                                                            message={formErrors.sizes}
+                                                            className="error-message"
+                                                        />
+                                                    )}
+                                                    </div>
+                                                )}
+
+                                                {/* Product-Specific AddOns Management Section - Premium/Advanced Only */}
+                                                {hasSizesAndAddOnsAccess(restaurant) && (
+                                                    <div className="addons-section">
+                                                        <div className="section-header">
+                                                            <h3 className="section-title">Product-Specific Add-Ons</h3>
+                                                            <button 
+                                                                type="button" 
+                                                                className="add-addon-btn"
+                                                                onClick={handleAddAddOn}
+                                                            >
+                                                                + Add Add-On
+                                                            </button>
+                                                        </div>
+                                                    {productForm.addOns.length > 0 && (
+                                                        <div className="addons-list">
+                                                            {productForm.addOns.map((addOn, index) => (
+                                                                <div key={index} className="addon-item">
+                                                                    <div className="addon-item-header">
+                                                                        <h4>Add-On {index + 1}</h4>
+                                                                        <button 
+                                                                            type="button"
+                                                                            className="remove-addon-btn"
+                                                                            onClick={() => handleRemoveAddOn(index)}
+                                                                        >
+                                                                            <IoClose />
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="addon-fields">
+                                                                        <TextField
+                                                                            label="Add-On Name"
+                                                                            variant="outlined"
+                                                                            value={addOn.name}
+                                                                            onChange={(e) => handleAddOnChange(index, 'name', e.target.value)}
+                                                                            className="form-field medium"
+                                                                        />
+                                                                        <TextField
+                                                                            label="Price"
+                                                                            type="number"
+                                                                            variant="outlined"
+                                                                            value={addOn.price || 0}
+                                                                            onChange={(e) => handleAddOnChange(index, 'price', parseFloat(e.target.value) || 0)}
+                                                                            className="form-field small"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="addon-available-row">
+                                                                        <div className="isAvailable-div">
+                                                                            <div className="label">Available</div>
+                                                                            <label className="switch">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={addOn.isAvailable !== false}
+                                                                                    onChange={(e) => handleAddOnChange(index, 'isAvailable', e.target.checked)}
+                                                                                />
+                                                                                <span className="slider round"></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    {/* AddOn Translations */}
+                                                                    {hasMultiLanguageAccess(restaurant) && restaurant?.languages && restaurant.languages.length > 0 && (
+                                                                        <div className="addon-translations">
+                                                                            {restaurant.languages.map((lang) => {
+                                                                                const languageNames = {
+                                                                                    'ar': { name: 'Arabic', native: 'العربية' },
+                                                                                    'fr': { name: 'French', native: 'Français' },
+                                                                                    'es': { name: 'Spanish', native: 'Español' },
+                                                                                    'en': { name: 'English', native: 'English' }
+                                                                                };
+                                                                                const langInfo = languageNames[lang] || { name: lang.toUpperCase(), native: lang };
+                                                                                return (
+                                                                                    <TextField
+                                                                                        key={lang}
+                                                                                        label={`${langInfo.name} Name`}
+                                                                                        variant="outlined"
+                                                                                        value={addOn.translations?.[lang] || ""}
+                                                                                        onChange={(e) => handleAddOnTranslationChange(index, lang, e.target.value)}
+                                                                                        className="form-field small"
+                                                                                    />
+                                                                                );
+                                                                            })}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    </div>
+                                                )}
+
+                                                {/* For general errors (no path available) */}
+                                                {Array.isArray(serverErrors) &&
+                                                !serverErrors.getError("name") &&
+                                                serverErrors.map((err, i) => (
+                                                    <CustomAlert 
+                                                    key={i} 
+                                                    severity="error" 
+                                                    message={err.msg} 
+                                                    className="error-message"
+                                                    />
+                                                ))}
                                             </div>
                                         ) : (
                                             <div className="product-details">
-                                                <div className="img-div">
-                                                    <div id="main-slider" className="splide">
-                                                        <div className="splide__track">
-                                                            <ul className="splide__list">
-                                                                {product?.images?.map((img, index) => (
-                                                                <li className="splide__slide" key={index}>
-                                                                    <img src={img.url} alt={`Main ${index}`} />
-                                                                </li>
+                                                <div className="product-view-header">
+                                                    <div className="img-div">
+                                                        <div id="main-slider" className="splide">
+                                                            <div className="splide__track">
+                                                                <ul className="splide__list">
+                                                                    {product?.images?.map((img, index) => (
+                                                                    <li className="splide__slide" key={index}>
+                                                                        <img src={img.url} alt={`Main ${index}`} />
+                                                                    </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="thumbnail-slider" className="splide mt-4">
+                                                            <div className="splide__track">
+                                                                <ul className="splide__list">
+                                                                    {product?.images?.map((img, index) => (
+                                                                    <li className="splide__slide" key={index}>
+                                                                        <img src={img.url} alt={`Thumb ${index}`} />
+                                                                    </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="product-basic-info">
+                                                        <h2 className="product-name">{product.name}</h2>
+                                                        <div className="product-meta">
+                                                            <span className="meta-item category">
+                                                                <span className="meta-label">Category:</span>
+                                                                <span className="meta-value">
+                                                                    {
+                                                                        typeof product.categoryId === 'object'
+                                                                            ? product.categoryId?.name
+                                                                            : categories.find(cat => cat._id === product.categoryId)?.name || '—'
+                                                                    }
+                                                                </span>
+                                                            </span>
+                                                            <span className={`meta-item availability ${product.isAvailable ? 'available' : 'unavailable'}`}>
+                                                                <span className="meta-label">Status:</span>
+                                                                <span className="meta-value">{product.isAvailable ? "Available" : "Not Available"}</span>
+                                                            </span>
+                                                            {product.isFeatured && (
+                                                                <span className="meta-item featured">
+                                                                    <span className="meta-value">Featured</span>
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="product-pricing">
+                                                            {product.offerPrice > 0 ? (
+                                                                <>
+                                                                    <span className="original-price">AED {product.price}</span>
+                                                                    <span className="offer-price">AED {product.offerPrice}</span>
+                                                                    {product.discountPercentage > 0 && (
+                                                                        <span className="discount-badge">-{product.discountPercentage}%</span>
+                                                                    )}
+                                                                </>
+                                                            ) : (
+                                                                <span className="current-price">AED {product.price}</span>
+                                                            )}
+                                                        </div>
+                                                        {product.description && (
+                                                            <p className="product-description">{product.description}</p>
+                                                        )}
+                                                        {product.tags?.length > 0 && (
+                                                            <div className="product-tags">
+                                                                {product.tags.map((tag) => (
+                                                                    <span key={tag} className="tag"><VscDebugBreakpointData />{tag}</span>
                                                                 ))}
-                                                            </ul>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="product-details-grid">
+                                                    <div className="details-section">
+                                                        <h3 className="section-title">Product Information</h3>
+                                                        <div className="details-list">
+                                                            <div className="detail-item">
+                                                                <span className="detail-label">Price</span>
+                                                                <span className="detail-value">AED {product.price}</span>
+                                                            </div>
+                                                            {product.offerPrice > 0 && (
+                                                                <>
+                                                                    <div className="detail-item">
+                                                                        <span className="detail-label">Offer Price</span>
+                                                                        <span className="detail-value">AED {product.offerPrice}</span>
+                                                                    </div>
+                                                                    <div className="detail-item">
+                                                                        <span className="detail-label">Discount</span>
+                                                                        <span className="detail-value">{product.discountPercentage}%</span>
+                                                                    </div>
+                                                                    <div className="detail-item">
+                                                                        <span className="detail-label">Discount Expiry</span>
+                                                                        <span className="detail-value">{formatDateToDDMMYYYY(product.discountExpiry) || "No Expiry"}</span>
+                                                                    </div>
+                                                                </>
+                                                            )}
                                                         </div>
                                                     </div>
 
-                                                    <div id="thumbnail-slider" className="splide mt-4">
-                                                        <div className="splide__track">
-                                                            <ul className="splide__list">
-                                                                {product?.images?.map((img, index) => (
-                                                                <li className="splide__slide" key={index}>
-                                                                    <img src={img.url} alt={`Thumb ${index}`} />
-                                                                </li>
+                                                    {/* Sizes Section - Premium/Advanced Only */}
+                                                    {hasSizesAndAddOnsAccess(restaurant) && product.sizes && product.sizes.length > 0 && (
+                                                        <div className="details-section">
+                                                            <h3 className="section-title">Product Sizes</h3>
+                                                            <div className="sizes-display">
+                                                                {product.sizes.map((size, index) => (
+                                                                    <div key={index} className={`size-card ${size.isDefault ? 'default-size' : ''} ${!size.isAvailable ? 'unavailable' : ''}`}>
+                                                                        <div className="size-header">
+                                                                            <span className="size-name">{size.name}</span>
+                                                                            {size.isDefault && <span className="default-badge">Default</span>}
+                                                                            {!size.isAvailable && <span className="unavailable-badge">Unavailable</span>}
+                                                                        </div>
+                                                                        <div className="size-price">AED {size.price}</div>
+                                                                    </div>
                                                                 ))}
-                                                            </ul>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div className="details-div">
-                                                    <div className="product-detail name">
-                                                        <span className="head">Name</span>
-                                                        <span className="value">{product.name}</span>
-                                                    </div>
-                                                    <div className="product-detail category">
-                                                        <span className="head">Category</span>
-                                                        <span className="value">
-                                                            {
-                                                                typeof product.categoryId === 'object'
-                                                                    ? product.categoryId?.name
-                                                                    : categories.find(cat => cat._id === product.categoryId)?.name || '—'
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    <div className="product-detail price">
-                                                        <span className="head">Price</span>
-                                                        <span className="value">AED {product.price}</span>
-                                                    </div>
-                                                    <div className="product-detail description">
-                                                        <span className="head">Description</span>
-                                                        <span className="value">{product.description}</span>
-                                                    </div>
-                                                    <div className="product-detail offer-per">
-                                                        <span className="head">Offer Percentage</span>
-                                                        <span className="value">{product.discountPercentage}%</span>
-                                                    </div>
-                                                    <div className="product-detail discount-expiry">
-                                                        <span className="head">Discount Expiry</span>
-                                                        <span className="value">{formatDateToDDMMYYYY(product.discountExpiry) || "No Expiry"}</span>
-                                                    </div>
-                                                    <div className="product-detail offer">
-                                                        <span className="head">Offer Price</span>
-                                                        <span className="value">AED {product.offerPrice}</span>
-                                                    </div>
-                                                    <div className="product-detail offer">
-                                                        <span className="head">Product Tags</span>
-                                                        <span className="value tags">
-                                                            {product.tags?.length > 0 ?
-                                                            product.tags.map((tag) => {
-                                                                return (
-                                                                    <span key={tag} className="tag"><VscDebugBreakpointData />{tag}</span>
-                                                                )
-                                                            }) : "No tags"}
-                                                        </span>
+                                                    )}
+
+                                                    {/* AddOns Section - Premium/Advanced Only */}
+                                                    {hasSizesAndAddOnsAccess(restaurant) && (
+                                                        <div className="details-section">
+                                                            <h3 className="section-title">Product-Specific Add-Ons</h3>
+                                                            {product.addOns && product.addOns.length > 0 ? (
+                                                            <div className="addons-display">
+                                                                {product.addOns.map((addOn, index) => (
+                                                                    <div key={index} className={`addon-card ${!addOn.isAvailable ? 'unavailable' : ''}`}>
+                                                                        <div className="addon-header">
+                                                                            <span className="addon-name">{addOn.name}</span>
+                                                                            {!addOn.isAvailable && <span className="unavailable-badge">Unavailable</span>}
+                                                                        </div>
+                                                                        <div className="addon-price">
+                                                                            {addOn.price > 0 ? `AED ${addOn.price}` : 'Free'}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="no-addons-message">
+                                                                <p>No add-ons have been added to this product.</p>
+                                                            </div>
+                                                        )}
+                                                        </div>
+                                                    )}
+
+                                                    {/* Translations Section */}
+                                                    <div className="details-section">
+                                                        <h3 className="section-title">Translations</h3>
+                                                        {hasMultiLanguageAccess(restaurant) && restaurant?.languages && restaurant.languages.length > 0 ? (
+                                                            (() => {
+                                                                // Convert translations Map to object if needed
+                                                                let translationsObj = {};
+                                                                if (product.translations) {
+                                                                    if (product.translations.get && typeof product.translations.get === 'function') {
+                                                                        // It's a Map
+                                                                        for (const [lang, data] of product.translations.entries()) {
+                                                                            translationsObj[lang] = data;
+                                                                        }
+                                                                    } else {
+                                                                        // It's already an object
+                                                                        translationsObj = product.translations;
+                                                                    }
+                                                                }
+
+                                                                const hasTranslations = Object.keys(translationsObj).length > 0 && 
+                                                                    Object.values(translationsObj).some(t => (t?.name && t.name.trim()) || (t?.description && t.description.trim()));
+
+                                                                const languageNames = {
+                                                                    'ar': { name: 'Arabic', native: 'العربية' },
+                                                                    'fr': { name: 'French', native: 'Français' },
+                                                                    'es': { name: 'Spanish', native: 'Español' },
+                                                                    'en': { name: 'English', native: 'English' }
+                                                                };
+
+                                                                return hasTranslations ? (
+                                                                    <div className="translations-display">
+                                                                        {restaurant.languages.map((lang) => {
+                                                                            const langInfo = languageNames[lang] || { name: lang.toUpperCase(), native: lang };
+                                                                            const translation = translationsObj[lang];
+                                                                            const hasName = translation?.name && translation.name.trim();
+                                                                            const hasDescription = translation?.description && translation.description.trim();
+
+                                                                            if (!hasName && !hasDescription) return null;
+
+                                                                            return (
+                                                                                <div key={lang} className="translation-card">
+                                                                                    <div className="translation-header">
+                                                                                        <span className="translation-language">{langInfo.name} ({langInfo.native})</span>
+                                                                                    </div>
+                                                                                    {hasName && (
+                                                                                        <div className="translation-item">
+                                                                                            <span className="translation-label">Name:</span>
+                                                                                            <span className="translation-value">{translation.name}</span>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    {hasDescription && (
+                                                                                        <div className="translation-item">
+                                                                                            <span className="translation-label">Description:</span>
+                                                                                            <span className="translation-value">{translation.description}</span>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </div>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="no-translations-message">
+                                                                        <p>No translations have been added to this product.</p>
+                                                                    </div>
+                                                                );
+                                                            })()
+                                                        ) : (
+                                                            <div className="translations-unavailable-message">
+                                                                <p>Translations feature is not available for your subscription plan.</p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -1146,12 +2040,12 @@ export default function ProductDashboard({restaurant}) {
                                                 <button className="btn edit-btn" onClick={handleAddProduct}>
                                                     {isLoading ? 
                                                         <Box sx={{ display: 'flex', gap: 1 }}>
-                                                           Saving <CircularProgress color="inherit" size={20}/>
+                                                           Saving <CircularProgress color="inherit"/>
                                                         </Box>
                                                     : (
                                                         <>
                                                             Save 
-                                                            <MdSaveAs size={20}/>
+                                                            <MdSaveAs/>
                                                         </>
                                                     )}
                                                 </button>
@@ -1164,12 +2058,12 @@ export default function ProductDashboard({restaurant}) {
                                                 <button className="btn edit-btn" onClick={handleAddProduct}>
                                                     {isLoading ? 
                                                         <Box sx={{ display: 'flex', gap: 1 }}>
-                                                           Adding <CircularProgress color="inherit" size={20}/>
+                                                           Adding <CircularProgress color="inherit"/>
                                                         </Box>
                                                     : (
                                                         <>
                                                             Add 
-                                                            <MdSaveAs size={20}/>
+                                                            <MdSaveAs/>
                                                         </>
                                                     )}
                                                 </button>
@@ -1189,7 +2083,7 @@ export default function ProductDashboard({restaurant}) {
                                             }}>
                                                 {isLoading ? 
                                                     <Box sx={{ display: 'flex', gap: 1 }}>
-                                                        Deleting <CircularProgress color="inherit" size={20}/>
+                                                        Deleting <CircularProgress color="inherit"/>
                                                     </Box>
                                                 : (
                                                     <>
@@ -1216,6 +2110,13 @@ export default function ProductDashboard({restaurant}) {
                     message="You have unsaved changes. Are you sure you want to cancel?"
                     onConfirm={handleCloseAll}
                     onCancel={() => {setShowConfirmCancel(false)}}
+                />
+            )}
+            {showBulkDeleteConfirm && (
+                <ConfirmToast
+                    message={`Are you sure you want to delete ${selectedProducts.length} selected product(s)? This action cannot be undone.`}
+                    onConfirm={confirmBulkDelete}
+                    onCancel={() => {setShowBulkDeleteConfirm(false)}}
                 />
             )}
         </section>

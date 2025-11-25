@@ -10,6 +10,7 @@ import couponReducers from "../Reducers/couponReducers"
 import paymentReducers from "../Reducers/paymentReducers"
 import userReducers from "../Reducers/userReducers"
 import restaurantReducers from "../Reducers/restaurantReducers"
+import commonAddOnReducers from "../Reducers/commonAddOnReducers"
 
 const configureStore = () => {
     const store = createStore(combineReducers({
@@ -23,6 +24,7 @@ const configureStore = () => {
         addresses: addressesReducers,
         coupons: couponReducers,
         payments: paymentReducers,
+        commonAddOns: commonAddOnReducers,
     }), applyMiddleware(thunk))
 
     return store

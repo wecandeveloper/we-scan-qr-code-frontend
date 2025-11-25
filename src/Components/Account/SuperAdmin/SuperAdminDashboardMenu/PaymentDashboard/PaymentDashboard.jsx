@@ -463,15 +463,25 @@ export default function PaymentDashboard() {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {payment?.lineItems?.map((product) => (
-                                                            <tr key={product._id}>
-                                                                <td>{product.productId.name}</td>
-                                                                <td>{product.productId.categoryId.name}</td>
-                                                                <td>{product?.quantity}</td>
-                                                                <td style={{ textAlign: 'right' }}>AED {product.price}</td>
-                                                                <td style={{ textAlign: 'right' }}>AED {product?.quantity * (product.price)}</td>
-                                                            </tr>
-                                                        ))}
+                                                        {payment?.lineItems?.map((product) => {
+                                                            // Safely access productId - handle both populated object and ID string
+                                                            const productId = typeof product?.productId === 'object' ? product.productId : null;
+                                                            const productName = productId?.name || 'Product Name';
+                                                            const categoryId = typeof productId?.categoryId === 'object' ? productId.categoryId : null;
+                                                            const categoryName = categoryId?.name || 'Category';
+                                                            const productPrice = product?.itemSubtotal || product?.basePrice || product?.price || 0;
+                                                            const productQuantity = product?.quantity || 1;
+                                                            
+                                                            return (
+                                                                <tr key={product._id || `product-${Date.now()}-${Math.random()}`}>
+                                                                    <td>{productName}</td>
+                                                                    <td>{categoryName}</td>
+                                                                    <td>{productQuantity}</td>
+                                                                    <td style={{ textAlign: 'right' }}>AED {productPrice}</td>
+                                                                    <td style={{ textAlign: 'right' }}>AED {product?.itemTotal || (productPrice * productQuantity)}</td>
+                                                                </tr>
+                                                            );
+                                                        })}
                                                         <tr className="total-row">
                                                             <td colSpan="4" style={{ textAlign: 'left' }}>Sub Total</td>
                                                             <td style={{ textAlign: 'right' }}>AED {payment?.originalAmount}</td>

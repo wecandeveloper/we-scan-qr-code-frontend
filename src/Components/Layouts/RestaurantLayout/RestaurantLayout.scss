@@ -1,4 +1,7 @@
 .restaurant-layout {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
     :root {
         --header-height: 80px; /* adjust based on your RestaurantHeader height */
     }
@@ -6,7 +9,7 @@
      .childrens {
         display: flex;
         flex-direction: column;
-        min-height: calc(100vh - 135px);
+        // min-height: calc(100vh - 135px);
         width: 100%;
         height: 100%;
         max-width: 1200px;
@@ -15,7 +18,7 @@
     }
 
     .childrens {
-        flex: 1; // Pushes the footer to the bottom if content is small
+        flex: 1 0 auto; // Pushes the footer to the bottom if content is small
         padding-top: 80px;
         padding-bottom: 80px;
     }
@@ -88,6 +91,31 @@
         letter-spacing: .5px;
         color: var(--primary-color);
     }
+
+    .restaurant-closed-div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        height: 100vh;
+
+        img {
+            width: 250px;
+        }
+
+        h1 {
+            font-size: 20px;
+        }
+
+        h2 {
+            font-size: 16px;
+        }
+
+        .btn-dark {
+            margin-top: 10px;
+        }
+    }
 }
 
 .restaurant-loader-notfound-div {
@@ -103,11 +131,19 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        min-height: 100vh; // ensure full viewport height to allow footer at bottom
         background: #ffeaea;
-        padding: 20px;
+        // padding: 20px;
         text-align: center;
         height: 100%;
         width: 100%;
+        padding-top: 200px;
+
+        // push footer to bottom in this state
+        .footer {
+            margin-top: auto;
+            width: 100%;
+        }
 
         .notFound-img {
             width: 300px;
@@ -118,6 +154,10 @@
         h2 {
             color: #333;
             margin-bottom: 10px;
+        }
+
+        p {
+            max-width: 700px;
         }
     }
 
@@ -137,8 +177,13 @@
             margin-bottom: 20px;
         }
 
+        .loading-circle {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
         h2 {
-            color: #FE931D;
+            // color: var(--primary-color);
             margin-bottom: 10px;
         }
 
@@ -177,18 +222,18 @@
 }
 
 /* Default toast styles */
-.custom-toast {
-    background-color: #333;
-    color: #fff;
-    font-size: 16px;
-    padding: 12px;
-    border-radius: 8px;
-}
+// .custom-toast {
+//     background-color: #333;
+//     color: #fff;
+//     font-size: 16px;
+//     padding: 12px;
+//     border-radius: 8px;
+// }
 
-/* Toast body styles */
-.custom-toast-body {
-    font-size: 14px;
-}
+// /* Toast body styles */
+// .custom-toast-body {
+//     font-size: 14px;
+// }
 
 /* Mobile-specific styles */
 @media screen and (max-width: 1200px) {
@@ -213,7 +258,7 @@
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 480px) {
     .restaurant-layout {
         .childrens {
             padding-top: 100px;
@@ -254,20 +299,5 @@
                 font-size: 14px;
             }
         }
-    }
-
-    .custom-toast {
-        font-size: 14px;
-        margin-top: 20px;
-        margin-right: 20px;
-        padding: 10px;
-        width: 80% !important;
-        // margin: 0 auto;
-        border-radius: 6px;
-    }
-
-    .custom-toast-body {
-        font-size: 12px;
-        text-align: center;
     }
 }

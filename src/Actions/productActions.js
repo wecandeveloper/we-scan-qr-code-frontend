@@ -1,6 +1,6 @@
 // import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
-import {render, localhost} from "../Api/apis"
+import { localhost } from "../Api/apis"
 import { toast } from 'react-toastify'
 
 export const startGetAllProducts = (restaurantSlug) => {
@@ -59,10 +59,19 @@ export const startCreateProduct = (formData, setServerErrors, handleCloseAll)=>{
             toast.success('Succesfully created Product')
             handleCloseAll()
             console.log(response.data.data)
-        }catch(err){
-            console.log(err)
-            toast.error("Failed to Add Product")
-            setServerErrors(err.response.data.message)
+        } catch (err) {
+            console.log(err);
+            toast.error("Failed to Add Product");
+
+            const { message } = err.response.data;
+
+            if (Array.isArray(message)) {
+                // Field-level validation errors
+                setServerErrors(message); // always an array
+            } else {
+                // General error -> wrap in array for consistency
+                setServerErrors([{ msg: message }]);
+            }
         }
     }
 }
@@ -122,5 +131,41 @@ const deleteProduct = (product)=>{
     return{
         type: "DELETE_PRODUCT",
         payload: product
+    }
+}
+
+// Bulk Delete Products
+export const startBulkDeleteProducts = (productIds) => {
+    return async (dispatch) => {
+        try {
+            dispatch(setBulkDeleteLoading(true));
+            const response = await axios.delete(`${localhost}/api/product/bulk-delete`, {
+                data: { productIds },
+                headers: {
+                    "Authorization": localStorage.getItem("token")
+                }
+            });
+            dispatch(setBulkDeleteLoading(false));
+            dispatch(bulkDeleteProducts(productIds));
+            toast.success(response.data.message);
+        } catch(err) {
+            dispatch(setBulkDeleteLoading(false));
+            console.log(err);
+            toast.error(err.response?.data?.message || "Failed to delete products");
+        }
+    }
+}
+
+const bulkDeleteProducts = (productIds) => {
+    return {
+        type: "BULK_DELETE_PRODUCTS",
+        payload: productIds
+    }
+}
+
+const setBulkDeleteLoading = (loading) => {
+    return {
+        type: "SET_BULK_DELETE_LOADING",
+        payload: loading
     }
 }

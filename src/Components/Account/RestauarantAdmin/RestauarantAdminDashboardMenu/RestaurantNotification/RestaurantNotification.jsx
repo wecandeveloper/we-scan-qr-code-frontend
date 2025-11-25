@@ -36,6 +36,14 @@ export default function RestaurantNotification() {
         // };
     }, []);
 
+    // ✅ Join restaurant room when restaurant is available
+    useEffect(() => {
+        if (socket.current && restaurant?._id) {
+            console.log('Joining restaurant room:', restaurant._id);
+            socket.current.emit('join-restaurant', restaurant._id);
+        }
+    }, [restaurant?._id]);
+
     // ✅ Handle Order Notifications
     useEffect(() => {
         if (!socket.current) return;
@@ -62,11 +70,19 @@ export default function RestaurantNotification() {
     // ✅ Handle Waiter Call Notifications
     useEffect(() => {
         if (!socket.current || !restaurant?._id) return;
+        console.log('🎯 Setting up call-waiter listener (menu) for restaurant:', restaurant._id);
 
         socket.current.on("call-waiter", (data) => {
+            console.log('🔔 call-waiter event (menu) received:', data);
             if (data.restaurantId !== restaurant._id) return;
 
-            toast.info(`🚨 Table ${data.tableNo} is requesting a waiter!`, { autoClose: 5000 });
+            const isTakeAway = (String(data?.orderType || '').toLowerCase() === 'take-away')
+                || !!data.vehicleNo || !!data.customerName || !!data.customerPhone;
+            const toastMsg = data?.message || (isTakeAway
+                ? `🚗 Take-Away assistance requested${data.vehicleNo ? ` • Vehicle ${data.vehicleNo}` : ''}${data.customerName ? ` • ${data.customerName}` : ''}${data.customerPhone ? ` • ${data.customerPhone}` : ''}`
+                : (data.tableNo ? `🚨 Table ${data.tableNo} is requesting a waiter!` : '🚨 Waiter assistance requested'));
+
+            toast.info(toastMsg, { autoClose: 5000 });
 
             if (waiterAudioRef.current) {
                 waiterAudioRef.current.currentTime = 0;
@@ -79,6 +95,21 @@ export default function RestaurantNotification() {
         });
 
         return () => socket.current.off("call-waiter");
+    }, [restaurant?._id]);
+
+    // ✅ Stop order sound when resolved on any dashboard
+    useEffect(() => {
+        if (!socket.current) return;
+
+        socket.current.on('order_request_resolved', (data) => {
+            if (data?.restaurantId && restaurant?._id && data.restaurantId !== restaurant._id) return;
+            if (orderAudioRef.current) {
+                orderAudioRef.current.pause();
+                orderAudioRef.current.currentTime = 0;
+            }
+        });
+
+        return () => socket.current.off('order_request_resolved');
     }, [restaurant?._id]);
 
     return (
@@ -106,7 +137,11 @@ export default function RestaurantNotification() {
                     {waiterCalls.length > 0 ? (
                         <ul className="waiter-calls">
                             {waiterCalls.map((w, i) => (
-                                <li key={i}>🚨 Table {w.tableNo} requested a waiter</li>
+                                <li key={i}>
+                                    {w.orderType === 'Take-Away'
+                                        ? `🚗 Take-Away assistance${w.vehicleNo ? ` • Vehicle ${w.vehicleNo}` : ''}${w.customerName ? ` • ${w.customerName}` : ''}${w.customerPhone ? ` • ${w.customerPhone}` : ''}`
+                                        : `🚨 Table ${w.tableNo} requested a waiter`}
+                                </li>
                             ))}
                         </ul>
                     ) : (

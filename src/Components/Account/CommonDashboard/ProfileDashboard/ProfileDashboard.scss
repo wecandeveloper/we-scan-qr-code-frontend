@@ -105,14 +105,14 @@
                             align-items: center;
                         }
 
-                        .btn-dark {
+                        .btn-primary {
                             // height: 55px;
                             width: 100px;
                         }
 
                         .verified-btn {
                             width: 100px;
-                            height: 55px;
+                            // height: 55px;
                             margin-left: auto;
                             background: #EDF7ED;
                             color: #458845;
@@ -121,9 +121,10 @@
                             flex-direction: row;
                             gap: 5px;
                             cursor: inherit;
+                            font-size: 14px;
 
                             img {
-                                width: 20px;
+                                width: 18px;
                             }
                         }
                 }
@@ -149,7 +150,7 @@
                             align-items: center;
                         }
 
-                        .btn-dark {
+                        .btn-primary {
                             height: 55px;
                             width: 100px;
                         }
@@ -276,7 +277,7 @@
                             align-items: center;
                         }
 
-                        .btn-dark {
+                        .btn-primary {
                             height: 55px;
                             width: 100px;
                         }
@@ -465,7 +466,7 @@
                 width: 150px;
             }
 
-            .btn-dark.submit {
+            .btn-primary.submit {
                 height: 55px;
                 border-radius: 10px;
             }
@@ -488,15 +489,15 @@
                 text-align: center;
 
                 .btn-resend {
-                    width: 160px;
-                    padding: 10px 20px;
-                    background-color: #470531;
-                    color: white;
-                    border: 2px solid #470531;
-                    border-radius: 6px;
-                    font-size: 16px;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
+                    // width: 160px;
+                    // // padding: 10px 20px;
+                    // background-color: #470531;
+                    // color: white;
+                    // border: 2px solid #470531;
+                    // border-radius: 6px;
+                    // font-size: 16px;
+                    // cursor: pointer;
+                    // transition: all 0.3s ease;
 
                     &:disabled {
                         background-color: #9e4a83;
@@ -640,7 +641,7 @@
                                 width: 100%;
                             }
 
-                            .btn-dark {
+                            .btn-primary {
                                 width: 100%;
                             }
                         }

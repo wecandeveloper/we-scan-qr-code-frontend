@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { initSocket } from "../../../../../Services/SocketService";
@@ -31,6 +31,14 @@ export default function RestaurantNotification2() {
         // };
     }, []);
 
+    // ✅ Join restaurant room when restaurant is available
+    useEffect(() => {
+        if (socket.current && restaurant?._id) {
+            console.log('Joining restaurant room:', restaurant._id);
+            socket.current.emit('join-restaurant', restaurant._id);
+        }
+    }, [restaurant?._id]);
+
     // ✅ Handle Order Notifications
     useEffect(() => {
         if (!socket.current) return;
@@ -59,7 +67,13 @@ export default function RestaurantNotification2() {
         socket.current.on("call-waiter", (data) => {
             if (data.restaurantId !== restaurant._id) return;
 
-            toast.info(`🚨 Table ${data.tableNo} is requesting a waiter!`, { autoClose: 5000 });
+            const isTakeAway = (String(data?.orderType || '').toLowerCase() === 'take-away')
+                || !!data.vehicleNo || !!data.customerName || !!data.customerPhone;
+            const toastMsg = data?.message || (isTakeAway
+                ? `🚗 Take-Away assistance requested${data.vehicleNo ? ` • Vehicle ${data.vehicleNo}` : ''}${data.customerName ? ` • ${data.customerName}` : ''}${data.customerPhone ? ` • ${data.customerPhone}` : ''}`
+                : (data.tableNo ? `🚨 Table ${data.tableNo} is requesting a waiter!` : '🚨 Waiter assistance requested'));
+
+            toast.info(toastMsg, { autoClose: 5000 });
 
             if (waiterAudioRef.current) {
                 waiterAudioRef.current.currentTime = 0;

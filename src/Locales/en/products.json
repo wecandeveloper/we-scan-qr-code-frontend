@@ -1,0 +1,18 @@
+{
+    "products_our_menu": "Our Menu",
+    "loading_categories": "Loading categories...",
+    "no_categories_found": "No categories found",
+    "all_items": "All Items",
+    "loading_products": "Loading Products...",
+    "no_products_found": "No Products found",
+    "no_record_found": "No Record Found,",
+    "show_all": "Show All",
+    "product_not_found": "Product not found",
+    "product_unavailable": "Product is currently unavailable",
+    "item_added_to_cart": "Item added to cart!",
+    "item_already_in_cart_updated": "{{name}} is already in the cart, quantity updated to {{qty}}",
+    "offer_items": "Offer Items",
+    "featured_items": "Featured Items",
+    "related_items": "Related Items",
+    "no_title_found": "No {{title}} found"
+}

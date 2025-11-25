@@ -7,7 +7,9 @@ const initialState = {
 export default function orderReducers(state = initialState, action) {
     switch (action.type) {
         case "ADD_ORDER" :{
-            return { ...state, data : [...state.data, action.payload] }
+            // Ensure state.data is an array before spreading
+            const currentData = Array.isArray(state.data) ? state.data : [];
+            return { ...state, data : [action.payload, ...currentData] }
         }
         case "SET_RESTAURANT_ORDERS" : {
             return { ...state, data : action.payload }
@@ -20,9 +22,11 @@ export default function orderReducers(state = initialState, action) {
         }
         case "CANCEL_ORDER": {
             const orderIdToCancel = action.payload._id; // expecting _id
+            // Ensure state.data is an array before mapping
+            const currentData = Array.isArray(state.data) ? state.data : [];
             return {
                 ...state,
-                data: state.data.map(order =>
+                data: currentData.map(order =>
                     order._id === orderIdToCancel
                         ? { ...order, status: "Cancelled" }
                         : order
@@ -31,9 +35,11 @@ export default function orderReducers(state = initialState, action) {
         }
         case "CHANGE_ORDER_STATUS" : {
             const orderIdToCancel = action.payload._id; // expecting _id
+            // Ensure state.data is an array before mapping
+            const currentData = Array.isArray(state.data) ? state.data : [];
             return {
                 ...state,
-                data: state.data.map(order =>
+                data: currentData.map(order =>
                     order._id === orderIdToCancel
                         ? { ...order, status: action.payload.status }
                         : order
@@ -41,9 +47,16 @@ export default function orderReducers(state = initialState, action) {
             };
         }
         case "DELETE_ORDER" : {
-            return { ...state, data : state.data.filter((ele) => {
+            // Ensure state.data is an array before filtering
+            const currentData = Array.isArray(state.data) ? state.data : [];
+            return { ...state, data : currentData.filter((ele) => {
                 return ele._id !== action.payload._id
             })}
+        }
+        case "BULK_DELETE_ORDERS" : {
+            // For bulk delete, we'll refresh the data from server
+            // The actual filtering will be handled by refreshing the orders
+            return { ...state, data : [] }
         }
         default : {
             return { ...state }

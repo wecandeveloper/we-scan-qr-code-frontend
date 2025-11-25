@@ -67,6 +67,7 @@
             width: 100%;
             width: 300px;
             cursor: pointer;
+            position: relative;
 
             .icon {
                 font-size: 25px;
@@ -74,6 +75,25 @@
 
             .heading {
                 font-size: 20px;
+            }
+
+            .test-connection-btn {
+                position: absolute;
+                right: 10px;
+                background: #007bff;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-size: 12px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                z-index: 10;
+
+                &:hover {
+                    background: #0056b3;
+                    transform: scale(1.05);
+                }
             }
         }
 
@@ -127,6 +147,7 @@
 
                     .menubar-li.active {
                         font-weight: 600;
+                        // text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
                         border-left: 3px solid #470531;
                         transition: .5s;
                         background: #eaeaea;
@@ -216,19 +237,25 @@
 
             .dashboard-overview-card {
                 display: flex;
-                flex-direction: row;
+                flex-direction: column;
                 align-items: center;
-                justify-content: flex-start;
+                justify-content: center;
+                text-align: center;
                 width: 250px;
-                height: 100px;
+                height: 250px;
                 background: var(--primary-color);
                 color: white;
                 padding: 20px 30px;
                 border-radius: 10px;
                 gap: 20px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                // box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.08);
+                // transition: transform 0.2s ease, 
+                // box-shadow 0.2s ease;
 
                 .icon {
-                    font-size: 40px;
+                    font-size: 50px;
                 }
 
                 .overview-details {
@@ -238,14 +265,1047 @@
                     gap: 5px;
 
                     .title {
-                        font-size: 22px;
+                        font-size: 25px;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
                     }
 
                     .nos {
                         font-size: 18px;
                         font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
                     }
                 }
+
+                &:hover {
+
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                }
+            }
+
+            // Notification Bell Styling
+            .dashboard-overview-card.notification-card {
+                position: relative;
+                
+                .notification-bell {
+                    position: relative;
+                    
+                    .notification-badge {
+                        position: absolute;
+                        top: -8px;
+                        right: -8px;
+                        background: #ff4444;
+                        color: white;
+                        border-radius: 50%;
+                        width: 20px;
+                        height: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 10px;
+                        font-weight: bold;
+                        animation: pulse 2s infinite;
+                    }
+                }
+            }
+
+            // Recent Orders Card Styling
+            .dashboard-overview-card.recent-orders-card {
+                position: relative;
+                background: var(--primary-color);
+                color: white;
+                transition: all 0.3s ease;
+                
+                &:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                }
+                
+                .recent-orders-icon {
+                    position: relative;
+                    color: white;
+                    font-size: 70px;
+                    
+                    .recent-orders-badge {
+                        position: absolute;
+                        top: -5px;
+                        right: -5px;
+                        background: #ff6b35;
+                        color: white;
+                        border-radius: 50%;
+                        width: 25px;
+                        height: 25px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 12px;
+                        font-weight: bold;
+                        animation: bounce 1s infinite;
+                    }
+                }
+                
+                .overview-details {
+                    .title {
+                        color: white;
+                        font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                    }
+                    
+                    .nos {
+                        color: rgba(255, 255, 255, 0.95);
+                        font-weight: 500;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                    }
+                }
+            }
+        }
+
+
+        .restaurant-notifications-section {
+            margin-top: 50px;
+            
+            .notifications-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+                
+                .notification-card {
+                    background: white;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                    border: 1px solid #f0f0f0;
+                    
+                    &:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 30px rgba(71, 5, 49, 0.12);
+                    }
+                    
+                    .card-header {
+                        background: var(--primary-color);
+                        color: white;
+                        padding: 20px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        
+                        .header-content {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            
+                            .header-icon {
+                                font-size: 24px;
+                            }
+                            
+                            .card-title {
+                                font-size: 18px;
+                                font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                                margin: 0;
+                            }
+                        }
+                        
+                        .notification-count {
+                            background: rgba(255, 255, 255, 0.2);
+                            color: white;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                            font-size: 14px;
+                            min-width: 30px;
+                            text-align: center;
+                        }
+                    }
+                    
+                    .card-content {
+                        padding: 20px;
+                        min-height: 200px;
+                        
+                        .notifications-list,
+                        .waiter-calls-list {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 12px;
+                            margin-bottom: 15px;
+                        }
+                        
+                        .notification-item,
+                        .waiter-call-item {
+                            background: #f8f9fa;
+                            border: 1px solid #e9ecef;
+                            border-radius: 10px;
+                            padding: 15px;
+                            transition: all 0.3s ease;
+                            
+                            &:hover {
+                                background: #f1f3f4;
+                                border-color: #470531;
+                                // transform: translateX(2px);
+                            }
+                        }
+                        
+                        .notification-item {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            
+                            .notification-info {
+                                flex: 1;
+                                
+                                .notification-header {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 10px;
+                                    margin-bottom: 8px;
+                                    
+                                    .order-number {
+                                        font-size: 16px;
+                                        font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                                        color: #470531;
+                                    }
+                                    
+                                    .order-type-badge {
+                                        background: #470531;
+                                        color: white;
+                                        padding: 3px 8px;
+                                        border-radius: 12px;
+                                        font-size: 10px;
+                                        font-weight: 500;
+                                    }
+                                }
+                                
+                                .notification-details {
+                                    .location-info {
+                                        font-size: 14px;
+                                        color: #666;
+                                        margin: 0 0 4px 0;
+                                    }
+                                    
+                                    .order-time {
+                                        font-size: 12px;
+                                        color: #999;
+                                        margin: 0;
+                                    }
+                                }
+                            }
+                            
+                            .view-btn {
+                                background: #470531;
+                                color: white;
+                                border: none;
+                                padding: 8px 16px;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-size: 12px;
+                                font-weight: 500;
+                                transition: all 0.3s ease;
+                                
+                                &:hover {
+                                    background: #5a0640;
+                                    transform: scale(1.05);
+                                }
+                            }
+                        }
+                        
+                        .waiter-call-item {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            
+                            .call-info {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 4px;
+                                
+                                .table-number {
+                                    font-size: 16px;
+                                    font-weight: 600;
+                                    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                                    color: #dc3545;
+                                }
+                                
+                                .call-message {
+                                    font-size: 14px;
+                                    color: #666;
+                                }
+                            }
+                            
+                            .call-time {
+                                font-size: 12px;
+                                color: #999;
+                                font-weight: 500;
+                            }
+                        }
+                        
+                        .more-items {
+                            text-align: center;
+                            padding: 12px;
+                            background: #f8f9fa;
+                            border-radius: 8px;
+                            border: 1px dashed #dee2e6;
+                            margin-bottom: 15px;
+                            
+                            p {
+                                margin: 0;
+                                color: #666;
+                                font-size: 13px;
+                                font-style: italic;
+                            }
+                        }
+                        
+                        .card-footer {
+                            border-top: 1px solid #f0f0f0;
+                            padding-top: 15px;
+                            text-align: center;
+                            
+                            .view-all-btn {
+                                background: transparent;
+                                color: #470531;
+                                border: 2px solid #470531;
+                                padding: 10px 20px;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                font-weight: 500;
+                                transition: all 0.3s ease;
+                                width: 100%;
+                                
+                                &:hover {
+                                    background: #470531;
+                                    color: white;
+                                    transform: translateY(-1px);
+                                }
+                            }
+                        }
+                        
+                        .empty-state {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 40px 20px;
+                            text-align: center;
+                            color: #999;
+                            
+                            .empty-icon {
+                                font-size: 48px;
+                                color: #ddd;
+                                margin-bottom: 15px;
+                            }
+                            
+                            p {
+                                margin: 0;
+                                font-size: 16px;
+                                color: #666;
+                            }
+                        }
+                    }
+                }
+                
+                // Specific styling for order notifications card
+                .order-notifications-card {
+                    .card-header {
+                        background: linear-gradient(135deg, #470531 0%, #5a0640 100%);
+                    }
+                }
+                
+                // Specific styling for waiter calls card
+                .waiter-calls-card {
+                    .card-header {
+                        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+                    }
+                }
+            }
+        }
+
+        // Mobile responsiveness
+        @media (max-width: 768px) {
+            .restaurant-notifications-section {
+                margin-top: 30px;
+                
+                .notifications-container {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                    
+                    .notification-card {
+                        .card-header {
+                            padding: 15px;
+                            
+                            .header-content {
+                                .header-icon {
+                                    font-size: 20px;
+                                }
+                                
+                                .card-title {
+                                    font-size: 16px;
+                                }
+                            }
+                            
+                            .notification-count {
+                                padding: 4px 10px;
+                                font-size: 12px;
+                            }
+                        }
+                        
+                        .card-content {
+                            padding: 15px;
+                            min-height: auto;
+                            
+                            .notification-item,
+                            .waiter-call-item {
+                                padding: 12px;
+                                
+                                &:hover {
+                                    transform: none;
+                                }
+                            }
+                            
+                            .notification-item {
+                                flex-direction: column;
+                                align-items: flex-start;
+                                gap: 10px;
+                                
+                                .view-btn {
+                                    align-self: flex-end;
+                                    padding: 6px 12px;
+                                    font-size: 11px;
+                                }
+                            }
+                            
+                            .waiter-call-item {
+                                .call-info {
+                                    .table-number {
+                                        font-size: 14px;
+                                    }
+                                    
+                                    .call-message {
+                                        font-size: 13px;
+                                    }
+                                }
+                                
+                                .call-time {
+                                    font-size: 11px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @media (max-width: 480px) {
+            .restaurant-notifications-section {
+                margin-top: 20px;
+                
+                .notifications-container {
+                    gap: 15px;
+                    
+                    .notification-card {
+                        border-radius: 12px;
+                        
+                        .card-header {
+                            padding: 12px;
+                            
+                            .header-content {
+                                gap: 8px;
+                                
+                                .header-icon {
+                                    font-size: 18px;
+                                }
+                                
+                                .card-title {
+                                    font-size: 14px;
+                                }
+                            }
+                        }
+                        
+                        .card-content {
+                            padding: 12px;
+                            
+                            .notification-item,
+                            .waiter-call-item {
+                                padding: 10px;
+                            }
+                            
+                            .notification-item {
+                                .notification-info {
+                                    .notification-header {
+                                        .order-number {
+                                            font-size: 14px;
+                                        }
+                                        
+                                        .order-type-badge {
+                                            font-size: 9px;
+                                            padding: 2px 6px;
+                                        }
+                                    }
+                                    
+                                    .notification-details {
+                                        .location-info {
+                                            font-size: 13px;
+                                        }
+                                        
+                                        .order-time {
+                                            font-size: 11px;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Order Dashboard Home Section (copied from OrderDashboard)
+        .order-dashboard-home-section {
+            margin-top: 30px;
+
+            // Notifications Section Styling
+            .notifications-section {
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                overflow: visible;
+
+                .notifications-header {
+                    background: var(--primary-color);
+                    color: white;
+                    padding: 15px 20px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-radius: 10px 10px 0 0;
+
+                    .notifications-title {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        margin: 0;
+                        font-size: 18px;
+                        font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                        border-radius: 10px;
+
+                        .notifications-icon {
+                            font-size: 20px;
+                        }
+                    }
+
+                    .notifications-actions {
+                        display: flex;
+                        gap: 10px;
+
+                        .bulk-delete-notifications-btn {
+                            background: #dc3545;
+                            color: white;
+                            border: none;
+                            padding: 8px 16px;
+                            border-radius: 6px;
+                            font-size: 14px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+
+                            &:hover {
+                                background: #c82333;
+                            }
+                        }
+
+                        .toggle-notifications-btn {
+                            background: var(--primary-color);
+                            color: white;
+                            border: 2px solid white;
+                            padding: 8px 16px;
+                            border-radius: 6px;
+                            font-size: 14px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+
+                            &:hover {
+                                background: white;
+                                color: var(--primary-color);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Notifications content wrapper for animation
+            .notifications-content-wrapper {
+                background: transparent;
+            }
+        }
+
+        // Waiter Calls Section
+        .waiter-calls-section {
+            margin-top: 30px;
+
+            .notifications-section {
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                overflow: visible;
+
+                .notifications-header {
+                    background: var(--primary-color);
+                    color: white;
+                    padding: 15px 20px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-radius: 10px 10px 0 0;
+
+                    .notifications-title {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        margin: 0;
+                        font-size: 18px;
+                        font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+                        .notifications-icon {
+                            font-size: 20px;
+                        }
+                    }
+                }
+
+                .waiter-call-card {
+                    border-left: 4px solid #dc3545;
+                    background: #fff5f5;
+
+                    &:hover {
+                        border-left-color: #c82333;
+                        background: #ffebee;
+                    }
+                }
+
+                .notifications-actions.waiter-calls-actions {
+                    display: flex;
+                    gap: 10px;
+
+                    .bulk-delete-notifications-btn {
+                        background: #dc3545;
+                        color: white;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 6px;
+                        font-size: 14px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+
+                        &:hover {
+                            background: #c82333;
+                        }
+                    }
+
+                    .toggle-notifications-btn {
+                        background: var(--primary-color);
+                        color: white;
+                        border: 2px solid white;
+                        padding: 8px 16px;
+                        border-radius: 6px;
+                        font-size: 14px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+
+                        &:hover {
+                            background: white;
+                            color: var(--primary-color);
+                        }
+                    }
+                }
+            }
+        }
+
+        .notifications-content {
+            padding: 20px;
+
+            .notifications-controls {
+                margin-bottom: 15px;
+
+                .select-all-notifications {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-weight: 500;
+                    cursor: pointer;
+
+                    input[type="checkbox"] {
+                        width: 16px;
+                        height: 16px;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            .notifications-list {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+
+                .notification-card {
+                    background: white;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    padding: 15px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 15px;
+                    transition: all 0.3s ease;
+
+                    &.unread {
+                        border-left: 4px solid #470531;
+                        background: #fff8f0;
+                    }
+
+                    &.read {
+                        opacity: 0.8;
+                    }
+
+                    &:hover {
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                        transform: translateY(-1px);
+                    }
+
+                    .notification-card-top {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        align-items: flex-start;
+                        gap: 10px;
+                        width: 100%;
+                    }
+
+                    .notification-checkbox {
+                        margin-top: 5px;
+
+                        input[type="checkbox"] {
+                            width: 16px;
+                            height: 16px;
+                            cursor: pointer;
+                        }
+                    }
+
+                    .notification-content {
+                        flex: 1;
+
+                        .notification-header {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            margin-bottom: 8px;
+                            flex-wrap: wrap;
+
+                            .notification-order-no {
+                                font-size: 16px;
+                                font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                                color: #470531;
+                                margin: 0;
+                            }
+
+                            .notification-type-badge {
+                                display: flex;
+                                align-items: center;
+                                gap: 5px;
+                                background: #470531;
+                                color: white;
+                                padding: 2px 8px;
+                                border-radius: 12px;
+                                font-size: 11px;
+                                font-weight: 500;
+
+                                .icon {
+                                    font-size: 16px;
+                                    color: white;
+                                    margin-top: 2px;
+                                }
+
+                                &.waiter-call {
+                                    background: #dc3545;
+                                    color: white;
+                                }
+                            }
+
+                            .notification-status-badge {
+                                padding: 2px 8px;
+                                border-radius: 12px;
+                                font-size: 11px;
+                                font-weight: 500;
+
+                                &.requested {
+                                    background: #fff3cd;
+                                    color: #856404;
+                                }
+
+                                &.accepted {
+                                    background: #d4edda;
+                                    color: #155724;
+                                }
+
+                                &.declined {
+                                    background: #f8d7da;
+                                    color: #721c24;
+                                }
+                            }
+
+                            .notification-time {
+                                font-size: 12px;
+                                color: #6c757d;
+                                margin-left: auto;
+                            }
+                        }
+
+                        .notification-details {
+                            .notification-location {
+                                display: flex;
+                                align-items: center;
+                                gap: 5px;
+                                font-size: 14px;
+                                color: #495057;
+                                margin: 0 0 5px 0;
+
+                                .icon {
+                                    font-size: 16px;
+                                    color: #470531;
+                                    margin-top: 2px;
+                                }
+
+                                p {
+                                    margin: 0;
+                                }
+                            }
+
+                            .notification-message {
+                                font-size: 14px;
+                                color: #6c757d;
+                                margin: 0;
+                                line-height: 1.4;
+                                margin-left: 10px;
+                            }
+                        }
+                    }
+
+                    .notification-actions {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 8px;
+
+                        .btn-sm {
+                            padding: 4px 8px;
+                            font-size: 12px;
+                            border-radius: 4px;
+                            border: none;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        }
+
+                        .accept-btn {
+                            background: #28a745;
+                            color: white;
+
+                            &:hover {
+                                background: #218838;
+                            }
+                        }
+
+                        .reject-btn {
+                            background: #ffc107;
+                            color: #212529;
+
+                            &:hover {
+                                background: #e0a800;
+                            }
+                        }
+
+                        .mark-read-btn {
+                            background: #28a745;
+                            color: white;
+
+                            .icon {
+                                font-size: 16px;
+                                margin-left: -5px;
+                            }
+
+                            &:hover {
+                                background: #218838;
+                            }
+
+                            &:disabled {
+                                background: #6c757d;
+                                cursor: not-allowed;
+                            }
+                        }
+
+                        .view-details-btn {
+                            background: #17a2b8;
+                            color: white;
+
+                            &:hover {
+                                background: #138496;
+                            }
+                        }
+
+                        .remove-notification-btn {
+                            background: #dc3545;
+                            color: white;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            &:hover {
+                                background: #c82333;
+                            }
+                        }
+                    }
+
+                    // Expanded notification details
+                    .notification-expanded-details {
+                        // margin-top: 10px;
+                        // border-top: 1px solid #dee2e6;
+                        width: 100%;
+                        
+                        .expanded-content {
+                            padding: 15px 0;
+                            
+                            .order-summary,
+                            .customer-details,
+                            .line-items {
+                                margin-bottom: 20px;
+                                
+                                .summary-title,
+                                .details-title,
+                                .items-title {
+                                    font-size: 14px;
+                                    font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                                    color: #470531;
+                                    margin: 0 0 10px 0;
+                                    padding-bottom: 5px;
+                                    border-bottom: 1px solid #e9ecef;
+                                }
+                                
+                                .order-info,
+                                .customer-info {
+                                    p {
+                                        margin: 5px 0;
+                                        font-size: 13px;
+                                        color: #495057;
+                                        
+                                        strong {
+                                            color: #212529;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            .line-items {
+                                .items-list {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 10px;
+                                    
+                                    .item-card {
+                                        background: white;
+                                        border: 1px solid #e9ecef;
+                                        border-radius: 8px;
+                                        padding: 12px;
+                                        display: flex;
+                                        gap: 12px;
+                                        transition: all 0.3s ease;
+                                        
+                                        &:hover {
+                                            border-color: #470531;
+                                            box-shadow: 0 2px 8px rgba(71, 5, 49, 0.1);
+                                        }
+                                        
+                                        .item-image {
+                                            width: 60px;
+                                            height: 60px;
+                                            border-radius: 8px;
+                                            overflow: hidden;
+                                            flex-shrink: 0;
+                                            
+                                            img {
+                                                width: 100%;
+                                                height: 100%;
+                                                object-fit: cover;
+                                            }
+                                        }
+                                        
+                                        .item-details {
+                                            flex: 1;
+                                            
+                                            .item-name {
+                                                font-size: 14px;
+                                                font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                                                color: #212529;
+                                                margin: 0 0 4px 0;
+                                            }
+                                            
+                                            .item-category {
+                                                font-size: 12px;
+                                                color: #6c757d;
+                                                margin: 0 0 8px 0;
+                                            }
+                                            
+                                            .item-pricing {
+                                                display: flex;
+                                                flex-wrap: wrap;
+                                                gap: 8px;
+                                                font-size: 12px;
+                                                
+                                                .item-price {
+                                                    color: #470531;
+                                                    font-weight: 500;
+                                                }
+                                                
+                                                .item-quantity {
+                                                    color: #6c757d;
+                                                }
+                                                
+                                                .item-total {
+                                                    color: #28a745;
+                                                    font-weight: 600;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                                                    margin-left: auto;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .no-notifications-message {
+            padding: 40px 20px;
+            text-align: center;
+            color: #6c757d;
+
+            .no-notifications-icon {
+                font-size: 48px;
+                color: #dee2e6;
+                margin-bottom: 10px;
+            }
+
+            p {
+                margin: 0;
+                font-size: 16px;
             }
         }
     }
@@ -258,8 +1318,14 @@
         display: flex;
         flex-direction: column;
 
-        p {
-            margin-top: 20px;
+        .details-div {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background: #eaeaea;
+            padding: 30px;
+            border-radius: 10px;
         }
 
         a {
@@ -273,141 +1339,18 @@
         overflow-y: auto;
         max-height: 100%;
     }
+}
 
-    .restaurant-order-waiter-section {
-        margin-top: 50px;
-        display: flex;
-        flex-direction: column;
-        gap: 50px;
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
 
-        .restaurant-order-waiter-div {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-
-            .notifications, .waiter-calls {
-                background: #fff;
-                border-radius: 10px;
-                padding: 20px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-                width: fit-content;
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .no-notifications, .no-waiter-calls {
-                background: #fff;
-                border-radius: 10px;
-                padding: 20px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-                width: fit-content;
-            }
-
-            .order-notifications {
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
-
-                .order-card {
-                    background: #fff;
-                    border-radius: 10px;
-                    padding: 20px;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-                    width: 100%;
-                }
-
-                .head-div {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                    gap: 20px;
-                }
-
-                .order-head {
-                    font-size: 25px;
-                }
-
-                .order-sub-head {
-                    font-size: 20px;
-                }
-
-                .lineItems-grid {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 30px;
-                    // background: #f3f3f3;
-                    // padding: 20px;
-                    border-radius: 10px;
-                    margin-top: 30px;
-
-                    .linItems-head {
-                        margin-bottom: -10px;
-                    }
-
-                    .lineItems-card {
-                        display: flex;
-                        flex-direction: row;
-                        gap: 20px;
-                        justify-content: flex-start;
-                        border-bottom: 2px solid #e0e0e0;
-                        padding-bottom: 20px;
-
-                        .img-div {
-                            height: 80px;
-                            width: 100px;
-
-                            img {
-                                height: 100%;
-                                width: 100%;
-                                object-fit: cover;
-                            }
-                        }
-
-                        .item-details-div {
-                            display: flex;
-                            flex-direction: row;
-                            width: 100%;
-                            justify-content: space-between;
-                            align-items: end;
-                            margin-bottom: 20px;
-                            gap: 20px;
-
-                            .item-name-div {
-                                display: flex;
-                                flex-direction: column;
-                                gap: 5px;
-                                justify-content: flex-start;
-                                align-items: flex-start;
-
-                                .name {
-                                    font-size: 16px;
-                                }
-
-                                .category {
-                                    font-size: 14px;
-                                    opacity: .8;
-                                }
-                            }
-
-                            .price-qty-div {
-                                display: flex;
-                                flex-direction: column;
-                                gap: 5px;
-                                align-items: flex-end;
-                                text-align: right;
-                            }
-                        }
-                    }
-
-                    .lineItems-card:last-child {
-                        border-bottom: none;
-                        padding-bottom: 0px;
-                    }
-                }
-            }
-        }
-    }
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-3px); }
+    60% { transform: translateY(-2px); }
 }
 
 @media (max-width: 1000px) {

@@ -1,6 +1,6 @@
 // import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
-import {render, localhost} from "../Api/apis"
+import { localhost } from "../Api/apis"
 import { toast } from 'react-toastify'
 
 export const startGetCoupon = () => {

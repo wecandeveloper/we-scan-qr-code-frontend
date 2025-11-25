@@ -6,10 +6,13 @@ const initialState = {
 
 export default function userReducers(state = initialState, action) {
     switch(action.type) {
-        case "SET_ALL_CUSTOMERS": {
+        case "SET_ALL_USERS": {
             return { ...state, data: action.payload }
         }
-        case "DELETE_CUSTOMER" : {
+        case 'ADD_USER': {
+            return {...state,data: [...state.data, action.payload]};
+        }
+        case "DELETE_USER" : {
             return { ...state, data : state.data.filter((ele) => {
                 return ele._id !== action.payload._id
             })}

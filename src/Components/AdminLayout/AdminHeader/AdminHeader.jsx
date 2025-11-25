@@ -2,7 +2,7 @@ import { useAuth } from "../../../Context/AuthContext";
 
 import "./AdminHeader.scss"
 
-import logo from "../../../Assets/Logo/we-scan-logo.png"
+import logo from "../../../Assets/Logo/os-logo.jpg"
 import defaultProfilePic from "../../../Assets/Common/account-icon.png"
 
 export default function AdminHeader() {

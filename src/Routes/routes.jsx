@@ -7,69 +7,16 @@ import Restaurant from "../Pages/Restaurant.jsx"
 import MainLayout from "../Components/Layouts/MainLayout/MainLayout.jsx"
 import RestaurantLayout from "../Components/Layouts/RestaurantLayout/RestaurantLayout.jsx"
 import AdminLayout from "../Components/Layouts/AdminLayout/AdminLayout.jsx"
-import Home from "../Components/MainLayout/Home/Home.jsx"
 import LoginRegister from "../Components/LoginRegister/LoginRegister.jsx"
 import OfferPage from "../Pages/OfferPage.jsx"
 import PageNotFound from "../Components/MainLayout/PageNotFound/PageNotFound.jsx"
 import RestaurantAdminLayout from "../Components/Layouts/RestaurantAdminLayout/RestaurantAdminLayout.jsx"
 import RestaurantAdminAccount from "../Pages/RestaurantAdminAccount.jsx"
+import MainHomePage from "../Pages/MainHomePage.jsx"
+import Thankyou from "../Components/MainLayout/ThankYouPage/Thankyou.jsx"
+import PaymentSuccess from "../Pages/PaymentSuccess.jsx"
+import PaymentFailure from "../Pages/PaymentFailure.jsx"
 
-// const routes = [
-//   {
-//     path: "/",
-//     element: <Home/>,
-//     isProtected: false,
-//   },
-//   {
-//     path: "/restaurant/:restaurantSlug",
-//     element: <Restaurant/>,
-//     isProtected: false,
-//   },
-//   {
-//     path: "/restaurant/:restaurantSlug/collections",
-//     element: <CategoryCollection/>,
-//     isProtected: false,
-//   },
-//   {
-//     path: "/restaurant/:restaurantSlug/collections/:categoryName",
-//     element: <CategoryCollection/>,
-//     isProtected: false,
-//   },
-//   {
-//     path: "/products/:productName",
-//     element: <ProductDetailPage/>,
-//     isProtected: false,
-//   },
-//   {
-//     path: "/cart",
-//     element: <Cart/>,
-//     isProtected: false,
-//     // roles: ["customer"],
-//   },
-//   {
-//     path: "/account",
-//     element: <CustomerAccount/>,
-//     isProtected: true,
-//     roles: ["customer"],
-//   },
-//   {
-//     path: "/account/:dashboradMenu",
-//     element: <CustomerAccount/>,
-//     isProtected: true,
-//     roles: ["customer"],
-//   },
-//   {
-//     path: "/admin/dashboard",
-//     element: <AdminAccount/>,
-//     isProtected: true,
-//     roles: ["superAdmin", "restaurantAdmin"],
-//   },
-//   {
-//     path: "/un-authorized",
-//     element: <UnAuthorized/>,
-//     isProtected: false,
-//   },
-// ]
 
 const routes = [
   // Main Routes
@@ -77,7 +24,7 @@ const routes = [
     path: "/",
     element: (
       <MainLayout>
-        <Home />
+        <MainHomePage />
       </MainLayout>
     ),
     isProtected: false,
@@ -96,6 +43,50 @@ const routes = [
     element: (
       <MainLayout>
         <LoginRegister />
+      </MainLayout>
+    ),
+    isProtected: false,
+  },
+
+    // Thank You Page
+    {
+      path: "/thank-you",
+      element: (
+        <MainLayout>
+          <Thankyou />
+        </MainLayout>
+      ),
+      isProtected: false,
+    },
+
+    // Payment Success Page
+    {
+      path: "/payment/success",
+      element: (
+        <MainLayout>
+          <PaymentSuccess />
+        </MainLayout>
+      ),
+      isProtected: false,
+    },
+
+    // Payment Failure Page
+    {
+      path: "/payment/failure",
+      element: (
+        <MainLayout>
+          <PaymentFailure />
+        </MainLayout>
+      ),
+      isProtected: false,
+    },
+
+  // Unauthorized Page
+  {
+    path: "/un-authorized",
+    element: (
+      <MainLayout>
+        <UnAuthorized />
       </MainLayout>
     ),
     isProtected: false,
@@ -150,16 +141,16 @@ const routes = [
   },
 
   // Customer Account (still part of restaurant layout)
-  {
-    path: "/account",
-    element: (
-      <RestaurantLayout>
-        <CustomerAccount />
-      </RestaurantLayout>
-    ),
-    isProtected: true,
-    roles: ["customer"],
-  },
+  // {
+  //   path: "/account",
+  //   element: (
+  //     <RestaurantLayout>
+  //       <CustomerAccount />
+  //     </RestaurantLayout>
+  //   ),
+  //   isProtected: true,
+  //   roles: ["customer"],
+  // },
   // Admin Routes
   {
     path: "/admin/dashboard",
@@ -182,17 +173,6 @@ const routes = [
     ),
     isProtected: true,
     roles: ["restaurantAdmin"],
-  },
-
-  // Unauthorized Page
-  {
-    path: "/un-authorized",
-    element: (
-      <MainLayout>
-        <UnAuthorized />
-      </MainLayout>
-    ),
-    isProtected: false,
   },
 ];
 

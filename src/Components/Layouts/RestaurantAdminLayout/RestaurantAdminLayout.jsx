@@ -3,13 +3,11 @@ import "./RestaurantAdminLayout.scss"
 
 import RestaurantAdminHeader from "../../RestaurantLayout/RestaurantAdminHeader/RestaurantAdminHeader";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { startGetOneRestaurant } from "../../../Actions/restaurantActions";
+import { startGetMyRestaurant } from "../../../Actions/restaurantActions";
 import { useEffect } from "react";
 
 export default function RestaurantAdminLayout({ children }) {
   const dispatch = useDispatch();
-  const { restaurantSlug } = useParams();
 
   const { selected: restaurant } = useSelector(
       (state) => state.restaurants
@@ -17,23 +15,22 @@ export default function RestaurantAdminLayout({ children }) {
 
   // Fetch restaurant details
   useEffect(() => {
-    if (restaurantSlug) {
-        if(!restaurant) {
-            dispatch(startGetOneRestaurant(restaurantSlug));
-        }
+    if (!restaurant) {
+        dispatch(startGetMyRestaurant());
     }
-  }, [restaurantSlug, dispatch]);
+  }, [dispatch, restaurant]);
 
   useEffect(() => {
-    if (restaurant?.theme) {
-      const { primaryColor, secondaryColor, buttonColor } = restaurant.theme;
+    const layout = document.querySelector(".restaurant-admin-layout");
+    if (!layout) return;
 
-      // Set CSS variables on root or on this layout container
-      const layout = document.querySelector(".restaurant-admin-layout");
-      layout.style.setProperty("--primary-color", primaryColor || "#000");
-      layout.style.setProperty("--secondary-color", secondaryColor || "#fff");
-      layout.style.setProperty("--button-color", buttonColor || "#000");
-    }
+    const primaryColor = restaurant?.theme?.primaryColor || "#000";
+    const secondaryColor = restaurant?.theme?.secondaryColor || "#fff";
+    const buttonColor = restaurant?.theme?.buttonColor || "#000";
+
+    layout.style.setProperty("--primary-color", primaryColor);
+    layout.style.setProperty("--secondary-color", secondaryColor);
+    layout.style.setProperty("--button-color", buttonColor);
   }, [restaurant]);
   return (
     <div className="restaurant-admin-layout">

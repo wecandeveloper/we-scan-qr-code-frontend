@@ -420,6 +420,7 @@
 
         .restaurant-head {
             font-size: 30px;
+            margin-bottom: 20px;
         }
 
         .restaurant-form {
@@ -650,6 +651,99 @@
                         display: flex;
                         align-items: center;
                         color: #111;
+                        gap: 8px;
+                        justify-content: flex-end;
+
+                        .subscription-badge {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            height: 40px;
+                            font-weight: 600;
+                            padding: 10px 15px;
+                            border-radius: 4px;
+                        }
+
+                        .btn-dark {
+                            margin-left: 8px;
+                            height: 40px;
+                        }
+
+                        .external-link, .qr-link, .map-link, .phone-link {
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            color: black;
+                            text-decoration: none;
+                            font-weight: 500;
+
+                            &:hover {
+                                text-decoration: underline;
+                                color: #ff9800;
+                            }
+
+                            .link-icon, .qr-icon, .map-icon, .phone-icon {
+                                font-size: 14px;
+                            }
+                        }
+
+                        .language-tags {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 6px;
+
+                            .language-tag {
+                                background: #ff9800;
+                                color: white;
+                                padding: 4px 8px;
+                                border-radius: 12px;
+                                font-size: 12px;
+                                font-weight: 500;
+                            }
+                        }
+
+                        .no-languages, .no-qr {
+                            color: #666;
+                            font-style: italic;
+                        }
+
+                        .status-badges {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 6px;
+
+                            .status-badge {
+                                padding: 4px 8px;
+                                border-radius: 12px;
+                                font-size: 12px;
+                                font-weight: 500;
+
+                                &.open {
+                                    background: #d4edda;
+                                    color: #155724;
+                                }
+
+                                &.closed {
+                                    background: #f8d7da;
+                                    color: #721c24;
+                                }
+
+                                &.approved {
+                                    background: #d1ecf1;
+                                    color: #0c5460;
+                                }
+
+                                &.pending {
+                                    background: #fff3cd;
+                                    color: #856404;
+                                }
+
+                                &.blocked {
+                                    background: #f8d7da;
+                                    color: #721c24;
+                                }
+                            }
+                        }
                     }
 
                     .value.tags {
@@ -802,6 +896,153 @@
     }
 }
 
+// Subscription Modal Styles
+.subscription-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+
+    .subscription-modal {
+        background: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+
+            h3 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .close-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #ff9800;
+                border: none;
+                font-size: 30px;
+                cursor: pointer;
+                color: white;
+                border: 2px solid #ff9800;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                transition: .3s;
+
+                &:hover {
+                    background: transparent;
+                    color: #ff9800;
+                }
+            }
+        }
+
+        .modal-body {
+            padding: 20px;
+
+            p {
+                margin-bottom: 20px;
+                color: #666;
+            }
+
+            .subscription-options {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+
+                .subscription-option {
+                    display: flex;
+                    align-items: center;
+                    padding: 12px;
+                    border: 2px solid #eee;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+
+                    &:hover {
+                        border-color: #ff9800;
+                        background: #f8f9ff;
+                    }
+
+                    input[type="radio"] {
+                        margin-right: 12px;
+                    }
+
+                    .option-content {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 4px;
+
+                        .option-name {
+                            font-weight: 600;
+                            color: #333;
+                        }
+
+                        .option-description {
+                            font-size: 14px;
+                            color: #666;
+                        }
+                    }
+
+                    input[type="radio"]:checked + .option-content {
+                        .option-name {
+                            color: #ff9800;
+                        }
+                    }
+                }
+            }
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px;
+            border-top: 1px solid #eee;
+
+            .btn {
+                padding: 8px 16px;
+                border-radius: 4px;
+                border: none;
+                cursor: pointer;
+                font-weight: 500;
+
+                &.cancel-btn {
+                    background: #6c757d;
+                    color: white;
+
+                    &:hover {
+                        background: #5a6268;
+                    }
+                }
+
+                &.confirm-btn {
+                    background: #ff9800;
+                    color: white;
+
+                    &:hover {
+                        background: #0056b3;
+                    }
+                }
+            }
+        }
+    }
+}
+
 @media (max-width: 700px) {
     .restaurant-form-section {
         width: 100%;
@@ -847,16 +1088,6 @@
             .table-footer {
                 flex-direction: column;
                 gap: 10px;
-            }
-        }
-    }
-
-    .restaurant-form-section {
-        .restaurant-content {
-            padding: 30px;
-
-            .restaurant-head {
-                font-size: 22px;
             }
         }
     }

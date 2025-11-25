@@ -1,7 +1,8 @@
 const initialState = {
     data: [],
     serverErrors: [],
-    loading: false
+    loading: false,
+    bulkDeleteLoading: false
 }
 
 export default function categoryReducers(state = initialState, action){
@@ -31,6 +32,20 @@ export default function categoryReducers(state = initialState, action){
                     return ele 
                 }
             })}
+        }
+        case "BULK_DELETE_CATEGORIES": {
+            return {
+                ...state,
+                data: state.data.filter((ele) => {
+                    return !action.payload.includes(ele._id);
+                })
+            }
+        }
+        case "SET_BULK_DELETE_LOADING": {
+            return {
+                ...state,
+                bulkDeleteLoading: action.payload
+            }
         }
         default: {
             return state

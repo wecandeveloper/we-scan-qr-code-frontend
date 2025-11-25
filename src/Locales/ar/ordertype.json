@@ -1,0 +1,39 @@
+{
+    "select_order_type": "اختر نوع الطلب",
+    "no_ordering_options": "لا توجد خيارات للطلب متاحة",
+    "please_select_order_type": "يرجى اختيار نوع الطلب",
+    "next": "التالي",
+    "select_table_number": "اختر رقم الطاولة",
+    "select_table": "اختر الطاولة",
+    "back": "عودة",
+    "submit": "إرسال",
+    "location_details": "تفاصيل الموقع",
+    "address_details": "تفاصيل العنوان",
+    "personal_details": "البيانات الشخصية",
+    "address_no_name": "رقم المنزل / المبنى",
+    "street": "الشارع",
+    "city": "المدينة",
+    "state": "الولاية",
+    "pincode": "الرمز البريدي",
+    "name": "الاسم",
+    "vehicle_number": "رقم السيارة",
+    "save": "حفظ",
+    "fill_all_required_fields": "يرجى ملء جميع الحقول المطلوبة",
+    "select_table_first": "يرجى تحديد الطاولة أولاً!",
+    "order_types": {
+        "Dine-In": "تناول الطعام في المطعم",
+        "Home-Delivery": "توصيل إلى المنزل",
+        "Take-Away": "الطلبات الخارجية"
+    },
+    "validation": {
+        "name_required": "الاسم مطلوب",
+        "addressNo_required": "رقم المنزل / المبنى مطلوب",
+        "street_required": "اسم الشارع مطلوب",
+        "city_required": "المدينة مطلوبة",
+        "state_required": "المحافظة مطلوبة",
+        "pincode_required": "الرمز البريدي مطلوب",
+        "pincode_invalid": "الرجاء إدخال رمز بريدي صحيح",
+        "phone_required": "رقم الهاتف مطلوب",
+        "phone_invalid": "الرجاء إدخال رقم هاتف صحيح"
+    }
+}

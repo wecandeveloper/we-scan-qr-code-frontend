@@ -1,6 +1,6 @@
 // import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
-import {render, localhost} from "../Api/apis"
+import { localhost } from "../Api/apis"
 import { toast } from 'react-toastify'
 
 export const startGetCategories = (restaurantSlug) => {
@@ -39,10 +39,19 @@ export const startCreateCategory = (formData, setServerErrors, handleCloseAll)=>
             toast.success('Succesfully created category')
             handleCloseAll()
             console.log(response.data.data)
-        }catch(err){
-            console.log(err)
-            toast.error(err.response.data.message)
-            setServerErrors(err.response.data.message)
+        } catch (err) {
+            console.log(err);
+            toast.error("Failed to Add Product");
+
+            const { message } = err.response.data;
+
+            if (Array.isArray(message)) {
+                // Field-level validation errors
+                setServerErrors(message); // always an array
+            } else {
+                // General error -> wrap in array for consistency
+                setServerErrors([{ msg: message }]);
+            }
         }
     }
 }
@@ -102,5 +111,41 @@ const deleteCategory = (category)=>{
     return{
         type:"DELETE_CATEGORY",
         payload:category
+    }
+}
+
+// Bulk Delete Categories
+export const startBulkDeleteCategories = (categoryIds) => {
+    return async (dispatch) => {
+        try {
+            dispatch(setBulkDeleteLoading(true));
+            const response = await axios.delete(`${localhost}/api/category/bulk-delete`, {
+                data: { categoryIds },
+                headers: {
+                    "Authorization": localStorage.getItem("token")
+                }
+            });
+            dispatch(setBulkDeleteLoading(false));
+            dispatch(bulkDeleteCategories(categoryIds));
+            toast.success(response.data.message);
+        } catch(err) {
+            dispatch(setBulkDeleteLoading(false));
+            console.log(err);
+            toast.error(err.response?.data?.message || "Failed to delete categories");
+        }
+    }
+}
+
+const bulkDeleteCategories = (categoryIds) => {
+    return {
+        type: "BULK_DELETE_CATEGORIES",
+        payload: categoryIds
+    }
+}
+
+const setBulkDeleteLoading = (loading) => {
+    return {
+        type: "SET_BULK_DELETE_LOADING",
+        payload: loading
     }
 }

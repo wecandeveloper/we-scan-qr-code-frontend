@@ -18,22 +18,16 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 export default function LoginRegister({ setShowModal }) {
-    const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { handleLogin, handleDashboardMenuChange } = useAuth()
+    const { handleLogin } = useAuth()
 
     const [ isRegister, setIsRegister ] = useState(false);
     const [ isLogin, setIsLogin ] = useState(true);
     const [ isLoading, setIsLoading ] = useState(false);
-    const [ couponError, setCouponError ] = useState(false)
-    const [ couponSuccess, setCouponSuccess ] = useState(false)
     const [ showPassword, setShowPassword ] = useState(false);
-    const [ verifyEmail, setVerifyEmail ] = useState(false)
+    // const [ showPassword1, setShowPassword1 ] = useState(false);
+    // const [ showPassword2, setShowPassword2 ] = useState(false);
     const [ otp, setOtp ] = useState("")
-
-    const cart = useSelector(state => {
-        return state.cart.data
-    })
 
     // console.log(cart)
 
@@ -55,7 +49,7 @@ export default function LoginRegister({ setShowModal }) {
     });
 
     const [ formErrors, setFormErrors ] = useState({});
-    const [ serverErrors, setServerErrors ] = useState([]);
+    // const [ serverErrors, setServerErrors ] = useState([]);
     const [ loginServerErrors, setLoginServerErrors ] = useState("");
     const [ otpError, setOtpError ] = useState("");
 
@@ -98,10 +92,10 @@ export default function LoginRegister({ setShowModal }) {
 
     const [cooldown, setCooldown] = useState(0);
 
-    const handleClick = () => {
-        handleSendOtp()
-        setCooldown(60);
-    };
+    // const handleClick = () => {
+    //     handleSendOtp()
+    //     setCooldown(60);
+    // };
 
     useEffect(() => {
         if (cooldown > 0) {
@@ -112,25 +106,25 @@ export default function LoginRegister({ setShowModal }) {
         }
     }, [cooldown]);
 
-    const handleRegisterChange = (field) => (event) => {
-        const inputValue = event.target.value;
+    // const handleRegisterChange = (field) => (event) => {
+    //     const inputValue = event.target.value;
 
-        if (field.startsWith("phone.")) {
-            const key = field.split(".")[1]; // either 'number' or 'countryCode'
-            setRegisterFormData((prev) => ({
-                ...prev,
-                phone: {
-                    ...prev.phone,
-                    [key]: inputValue,
-                },
-            }));
-        } else {
-            setRegisterFormData((prev) => ({
-                ...prev,
-                [field]: inputValue,
-            }));
-        }
-    };
+    //     if (field.startsWith("phone.")) {
+    //         const key = field.split(".")[1]; // either 'number' or 'countryCode'
+    //         setRegisterFormData((prev) => ({
+    //             ...prev,
+    //             phone: {
+    //                 ...prev.phone,
+    //                 [key]: inputValue,
+    //             },
+    //         }));
+    //     } else {
+    //         setRegisterFormData((prev) => ({
+    //             ...prev,
+    //             [field]: inputValue,
+    //         }));
+    //     }
+    // };
 
 
     const handleLoginChange = (field) => (event) => {
@@ -138,54 +132,53 @@ export default function LoginRegister({ setShowModal }) {
         setLoginFormData((prev) => ({ ...prev, [field]: inputValue }));
     };
 
-    const handleRegisterSubmit = async (e) => {
-        e.preventDefault();
-        if(Object.keys(errors).length === 0){
-            setIsLoading(true)
-            const { firstName, lastName, email, phone, password } = registerFormData;
+    // const handleRegisterSubmit = async (e) => {
+    //     e.preventDefault();
+    //     if(Object.keys(errors).length === 0){
+    //         setIsLoading(true)
+    //         const { firstName, lastName, email, phone, password } = registerFormData;
 
-            const user = {
-                firstName,
-                lastName,
-                email: {
-                    address: email
-                },
-                phone,
-                password,
-                role: "restaurantAdmin"
-            }
+    //         const user = {
+    //             firstName,
+    //             lastName,
+    //             email: {
+    //                 address: email
+    //             },
+    //             phone,
+    //             password
+    //         }
 
-            // console.log(user)
+    //         // console.log(user)
 
-            try {
-                const response = await axios.post(`${localhost}/api/user/register`, user)
-                console.log(response)
-                toast.success(response.data.message);
-                setIsRegister(false)
-                handleSendOtp()
-                // setShowModal(false)
-            } catch(err) {
-                console.log(err)
-                setFormErrors({})
-                const errors = Array.isArray(err.response?.data?.message)
-                    ? err.response.data.message
-                    : [];
-                setServerErrors(errors);
-                console.log(err.response.data.message)
-                console.log(serverErrors)
-            } finally {
-                setIsLoading(false)
-            }
-        } else {
-            setFormErrors(errors);
-            console.log(errors)
-            setServerErrors([])
-        }
-    };
+    //         try {
+    //             const response = await axios.post(`${localhost}/api/user/register`, user)
+    //             console.log(response)
+    //             toast.success(response.data.message);
+    //             setIsRegister(false)
+    //             handleSendOtp()
+    //             // setShowModal(false)
+    //         } catch(err) {
+    //             console.log(err)
+    //             setFormErrors({})
+    //             const errors = Array.isArray(err.response?.data?.message)
+    //                 ? err.response.data.message
+    //                 : [];
+    //             setServerErrors(errors);
+    //             console.log(err.response.data.message)
+    //             console.log(serverErrors)
+    //         } finally {
+    //             setIsLoading(false)
+    //         }
+    //     } else {
+    //         setFormErrors(errors);
+    //         console.log(errors)
+    //         setServerErrors([])
+    //     }
+    // };
 
     const handleSendOtp = async () => {
         try {
-            const response = await axios.post(`${localhost}/api/user/send-mail-otp`, { email: registerFormData.email})
+            const response = await axios.post(`${localhost}/api/user/send-mail-otp`, { email: registerFormData.email.toLocaleLowerCase()})
             console.log(response)
             const isSent = response.data.isSent
             if(isSent){
@@ -203,7 +196,7 @@ export default function LoginRegister({ setShowModal }) {
     const handleVerifyEmailOtp = async () => {
         const formData = {
             // email: "mohammedsinanchinnu07@gmail.com",
-            email: registerFormData.email,
+            email: registerFormData.email.toLocaleLowerCase(),
             otp: Number(otp),
         }
         console.log(formData)
@@ -279,7 +272,7 @@ export default function LoginRegister({ setShowModal }) {
                     <FaTimes />
                 </button>
                 <h2>{isLogin ? "Login" : isRegister ? "Register" : "Verify Email"}</h2>
-                {isLogin ? (
+                {isLogin && (
                     <div>
                         <form
                             component="form"
@@ -289,7 +282,7 @@ export default function LoginRegister({ setShowModal }) {
                             <TextField
                                 label="Email or Phone Number"
                                 variant="outlined"
-                                value={loginFormData.username}
+                                value={loginFormData.username.toLocaleLowerCase()}
                                 onChange={handleLoginChange('username')}
                                 fullWidth
                                 className="form-field"
@@ -341,195 +334,213 @@ export default function LoginRegister({ setShowModal }) {
                                 : "Submit"}
                             </button>
                         </form>
-                        <p className="goto-links">New User, <span onClick={() => {setIsRegister(true); setIsLogin(false)}}>Register</span></p>
-                    </div>
-                ) : (
-                    isRegister ? (
-                    <div>
-                    <form
-                        component="form"
-                        onSubmit={handleRegisterSubmit}
-                        className="contact-form"
-                        >
-                        <div className="sameline">
-                            <TextField
-                                label="First Name"
-                                variant="outlined"
-                                value={registerFormData.firstName}
-                                onChange={handleRegisterChange('firstName')}
-                                fullWidth
-                                className="form-field"
-                            />
-                            <TextField
-                                label="Last Name"
-                                variant="outlined"
-                                value={registerFormData.lastName}
-                                onChange={handleRegisterChange('lastName')}
-                                fullWidth
-                                className="form-field"
-                            />
-                        </div>
-                        {(formErrors.firstName || formErrors.lastName) &&
-                            <CustomAlert 
-                                severity="error" 
-                                message={`${formErrors.firstName || ''}${formErrors.firstName && formErrors.lastName ? ' | ' : ''}${formErrors.lastName || ''}`}
-                            />
-                        }
-                        <div className="sameline phone">
-                            <PhoneInput
-                                country={"ae"}              // default country
-                                value={registerFormData.phone.countryCode + registerFormData.phone.number} 
-                                onChange={(phone) => {
-                                    // phone will be full number with country code e.g. "971501234567"
-                                    // Parse country code and number from this string:
-                                    const countryCode = "+" + phone.slice(0, phone.length - 9);  // adjust length for your phone number format
-                                    const number = phone.slice(phone.length - 9);
-
-                                    setRegisterFormData((prev) => ({
-                                    ...prev,
-                                    phone: {
-                                        countryCode,
-                                        number,
-                                    }
-                                    }));
-                                }}
-                                inputProps={{
-                                    name: 'phone',
-                                    required: true,
-                                    autoFocus: true,
-                                    style: {
-                                    fontFamily: '"Montserrat", sans-serif',
-                                    color: '#470531',
-                                    borderRadius: 30,
-                                    border: '1.5px solid #470531',
-                                    padding: '10px 50px',
-                                    width: '100%',
-                                    height: '57px',
-                                    }
-                                }}
-                                buttonStyle={{
-                                    border: '1.5px solid #470531',
-                                    borderRadius: '30px 0 0 30px',
-                                    boxShadow: 'none',
-                                }}
-                                containerStyle={{
-                                    width: '100%',
-                                }}
-                            />
-                            <TextField
-                                label="Email"
-                                variant="outlined"
-                                value={registerFormData.email}
-                                onChange={handleRegisterChange('email')}
-                                fullWidth
-                                className="form-field"
-                            />
-                        </div>
-                        {(formErrors.number || formErrors.email) &&
-                            <CustomAlert 
-                                severity="error" 
-                                message={`${formErrors.countryCode || ''}${formErrors.countryCode && formErrors.number ? ' | ' : ''}${formErrors.number || ''}`}
-                            />
-                        }
-                        {Array.isArray(serverErrors) && (serverErrors.getError("phone.number") || serverErrors.getError("email.address")) && (
-                            <CustomAlert 
-                                severity="error" 
-                                message={`${serverErrors.getError("phone.number") || ''}${serverErrors.getError("phone.number") && serverErrors.getError("email.address") ? ' | ' : ''}${serverErrors.getError("email.address") || ''}`}
-                             />
-                        )}
-
-                        <div className="sameline">
-                            <TextField
-                                label="Password"
-                                variant="outlined"
-                                multiline
-                                // rows={4}
-                                value={registerFormData.password}
-                                onChange={handleRegisterChange('password')}
-                                fullWidth
-                                className="form-field"
-                            />
-                            <TextField
-                                label="Confirm Password"
-                                variant="outlined"
-                                multiline
-                                // rows={4}
-                                value={registerFormData.confirmPassword}
-                                onChange={handleRegisterChange('confirmPassword')}
-                                fullWidth
-                                className="form-field"
-                            />
-                        </div>
-                        {(formErrors.password ||formErrors.confirmPassword) &&
-                            <CustomAlert 
-                                severity="error" 
-                                message={`${formErrors.password || ''}${formErrors.password && formErrors.confirmPassword ? ' | ' : ''}${formErrors.confirmPassword || ''}`}
-                            />
-                        }
-                        <button
-                            type="submit"
-                            className="btn-dark"
-                        >
-                            {isLoading ? 
-                                <Box sx={{ display: 'flex' }}>
-                                    <CircularProgress color="inherit" size={20}/>
-                                </Box>
-                            : "Submit"}
-                        </button>
-                    </form>
-                    <p className="goto-links">Already Registered, <span onClick={() => {setIsRegister(false); setIsLogin(true)}}>Login</span></p>
-                    </div>
-                ) : (
-                    <div className="verify-email-div">
-                        <p>Verify your email address, a verification email has been sent to your email address.</p>
-                        <div className="verify-email">
-                            <TextField
-                                label="OTP"
-                                variant="outlined"
-                                value={otp}
-                                onChange={(e) => {setOtp(e.target.value)}}
-                                fullWidth
-                                className="form-field verify"
-                            />
-                            <button
-                                    type="submit"
-                                    className="btn-dark submit"
-                                    onClick={handleVerifyEmailOtp}
-                                >
-                                    {isLoading ? 
-                                        <Box sx={{ display: 'flex' }}>
-                                            <CircularProgress color="inherit" size={20}/>
-                                        </Box>
-                                    : "Submit"}
-                            </button>
-                        </div>
-                        <div className="same-line">
-                            {(otpError) &&
-                                <CustomAlert 
-                                    severity="error" 
-                                    message={otpError}
-                                    className="otp-error"
-                                />
-                            }
-                            <div className="otp-container">
-                                <button
-                                    type="button"
-                                    className="btn-dark"
-                                    onClick={handleClick}
-                                    disabled={cooldown > 0}
-                                >
-                                    {cooldown > 0 ? "Please wait..." : "Resend OTP"}
-                                </button>
-                                {cooldown > 0 && (
-                                    <div className="cooldown-text">
-                                        Resend otp in 0:{cooldown < 10 ? `0${cooldown}` : cooldown}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        {/* <p className="goto-links">New User, <span onClick={() => {setIsRegister(true); setIsLogin(false)}}>Register</span></p> */}
                     </div>
                 )
-                )}
+                // : (
+                //     isRegister ? (
+                //     <div>
+                //     <form
+                //         component="form"
+                //         onSubmit={handleRegisterSubmit}
+                //         className="contact-form"
+                //         >
+                //         <div className="sameline">
+                //             <TextField
+                //                 label="First Name"
+                //                 variant="outlined"
+                //                 value={registerFormData.firstName}
+                //                 onChange={handleRegisterChange('firstName')}
+                //                 fullWidth
+                //                 className="form-field"
+                //             />
+                //             <TextField
+                //                 label="Last Name"
+                //                 variant="outlined"
+                //                 value={registerFormData.lastName}
+                //                 onChange={handleRegisterChange('lastName')}
+                //                 fullWidth
+                //                 className="form-field"
+                //             />
+                //         </div>
+                //         {(formErrors.firstName || formErrors.lastName) &&
+                //             <CustomAlert 
+                //                 severity="error" 
+                //                 message={`${formErrors.firstName || ''}${formErrors.firstName && formErrors.lastName ? ' | ' : ''}${formErrors.lastName || ''}`}
+                //             />
+                //         }
+                //         <div className="sameline phone">
+                //             <PhoneInput
+                //                 country={"ae"}              // default country
+                //                 value={registerFormData.phone.countryCode + registerFormData.phone.number} 
+                //                 onChange={(phone) => {
+                //                     // phone will be full number with country code e.g. "971501234567"
+                //                     // Parse country code and number from this string:
+                //                     const countryCode = "+" + phone.slice(0, phone.length - 9);  // adjust length for your phone number format
+                //                     const number = phone.slice(phone.length - 9);
+
+                //                     setRegisterFormData((prev) => ({
+                //                     ...prev,
+                //                     phone: {
+                //                         countryCode,
+                //                         number,
+                //                     }
+                //                     }));
+                //                 }}
+                //                 inputProps={{
+                //                     name: 'phone',
+                //                     required: true,
+                //                     autoFocus: true,
+                //                     style: {
+                //                     fontFamily: '"Montserrat", sans-serif',
+                //                     color: '#470531',
+                //                     borderRadius: 30,
+                //                     border: '1.5px solid #470531',
+                //                     padding: '10px 50px',
+                //                     width: '100%',
+                //                     height: '57px',
+                //                     }
+                //                 }}
+                //                 buttonStyle={{
+                //                     border: '1.5px solid #470531',
+                //                     borderRadius: '30px 0 0 30px',
+                //                     boxShadow: 'none',
+                //                 }}
+                //                 containerStyle={{
+                //                     width: '100%',
+                //                 }}
+                //             />
+                //             <TextField
+                //                 label="Email"
+                //                 variant="outlined"
+                //                 value={registerFormData.email}
+                //                 onChange={handleRegisterChange('email')}
+                //                 fullWidth
+                //                 className="form-field"
+                //             />
+                //         </div>
+                //         {(formErrors.number || formErrors.email) &&
+                //             <CustomAlert 
+                //                 severity="error" 
+                //                 message={`${formErrors.countryCode || ''}${formErrors.countryCode && formErrors.number ? ' | ' : ''}${formErrors.number || ''}`}
+                //             />
+                //         }
+                //         {Array.isArray(serverErrors) && (serverErrors.getError("phone.number") || serverErrors.getError("email.address")) && (
+                //             <CustomAlert 
+                //                 severity="error" 
+                //                 message={`${serverErrors.getError("phone.number") || ''}${serverErrors.getError("phone.number") && serverErrors.getError("email.address") ? ' | ' : ''}${serverErrors.getError("email.address") || ''}`}
+                //              />
+                //         )}
+
+                //         <div className="sameline">
+                //             <TextField
+                //                 label="Password"
+                //                 variant="outlined"
+                //                 type={showPassword1 ? 'text' : 'password'}
+                //                 value={registerFormData.password}
+                //                 onChange={handleRegisterChange('password')}
+                //                 fullWidth
+                //                 className="form-field"
+                //                 InputProps={{
+                //                     endAdornment: (
+                //                     <InputAdornment position="end">
+                //                         <IconButton onClick={() => setShowPassword1(!showPassword1)} edge="end">
+                //                         {showPassword1 ? <IoMdEyeOff /> : <IoMdEye />}
+                //                         </IconButton>
+                //                     </InputAdornment>
+                //                     ),
+                //                 }}
+                //             />
+                //             <TextField
+                //                 label="Password"
+                //                 variant="outlined"
+                //                 type={showPassword2 ? 'text' : 'password'}
+                //                 value={registerFormData.confirmPassword}
+                //                 onChange={handleRegisterChange('confirmPassword')}
+                //                 fullWidth
+                //                 className="form-field"
+                //                 InputProps={{
+                //                     endAdornment: (
+                //                     <InputAdornment position="end">
+                //                         <IconButton onClick={() => setShowPassword2(!showPassword2)} edge="end">
+                //                         {showPassword2 ? <IoMdEyeOff /> : <IoMdEye />}
+                //                         </IconButton>
+                //                     </InputAdornment>
+                //                     ),
+                //                 }}
+                //             />
+                //         </div>
+                //         {(formErrors.password ||formErrors.confirmPassword) &&
+                //             <CustomAlert 
+                //                 severity="error" 
+                //                 message={`${formErrors.password || ''}${formErrors.password && formErrors.confirmPassword ? ' | ' : ''}${formErrors.confirmPassword || ''}`}
+                //             />
+                //         }
+                //         <button
+                //             type="submit"
+                //             className="btn-dark"
+                //         >
+                //             {isLoading ? 
+                //                 <Box sx={{ display: 'flex' }}>
+                //                     <CircularProgress color="inherit" size={20}/>
+                //                 </Box>
+                //             : "Submit"}
+                //         </button>
+                //     </form>
+                //     <p className="goto-links">Already Registered, <span onClick={() => {setIsRegister(false); setIsLogin(true)}}>Login</span></p>
+                //     </div>
+                // ) : (
+                //     <div className="verify-email-div">
+                //         <p>Verify your email address, a verification email has been sent to your email address.</p>
+                //         <div className="verify-email">
+                //             <TextField
+                //                 label="OTP"
+                //                 variant="outlined"
+                //                 value={otp}
+                //                 onChange={(e) => {setOtp(e.target.value)}}
+                //                 fullWidth
+                //                 className="form-field verify"
+                //             />
+                //             <button
+                //                     type="submit"
+                //                     className="btn-dark submit"
+                //                     onClick={handleVerifyEmailOtp}
+                //                 >
+                //                     {isLoading ? 
+                //                         <Box sx={{ display: 'flex' }}>
+                //                             <CircularProgress color="inherit" size={20}/>
+                //                         </Box>
+                //                     : "Submit"}
+                //             </button>
+                //         </div>
+                //         <div className="same-line">
+                //             {(otpError) &&
+                //                 <CustomAlert 
+                //                     severity="error" 
+                //                     message={otpError}
+                //                     className="otp-error"
+                //                 />
+                //             }
+                //             <div className="otp-container">
+                //                 <button
+                //                     type="button"
+                //                     className="btn-dark"
+                //                     onClick={handleClick}
+                //                     disabled={cooldown > 0}
+                //                 >
+                //                     {cooldown > 0 ? "Please wait..." : "Resend OTP"}
+                //                 </button>
+                //                 {cooldown > 0 && (
+                //                     <div className="cooldown-text">
+                //                         Resend otp in 0:{cooldown < 10 ? `0${cooldown}` : cooldown}
+                //                     </div>
+                //                 )}
+                //             </div>
+                //         </div>
+                //     </div>
+                // )
+                // )
+                }
             </div>
         </div>
     )

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "../../../../Context/AuthContext"
 import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { clearRestaurantData } from "../../../../Actions/restaurantActions"
 
 import "./CustomerDashboardHome.scss"
 import defaultProfilePic from "../../../../Assets/Common/account-icon.png"
@@ -13,6 +15,7 @@ import CustomerPassword from "../CustomerDashboardMenu/CustomerPassword/Customer
 
 export default function CustomerDashboardHome() {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const { 
         user,
         handleLogout,
@@ -104,6 +107,8 @@ export default function CustomerDashboardHome() {
                     </div>
                     <div className="logout-div" onClick={() => {
                         handleLogout()
+                        // Clear restaurant data from Redux store
+                        dispatch(clearRestaurantData())
                         // navigate("/")
                         localStorage.removeItem("token")
                     }}><TbLogout className="icon"/> <p>Log Out</p></div>

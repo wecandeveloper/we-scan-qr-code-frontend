@@ -413,7 +413,7 @@ export default function CustomerAddresses() {
                                     inputProps={{
                                         name: 'phone',
                                         required: true,
-                                        autoFocus: true,
+                                        // autoFocus: true,
                                         style: {
                                         fontFamily: '"Montserrat", sans-serif',
                                         color: '#470531',

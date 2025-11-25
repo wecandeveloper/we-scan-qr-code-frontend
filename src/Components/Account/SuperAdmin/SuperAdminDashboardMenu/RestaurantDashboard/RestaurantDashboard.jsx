@@ -13,7 +13,12 @@ import { IoIosClose } from "react-icons/io";
 import ConfirmToast from "../../../../../Designs/ConfirmToast/ConfirmToast"
 import { BiSolidTrash } from "react-icons/bi"
 import { startDeleteProduct } from "../../../../../Actions/productActions";
-import { startApproveRestaurant, startBlockRestaurant } from "../../../../../Actions/restaurantActions";
+import { startApproveRestaurant, startBlockRestaurant, startDeleteRestaurant, startUpdateRestaurantSubscription } from "../../../../../Actions/restaurantActions";
+import { websiteUrl, localhost } from "../../../../../Api/apis";
+import { getSubscriptionInfo } from "../../../../../Utils/subscriptionUtils";
+import { FaExternalLinkAlt, FaQrcode, FaMapMarkerAlt, FaPhone, FaGlobe } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { Box, CircularProgress } from "@mui/material";
 
 export default function RestaurantDashboard() {
     const dispatch = useDispatch()
@@ -31,12 +36,15 @@ export default function RestaurantDashboard() {
     const [ isViewEditSectionOpen, setIsViewEditSectionOpen ] = useState(false)
     const [ restaurantId, setRestaurantId ] = useState("")
     const [ restaurant, setRestaurant ] = useState({})
+    const [ deleteLoading, setDeleteLoading ] = useState(false)
 
 
     const [ showConfirmDeleteRestaurant, setShowConfirmDeleteRestaurant ] = useState(false)
     const [ showConfirmApproveRestaurant, setShowConfirmApproveRestaurant ] = useState(false)
     const [ showConfirmBlockRestaurant, setShowConfirmBlockRestaurant ] = useState(false)
     const [ showConfirmCancel, setShowConfirmCancel ] = useState(false)
+    const [ showSubscriptionModal, setShowSubscriptionModal ] = useState(false)
+    const [ newSubscription, setNewSubscription ] = useState('')
 
     useEffect(() => {
         if (restaurantId && restaurants.length > 0) {
@@ -204,15 +212,30 @@ export default function RestaurantDashboard() {
         dispatch(startBlockRestaurant(restaurantId, handleCloseAll))
     }
 
-    const confirmDeleteRestaurant = () => {
-        console.log(restaurantId)
-        dispatch(startDeleteProduct(restaurantId, handleCloseAll))
-    }
+    const confirmDeleteRestaurant = async () => {
+        if (!restaurantId) return;
+
+        setDeleteLoading(true);
+        try {
+            await dispatch(startDeleteRestaurant(restaurantId, handleCloseAll));
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
+
 
     const handleCloseAll = () => {
         setRestaurantId("")
         setRestaurant("")
         setIsViewEditSectionOpen(false)
+    }
+
+    const handleSubscriptionChange = () => {
+        dispatch(startUpdateRestaurantSubscription(restaurantId, newSubscription, () => {
+            setShowSubscriptionModal(false);
+        }));
     }
 
     // console.log(serverErrors)
@@ -277,14 +300,14 @@ export default function RestaurantDashboard() {
                             {getProcessedProducts().length > 0 ? (
                                 <tbody>
                                     {getProcessedProducts().map((restaurant, index) => (
-                                        <tr key={restaurant._id}>
-                                            <td>{index + 1}</td>
-                                            <td>{restaurant.name}</td>
-                                            <td>{restaurant.adminId.firstName} {restaurant.adminId.lastName}</td>
-                                            <td>{restaurant.address.street}, {restaurant.address.area}, {restaurant.address.city}</td>
-                                            <td>{restaurant.tableCount || 0}</td>
-                                            <td>{restaurant.contactNumber.countryCode} {restaurant.contactNumber.number}</td>
-                                            <td>{restaurant.isOpen ? 'Open' : 'Closed'}</td>
+                                        <tr key={restaurant?._id}>
+                                            <td>{(currentPage - 1) * showNo + index + 1}</td>
+                                            <td>{restaurant?.name}</td>
+                                            <td>{restaurant?.adminId?.firstName} {restaurant?.adminId?.lastName}</td>
+                                            <td>{restaurant?.address?.street}, {restaurant?.address?.area}, {restaurant?.address?.city}</td>
+                                            <td>{restaurant?.tableCount || 0}</td>
+                                            <td>{restaurant?.contactNumber?.countryCode} {restaurant?.contactNumber?.number}</td>
+                                            <td>{restaurant?.isOpen ? 'Open' : 'Closed'}</td>
                                             <td>
                                                 <div className="action-div">
                                                     <button className="view-btn" onClick={() => {
@@ -299,7 +322,10 @@ export default function RestaurantDashboard() {
                                                     <button className="delete-btn" onClick={() => {
                                                         setShowConfirmDeleteRestaurant(true)
                                                         setRestaurantId(restaurant._id)
-                                                    }}><BiSolidTrash /></button>
+                                                    }}>{(deleteLoading && restaurantId === restaurant._id) ? 
+                                                        <Box sx={{ display: 'flex', gap: 1 }}>
+                                                            <CircularProgress color="inherit" size={15}/>
+                                                        </Box> : <BiSolidTrash />}</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -377,6 +403,7 @@ export default function RestaurantDashboard() {
                                     <div>
                                         <h1 className="restaurant-head">View Restaurant</h1>
                                         <div className="restaurant-details">
+                                            {restaurant?.images?.length > 0 && (
                                             <div className="img-div">
                                                 <div id="main-slider" className="splide">
                                                     <div className="splide__track">
@@ -401,7 +428,8 @@ export default function RestaurantDashboard() {
                                                         </ul>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> 
+                                            )}
                                             <div className="details-div">
                                                 <div className="restaurant-detail name">
                                                     <span className="head">Name</span>
@@ -413,29 +441,116 @@ export default function RestaurantDashboard() {
                                                         {`${restaurant?.adminId?.firstName} ${restaurant?.adminId?.lastName}`}
                                                     </span>
                                                 </div>
+                                                <div className="restaurant-detail subscription">
+                                                    <span className="head">Subscription</span>
+                                                    <span className="value">
+                                                        <span className="subscription-badge" style={{ color: getSubscriptionInfo(restaurant).color, background: getSubscriptionInfo(restaurant).background, border: `2px solid ${getSubscriptionInfo(restaurant).border}` }}>
+                                                            {getSubscriptionInfo(restaurant).name}
+                                                        </span>
+                                                        <button 
+                                                            className="btn-dark"
+                                                            onClick={() => {
+                                                                setNewSubscription(restaurant.subscription || 'standard');
+                                                                setShowSubscriptionModal(true);
+                                                            }}
+                                                        >
+                                                            Change
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                                <div className="restaurant-detail website">
+                                                    <span className="head">Restaurant URL</span>
+                                                    <span className="value">
+                                                        <a 
+                                                            href={`${websiteUrl}/restaurant/${restaurant.slug}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="external-link"
+                                                        >
+                                                            {`${websiteUrl}/restaurant/${restaurant.slug}`}
+                                                            <FaExternalLinkAlt className="link-icon" />
+                                                        </a>
+                                                    </span>
+                                                </div>
+                                                <div className="restaurant-detail qr-code">
+                                                    <span className="head">QR Code</span>
+                                                    <span className="value">
+                                                        {restaurant.qrCodeURL ? (
+                                                            <a 
+                                                                href={restaurant.qrCodeURL}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="qr-link"
+                                                            >
+                                                                <FaQrcode className="qr-icon" />
+                                                                View QR Code
+                                                            </a>
+                                                        ) : (
+                                                            <span className="no-qr">No QR Code Generated</span>
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                <div className="restaurant-detail languages">
+                                                    <span className="head">Languages</span>
+                                                    <span className="value">
+                                                        {restaurant?.languages?.length > 0 ? (
+                                                            <div className="language-tags">
+                                                                {restaurant.languages.map((lang) => (
+                                                                    <span key={lang} className="language-tag">
+                                                                        {lang === 'ar' ? 'العربية' : lang.toUpperCase()}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <span className="no-languages">No languages selected</span>
+                                                        )}
+                                                    </span>
+                                                </div>
                                                 <div className="restaurant-detail stock">
                                                     <span className="head">Address</span>
                                                     <span className="value">{restaurant?.address?.street}, {restaurant?.address?.area}, {restaurant?.address?.city}</span>
                                                 </div>
-                                                <div className="restaurant-detail price">
+                                                <div className="restaurant-detail location">
                                                     <span className="head">Location</span>
-                                                    <span className="value">Longitude {restaurant?.location?.coordinates[0]}, Latitude {restaurant?.location?.coordinates[1]}</span>
+                                                    <span className="value">
+                                                        <a 
+                                                            href={`https://www.google.com/maps?q=${restaurant?.location?.coordinates[1]},${restaurant?.location?.coordinates[0]}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="map-link"
+                                                        >
+                                                            <FaMapMarkerAlt className="map-icon" />
+                                                            {restaurant?.location?.coordinates[1]}, {restaurant?.location?.coordinates[0]}
+                                                        </a>
+                                                    </span>
                                                 </div>
-                                                <div className="restaurant-detail description">
+                                                <div className="restaurant-detail contact">
                                                     <span className="head">Contact Number</span>
-                                                    <span className="value">{`${restaurant?.contactNumber?.countryCode} ${restaurant?.contactNumber?.number}`}</span>
+                                                    <span className="value">
+                                                        <a 
+                                                            href={`tel:${restaurant?.contactNumber?.countryCode}${restaurant?.contactNumber?.number}`}
+                                                            className="phone-link"
+                                                        >
+                                                            <FaPhone className="phone-icon" />
+                                                            {`${restaurant?.contactNumber?.countryCode} ${restaurant?.contactNumber?.number}`}
+                                                        </a>
+                                                    </span>
                                                 </div>
-                                                <div className="restaurant-detail offer-per">
-                                                    <span className="head">Restaurant Open</span>
-                                                    <span className="value">{restaurant?.isOpen ? 'Yes' : 'No'}</span>
-                                                </div>
-                                                <div className="restaurant-detail discount-expiry">
-                                                    <span className="head">Restaurant Approved</span>
-                                                    <span className="value">{restaurant?.isApproved ? 'Yes' : 'No'}</span>
-                                                </div>
-                                                <div className="restaurant-detail discount-expiry">
-                                                    <span className="head">Restaurant Blocked</span>
-                                                    <span className="value">{restaurant?.isBlocked ? 'Yes' : 'No'}</span>
+                                                <div className="restaurant-detail status">
+                                                    <span className="head">Status</span>
+                                                    <span className="value">
+                                                        <div className="status-badges">
+                                                            <span className={`status-badge ${restaurant?.isOpen ? 'open' : 'closed'}`}>
+                                                                {restaurant?.isOpen ? 'Open' : 'Closed'}
+                                                            </span>
+                                                            <span className={`status-badge ${restaurant?.isApproved ? 'approved' : 'pending'}`}>
+                                                                {restaurant?.isApproved ? 'Approved' : 'Pending'}
+                                                            </span>
+                                                            {restaurant?.isBlocked && (
+                                                                <span className="status-badge blocked">Blocked</span>
+                                                            )}
+                                                        </div>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -450,7 +565,13 @@ export default function RestaurantDashboard() {
                                         }}>{restaurant.isBlocked ? "Unblock" : "Block"} <MdEditSquare /></button>
                                         <button className="btn delete-btn" onClick={() => {
                                             setShowConfirmDeleteRestaurant(true)
-                                        }}>Delete <BiSolidTrash /></button>
+                                        }}>{(deleteLoading && restaurantId === restaurant._id) ? 
+                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                Deleting <CircularProgress color="inherit" size={15}/>
+                                            </Box> : <>
+                                                Delete <BiSolidTrash />
+                                            </>}
+                                        </button>
                                     </div>
                                 </div>
                         </motion.div>
@@ -484,6 +605,79 @@ export default function RestaurantDashboard() {
                     onConfirm={handleCloseAll}
                     onCancel={() => {setShowConfirmCancel(false)}}
                 />
+            )}
+            {showSubscriptionModal && (
+                <div className="subscription-modal-overlay">
+                    <div className="subscription-modal">
+                        <div className="modal-header">
+                            <h3>Change Subscription</h3>
+                            <button 
+                                className="close-btn"
+                                onClick={() => setShowSubscriptionModal(false)}
+                            >
+                                <IoIosClose />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <p>Change subscription for <strong>{restaurant.name}</strong></p>
+                            <div className="subscription-options">
+                                <label className="subscription-option">
+                                    <input
+                                        type="radio"
+                                        name="subscription"
+                                        value="standard"
+                                        checked={newSubscription === 'standard'}
+                                        onChange={(e) => setNewSubscription(e.target.value)}
+                                    />
+                                    <span className="option-content">
+                                        <span className="option-name">Standard</span>
+                                        <span className="option-description">Basic features without language support</span>
+                                    </span>
+                                </label>
+                                <label className="subscription-option">
+                                    <input
+                                        type="radio"
+                                        name="subscription"
+                                        value="premium"
+                                        checked={newSubscription === 'premium'}
+                                        onChange={(e) => setNewSubscription(e.target.value)}
+                                    />
+                                    <span className="option-content">
+                                        <span className="option-name">Premium</span>
+                                        <span className="option-description">Full features including multi-language support (up to 10 languages)</span>
+                                    </span>
+                                </label>
+                                <label className="subscription-option">
+                                    <input
+                                        type="radio"
+                                        name="subscription"
+                                        value="advanced"
+                                        checked={newSubscription === 'advanced'}
+                                        onChange={(e) => setNewSubscription(e.target.value)}
+                                    />
+                                    <span className="option-content">
+                                        <span className="option-name">Advanced</span>
+                                        <span className="option-description">Full features including payment gateway and multi-language support (up to 10 languages)</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button 
+                                className="btn-dark"
+                                onClick={() => setShowSubscriptionModal(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                className="btn-dark-fill"
+                                onClick={handleSubscriptionChange}
+                            >
+                                Update Subscription
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </section>
     )

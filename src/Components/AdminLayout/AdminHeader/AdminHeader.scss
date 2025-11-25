@@ -25,9 +25,9 @@
         height: 80px;
 
         .logo-div {
-            width: 180px;
-            // height: 70px;
-            margin-left: -25px;
+            width: 160px;
+            height: 80px;
+            // margin-left: -25px;
             img {
                 // margin-top: -2px;
                 width: 100%;
@@ -78,8 +78,11 @@
 @media (max-width:600px) {
     .admin-nav {
         .navbar {
+            padding: 10px 30px;
+
             .logo-div {
                 width: 150px;
+                height: 75px;
             }
             .profile-div {
                 .profile-image-div {

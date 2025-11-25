@@ -501,6 +501,109 @@
                 }
             }
 
+            .contact-form {
+                color: #470531;
+                margin: auto;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 15px;
+                width: 100%;
+                background-color: white; // White form background
+                font-family: "Montserrat", sans-serif;
+
+                .sameline {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: flex-start;
+                    text-align: start;
+                    gap: 10px;
+                    width: 100%;
+                    p {
+                        width: 50%;
+                        text-align: left;
+                    }
+                }
+
+                .sameline.form-errors {
+                    margin-top: -10px;
+                    font-size: 12px;
+                }
+
+                .sameline.phone {
+                    .form-field.country-code {
+                        width: 20%;
+                    }
+
+                    .form-field.number {
+                        width: 80%;
+                    }
+                }
+
+
+                .btn-dark {
+                    align-self: flex-start;
+                    font-size: 12px;
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    transition: all 0.3s ease;
+                    margin-left: auto;
+                }
+            }
+
+            .form-field {
+                width: 100%;
+                // border: 2px solid #470531;
+                border-radius: 10px;
+
+                .MuiOutlinedInput-root {
+                    color: #470531;
+                    font-family: "Montserrat", sans-serif;
+                    border-radius: 10px;
+                    transition: all 0.3s ease;
+
+                    fieldset {
+                        border-color: #470531;
+                        border-width: 1.5px;
+                        transition: 0.3s;
+                    }
+
+                    &:hover fieldset {
+                        border-color: #470531;
+                        border-width: 2px;
+                    }
+
+                    &.Mui-focused fieldset {
+                        border-color: #470531;
+                        border-width: 2px;
+                    }
+                }
+
+                .MuiInputLabel-root {
+                    color: #470531;
+                    font-family: "Montserrat", sans-serif;
+                }
+
+                .MuiInputLabel-root.Mui-focused {
+                    color: #470531;
+                }
+
+                .MuiInputBase-input,
+                .MuiSelect-select {
+                    color: #470531;
+                    font-family: "Montserrat", sans-serif;
+                    text-align: left;
+                }
+
+                .start-adornment {
+                    font-family: "Montserrat", sans-serif;
+                    color: #470531;
+                    font-weight: 500;
+                }
+            }
+
             .change-password-div {
                 margin-top: 30px;
                 display: flex;

@@ -1,0 +1,132 @@
+.payment-failure-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+
+    .payment-loading {
+        text-align: center;
+        color: white;
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        p {
+            font-size: 18px;
+            font-weight: 500;
+        }
+    }
+
+    .payment-failure-content {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+        .failure-icon {
+            width: 80px;
+            height: 80px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        p {
+            color: #6c757d;
+            margin-bottom: 15px;
+            font-size: 16px;
+
+            &.sub-text {
+                font-size: 14px;
+                color: #868e96;
+            }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+
+            button {
+                padding: 12px 30px;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: none;
+                font-size: 16px;
+
+                &.btn-primary {
+                    background: var(--primary-color, #667eea);
+                    color: white;
+
+                    &:hover {
+                        background: color-mix(in srgb, var(--primary-color, #667eea) 90%, #000);
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    }
+                }
+
+                &.btn-secondary {
+                    background: white;
+                    color: var(--primary-color, #667eea);
+                    border: 2px solid var(--primary-color, #667eea);
+
+                    &:hover {
+                        background: var(--primary-color, #667eea);
+                        color: white;
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    }
+                }
+            }
+        }
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .payment-failure-page {
+        .payment-failure-content {
+            padding: 30px 20px;
+
+            .action-buttons {
+                flex-direction: column;
+
+                button {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
