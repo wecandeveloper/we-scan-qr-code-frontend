@@ -2038,7 +2038,7 @@ export default function ProductDashboard({restaurant}) {
                                         productId ? (
                                             <div className="action-div">
                                                 <button className="btn edit-btn" onClick={handleAddProduct}>
-                                                    {true ? 
+                                                    {isLoading ? 
                                                         <Box sx={{ display: 'flex', gap: 1 }}>
                                                            Saving <CircularProgress color="inherit"/>
                                                         </Box>
