@@ -284,8 +284,8 @@ export default function ProductDashboard({restaurant}) {
             setProductForm({
                 name: product.name,
                 categoryId: product.categoryId,
-                isAvailable: product.isAvailable || true,
-                isFeatured: product.isFeatured || false,
+                isAvailable: product.isAvailable !== undefined ? product.isAvailable : true,
+                isFeatured: product.isFeatured !== undefined ? product.isFeatured : false,
                 price: product.price,
                 description: product.description,
                 images: product.images,
@@ -903,8 +903,8 @@ export default function ProductDashboard({restaurant}) {
                     : productForm.categoryId?._id || ""
                 )
             formData.append("stock", productForm.stock);
-            formData.append("isAvailable", productForm.isAvailable || true);
-            formData.append("isFeatured", productForm.isFeatured || false);
+            formData.append("isAvailable", productForm.isAvailable !== undefined ? productForm.isAvailable : true);
+            formData.append("isFeatured", productForm.isFeatured !== undefined ? productForm.isFeatured : false);
             formData.append("price", productForm.price);
 
             // Optional: discountPercentage
@@ -2038,7 +2038,7 @@ export default function ProductDashboard({restaurant}) {
                                         productId ? (
                                             <div className="action-div">
                                                 <button className="btn edit-btn" onClick={handleAddProduct}>
-                                                    {isLoading ? 
+                                                    {true ? 
                                                         <Box sx={{ display: 'flex', gap: 1 }}>
                                                            Saving <CircularProgress color="inherit"/>
                                                         </Box>
