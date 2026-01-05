@@ -35,7 +35,8 @@ export default function RestaurantLayout({ children }) {
     // Fetch restaurant details
     useEffect(() => {
         if (restaurantSlug) {
-            if(!restaurant) {
+            // Fetch if no restaurant is loaded OR if the current restaurant slug doesn't match
+            if(!restaurant || restaurant.slug !== restaurantSlug) {
                 dispatch(startGetOneRestaurant(restaurantSlug));
             }
         }
