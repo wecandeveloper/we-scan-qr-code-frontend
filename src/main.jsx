@@ -13,6 +13,7 @@ import { I18nextProvider } from "react-i18next";
 const store = configureStore()
 console.log(store.getState())
 
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
