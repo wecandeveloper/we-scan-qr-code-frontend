@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import AppLoader from './Components/AppLoader/AppLoader';
 import AppRouter from './Components/AppRouter/AppRouter';
 import routes from './Routes/routes';
@@ -11,14 +10,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { localhost } from './Api/apis';
 import { startCreateOrder } from './Actions/orderActions';
-import { startGetOneRestaurant } from './Actions/restaurantActions';
 // import Footer from './Components/Footer/Footer';
 import i18n from './Services/i18n_new';
 import DynamicMetaTags from './Components/DynamicMetaTags/DynamicMetaTags';
 
 export default function App() {
   // const path = location.pathname;
-  const { restaurantSlug } = useParams();
   const currentLang = (i18n.language || "en").slice(0, 2);
 
   // detect if route is restaurant-specific
@@ -35,12 +32,6 @@ export default function App() {
   const [pageLoading, setPageLoading] = useState(true); // True initially for pre-loader
 
   const {  handleLogin, handleCategoryChange, handleDashboardMenuChange } = useAuth()
-
-  useEffect(() => {
-      if(restaurantSlug) {
-          dispatch(startGetOneRestaurant(restaurantSlug));
-      }
-  }, [restaurantSlug, dispatch]);
 
   useEffect(() => {
     // Initialize app language from localStorage if present

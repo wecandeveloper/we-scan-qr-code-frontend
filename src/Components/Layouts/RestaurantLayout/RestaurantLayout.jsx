@@ -27,6 +27,7 @@ export default function RestaurantLayout({ children }) {
     const dispatch = useDispatch();
     const { restaurantSlug } = useParams();
     const { t } = useTranslation();
+    const lastFetchedSlugRef = useRef(null);
 
     const { selected: restaurant, loading: restaurantLoading } = useSelector(
         (state) => state.restaurants
@@ -35,8 +36,16 @@ export default function RestaurantLayout({ children }) {
     // Fetch restaurant details
     useEffect(() => {
         if (restaurantSlug) {
-            // Fetch if no restaurant is loaded OR if the current restaurant slug doesn't match
-            if(!restaurant || restaurant.slug !== restaurantSlug) {
+            // Always fetch if:
+            // 1. We haven't fetched this slug yet, OR
+            // 2. No restaurant is loaded, OR
+            // 3. The current restaurant slug doesn't match the URL slug
+            // This ensures we fetch even if there was a previous error or stale data
+            const hasFetchedThisSlug = lastFetchedSlugRef.current === restaurantSlug;
+            const restaurantMatches = restaurant && restaurant.slug === restaurantSlug;
+            
+            if (!hasFetchedThisSlug || !restaurantMatches) {
+                lastFetchedSlugRef.current = restaurantSlug;
                 dispatch(startGetOneRestaurant(restaurantSlug));
             }
         }
