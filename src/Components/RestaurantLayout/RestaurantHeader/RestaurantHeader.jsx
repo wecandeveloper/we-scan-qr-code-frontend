@@ -30,7 +30,7 @@ import { IoChevronDown } from "react-icons/io5";
 import axios from "axios";
 import { localhost } from "../../../Api/apis";
 import LocationLink from "../../../Designs/LocationLink";
-import WhatsAppLink from "../../../Designs/WhatsappLink";
+import WhatsAppLink from "../../../Designs/WhatsAppLink";
 import { useTranslation } from "react-i18next";
 
 const socialIcons = {
