@@ -1,0 +1,36 @@
+{
+    "contact_title": "Ready to Transform Your Restaurant?",
+    "contact_description": "Join hundreds of restaurants already using Dine OS to enhance their customer experience. Our QR menu system is designed to boost efficiency, reduce wait times, and increase customer satisfaction.",
+    "contact_subtitle": "Get started with Dine OS today and revolutionize your restaurant operations!",
+    "form_title": "Get Your Free Consultation",
+    "form_description": "Tell us about your restaurant and we'll create a customized solution for you.",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "phone": "Phone",
+    "email": "Email",
+    "service": "Service",
+    "message": "Message",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "location": "Location",
+    "dubai_uae": "Dubai, United Arab Emirates",
+    "qr_menu_system": "QR Menu System",
+    "restaurant_pos": "Restaurant POS",
+    "digital_menu_setup": "Digital Menu Setup",
+    "food_photography": "Food Photography",
+    "custom_domain": "Custom Domain",
+    "payment_integration": "Payment Integration",
+    "consultation": "Consultation",
+    "first_name_required": "First Name is Required",
+    "last_name_required": "Last Name is Required",
+    "phone_required": "Phone Number is Required",
+    "email_required": "Email is Required",
+    "service_required": "Please select a service",
+    "message_required": "Message is Required",
+    "email_sent_successfully": "Email sent successfully!",
+    "email_sending_error": "Email sending error"
+}
+
+
+
+

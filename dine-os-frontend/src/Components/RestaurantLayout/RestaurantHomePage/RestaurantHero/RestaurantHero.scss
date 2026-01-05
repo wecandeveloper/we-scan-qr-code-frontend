@@ -1,0 +1,87 @@
+.restaurant-hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    padding: 50px 50px 0px 50px;
+
+    .img-slider-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 1200px; // ✅ Optional: Limit max width
+        height: 400px; // ✅ Fixed uniform height for the slider
+        border-radius: 12px;
+        overflow: hidden;
+
+        .swiper {
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            background-color: #000; // ✅ Fallback background
+        }
+
+        .swiper-pagination {
+            bottom: 20px !important;
+            text-align: center;
+        }
+
+        .swiper-pagination-bullet {
+            background: white;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #fff;
+            opacity: 1;
+            transform: scale(1.2);
+        }
+    }
+
+    .img-div {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border-radius: 10px;
+        position: relative;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;  // ✅ Ensures image fills the container
+            object-position: center; // ✅ Centers the image
+            border-radius: 10px;
+            transition: transform 0.3s ease-in-out;
+
+            // Optional: Slight zoom effect on hover
+            &:hover {
+                transform: scale(1.03);
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .restaurant-hero-section {
+        .img-slider-wrapper {
+            height: 300px;
+        }
+    }
+}
+
+
+@media (max-width: 500px) {
+    .restaurant-hero-section {
+        .img-slider-wrapper {
+            height: 200px;
+        }
+    }
+}

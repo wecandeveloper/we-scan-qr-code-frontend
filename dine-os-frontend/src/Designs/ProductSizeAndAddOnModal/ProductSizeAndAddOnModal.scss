@@ -1,0 +1,418 @@
+.product-size-addon-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1005;
+    padding: 20px;
+    overflow-y: auto;
+
+    .product-size-addon-modal-content {
+        background: white;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 600px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+
+        .product-size-addon-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+
+            h2 {
+                font-size: 20px;
+                font-weight: 600;
+                color: #333;
+                margin: 0;
+                flex: 1;
+            }
+
+            .addon-modal-header-close-btn {
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                padding: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #666;
+                transition: all 0.2s;
+                border-radius: 4px;
+                z-index: 1003;
+
+                &:hover {
+                    background: #e9ecef;
+                    color: #333;
+                }
+
+                svg {
+                    font-size: 24px;
+                }
+            }
+        }
+
+        .product-size-addon-modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+
+            .options-section {
+                margin-bottom: 24px;
+
+                &:last-of-type {
+                    margin-bottom: 0;
+                }
+
+                .section-title {
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #333;
+                    margin-bottom: 16px;
+                }
+
+                .sizes-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+
+                    .size-item {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 14px 16px;
+                        border: 2px solid #dee2e6;
+                        border-radius: 8px;
+                        background: white;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        font-family: inherit;
+
+                        &:hover:not(.disabled):not(.selected) {
+                            border-color: var(--primary-color);
+                            background: #f8f9fa;
+                            
+                            .size-name {
+                                color: #333;
+                            }
+                            
+                            .size-price {
+                                color: #666;
+                                
+                                .offer-price {
+                                    color: #10b981;
+                                }
+                                
+                                .product-price {
+                                    color: #666;
+                                    
+                                    &.strike {
+                                        color: #ef4444;
+                                    }
+                                }
+                            }
+                        }
+
+                        &.selected {
+                            border-color: var(--primary-color);
+                            background: var(--primary-color);
+                            color: white;
+
+                            .size-name,
+                            .size-price {
+                                color: white;
+                            }
+                        }
+
+                        &.disabled {
+                            opacity: 0.5;
+                            cursor: not-allowed;
+                            background: #f8f9fa;
+                        }
+
+                        .size-name {
+                            font-size: 15px;
+                            font-weight: 500;
+                            color: #333;
+                        }
+
+                        .size-price {
+                            font-size: 15px;
+                            font-weight: 600;
+                            color: #666;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-end;
+                            gap: 4px;
+
+                            .offer-price {
+                                font-size: 15px;
+                                font-weight: 600;
+                                color: #10b981; // Green for offer price
+                            }
+
+                            .product-price {
+                                font-size: 15px;
+                                font-weight: 600;
+                                color: #666;
+
+                                &.strike {
+                                    text-decoration: line-through;
+                                    color: #ef4444; // Red for struck-through price
+                                    font-size: 13px;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .addons-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+
+                    .addon-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 14px 16px;
+                        border: 2px solid #dee2e6;
+                        border-radius: 8px;
+                        background: white;
+                        cursor: pointer;
+                        transition: all 0.2s;
+
+                        &:hover:not(.disabled) {
+                            border-color: var(--primary-color);
+                            background: #f8f9fa;
+                        }
+
+                        &.selected {
+                            border-color: var(--primary-color);
+                            background: #f0f4ff;
+
+                            .addon-name {
+                                color: var(--primary-color);
+                                font-weight: 600;
+                            }
+                        }
+
+                        &.disabled {
+                            opacity: 0.5;
+                            cursor: not-allowed;
+                            background: #f8f9fa;
+                        }
+
+                        input[type="checkbox"] {
+                            width: 20px;
+                            height: 20px;
+                            cursor: pointer;
+                            accent-color: var(--primary-color);
+                        }
+
+                        .addon-name {
+                            flex: 1;
+                            font-size: 15px;
+                            color: #333;
+                        }
+
+                        .addon-price {
+                            font-size: 15px;
+                            font-weight: 600;
+                            color: var(--primary-color);
+                        }
+                    }
+                }
+            }
+
+            .total-section {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                margin-top: 20px;
+                border: 1px solid #e9ecef;
+
+                .total-label {
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #333;
+                }
+
+                .total-price {
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: var(--primary-color);
+                }
+            }
+        }
+
+        .product-size-addon-modal-footer {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+
+            button {
+                flex: 1;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+
+                &.cancel-btn {
+                    background: white;
+                    color: #666;
+                    border: 2px solid #dee2e6;
+
+                    &:hover {
+                        background: #f8f9fa;
+                        border-color: #adb5bd;
+                    }
+                }
+
+                &.confirm-btn {
+                    background: var(--primary-color);
+                    color: white;
+
+                    &:hover {
+                        background: var(--secondary-color);
+                        transform: translateY(-1px);
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .product-size-addon-modal-overlay {
+        padding: 10px;
+
+        .product-size-addon-modal-content {
+            max-height: 95vh;
+            max-width: 95%;
+            border-radius: 12px;
+
+            .product-size-addon-modal-header {
+                padding: 15px 20px;
+
+                h2 {
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+
+                .addon-modal-header-close-btn {
+                    svg {
+                        font-size: 20px;
+                    }
+                }
+            }
+
+            .product-size-addon-modal-body {
+                padding: 15px 20px;
+
+                .options-section {
+                    margin-bottom: 16px;
+
+                    .section-title {
+                        font-size: 14px;
+                        font-weight: 600;
+                        margin-bottom: 12px;
+                    }
+
+                    .sizes-list {
+                        gap: 8px;
+
+                        .size-item {
+                            padding: 10px 12px;
+
+                            .size-name {
+                                font-size: 14px;
+                            }
+
+                            .size-price {
+                                font-size: 14px;
+
+                                .offer-price {
+                                    font-size: 14px;
+                                }
+
+                                .product-price.strike {
+                                    font-size: 12px;
+                                }
+                            }
+                        }
+                    }
+
+                    .addons-list {
+                        gap: 8px;
+
+                        .addon-item {
+                            padding: 10px 12px;
+                            gap: 10px;
+
+                            input[type="checkbox"] {
+                                width: 18px;
+                                height: 18px;
+                            }
+
+                            .addon-name {
+                                font-size: 14px;
+                            }
+
+                            .addon-price {
+                                font-size: 14px;
+                            }
+                        }
+                    }
+                }
+
+                .total-section {
+                    padding: 12px;
+                    margin-top: 16px;
+
+                    .total-label {
+                        font-size: 16px;
+                    }
+
+                    .total-price {
+                        font-size: 18px;
+                    }
+                }
+            }
+
+            .product-size-addon-modal-footer {
+                padding: 15px 20px;
+                gap: 8px;
+
+                button {
+                    width: 100%;
+                    padding: 10px 20px;
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}
+

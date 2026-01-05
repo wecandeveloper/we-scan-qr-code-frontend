@@ -1,0 +1,31 @@
+.restaurant-order-waiter-section {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+
+    .restaurant-order-waiter-div {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+
+        .notifications, .waiter-calls {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            width: fit-content;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .no-notifications, .no-waiter-calls {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            width: fit-content;
+        }
+    }
+}

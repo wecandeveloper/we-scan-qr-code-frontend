@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Montserrat:wght@200..700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden; 
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* scroll-snap-type: y mandatory; */
+  scroll-behavior: smooth;
+  scroll-snap-type: none;
+}
+
+section{
+  height: 100%;
+  scroll-snap-align: center;
+}
+
+
+body {
+  margin: 0;
+  background: white;
+  color: black;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; // ✅ Ensures it fills the full viewport
+}
+
+main {
+  flex: 1; // ✅ Pushes the footer to the bottom if there's little content
+}
+
+html {
+  /* scroll-snap-type: y mandatory; */
+  scroll-behavior: smooth;
+  scroll-snap-type: none;
+}
+
+section{
+  height: 100%;
+  scroll-snap-align: center;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  list-style: none;
+  text-decoration: none;
+}
+
+a {
+  text-decoration: none;
+  transition: .5s;
+  color: inherit;
+}
+
+a:hover {
+  transition: .5s;
+}
+
+
+button, input {
+  font-family: "Montserrat", sans-serif;
+}
+
+// React-toastify RTL and mobile styling
+.Toastify__toast-container {
+  font-family: "Montserrat", sans-serif;
+  
+  // RTL support for Arabic
+  [dir="rtl"] & {
+    .Toastify__toast {
+      text-align: right;
+      direction: rtl;
+    }
+    
+    .Toastify__close-button {
+      left: 8px;
+      right: auto;
+    }
+  }
+}
+
+// Mobile responsiveness for react-toastify
+@media (max-width: 600px) {
+  .Toastify__toast-container {
+    width: 70% !important;
+    left: 20px !important;
+    right: 20px !important;
+    margin-right: auto;
+  }
+  
+  .Toastify__toast {
+    width: 100% !important;
+    padding: 20px !important;
+    font-size: 14px !important;
+    margin-bottom: 15px !important;
+  }
+  
+  .Toastify__toast:not(:last-child) {
+    margin-bottom: 15px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .Toastify__toast-container {
+    width: 80% !important;
+    top: 20px !important;
+    left: 20px !important;
+    right: 20px !important;
+    margin-right: auto;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  
+  .Toastify__toast {
+    width: 100% !important;
+    padding: 20px !important;
+    font-size: 13px !important;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-bottom: 10px !important;
+  }
+  
+  .Toastify__toast:not(:last-child) {
+    margin-bottom: 10px !important;
+  }
+}

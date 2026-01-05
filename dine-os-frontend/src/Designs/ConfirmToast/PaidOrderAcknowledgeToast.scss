@@ -1,0 +1,235 @@
+// PaidOrderAcknowledgeToast Styles (similar to CustomerCancelToastNotification)
+.paid-order-acknowledge-toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+  &.exit {
+    animation: slideOutRight 0.3s ease-in forwards;
+  }
+
+  .paid-order-acknowledge-toast {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-family: "Montserrat", sans-serif;
+    color: #2c3e50;
+    width: 380px;
+    max-width: 90vw;
+    position: relative;
+    border: 2px solid #10b981;
+    overflow: hidden;
+
+    .toast-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #e9ecef;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .icon-wrapper {
+          .paid-icon {
+            font-size: 24px;
+          }
+        }
+
+        .toast-title {
+          font-size: 18px;
+          font-weight: 700;
+          margin: 0;
+          color: white;
+        }
+      }
+
+      .close-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: white;
+        font-size: 20px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    .toast-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .order-no,
+      .order-type,
+      .order-info,
+      .customer-info,
+      .payment-info {
+        font-size: 14px;
+        line-height: 1.6;
+
+        strong {
+          color: #2c3e50;
+          font-weight: 600;
+          margin-right: 8px;
+        }
+      }
+
+      .customer-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        .customer-details,
+        .customer-phone {
+          font-size: 14px;
+        }
+      }
+
+      .payment-info {
+        background: #e9f7ef;
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 3px solid #10b981;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .payment-status {
+          .status-paid {
+            color: #10b981;
+            font-weight: 700;
+            font-size: 15px;
+          }
+        }
+
+        .payment-option {
+          color: #059669;
+          font-weight: 500;
+        }
+
+        .total-amount {
+          color: #2c3e50;
+          font-weight: 600;
+          font-size: 16px;
+        }
+      }
+    }
+
+    .toast-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      justify-content: center;
+      background: #f8f9fa;
+
+      .acknowledge-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 32px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        &:active:not(:disabled) {
+          transform: translateY(0);
+        }
+
+        &:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .check-icon {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(150%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(150%);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .paid-order-acknowledge-toast-container {
+    right: 10px;
+    top: 10px;
+
+    .paid-order-acknowledge-toast {
+      width: calc(100vw - 20px);
+      max-width: 380px;
+
+      .toast-header {
+        padding: 16px 20px;
+
+        .header-content .toast-title {
+          font-size: 16px;
+        }
+      }
+
+      .toast-body {
+        padding: 16px 20px;
+        font-size: 13px;
+      }
+
+      .toast-footer {
+        padding: 12px 20px;
+
+        .acknowledge-btn {
+          padding: 10px 24px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,18 @@
+{
+    "products_our_menu": "قائمتنا",
+    "loading_categories": "جاري تحميل الفئات...",
+    "no_categories_found": "لا توجد فئات",
+    "all_items": "كل الأصناف",
+    "loading_products": "جاري تحميل المنتجات...",
+    "no_products_found": "لا توجد منتجات",
+    "no_record_found": "لا توجد سجلات",
+    "show_all": "عرض الكل",
+    "product_not_found": "المنتج غير موجود",
+    "product_unavailable": "المنتج غير متوفر حالياً",
+    "item_added_to_cart": "تم إضافة العنصر إلى السلة!",
+    "item_already_in_cart_updated": "{{name}} موجود بالفعل في السلة، تم تحديث الكمية إلى {{qty}}",
+    "offer_items": "عناصر العروض",
+    "featured_items": "العناصر المميزة",
+    "related_items": "العناصر ذات الصلة",
+    "no_title_found": "لا يوجد {{title}}"
+}

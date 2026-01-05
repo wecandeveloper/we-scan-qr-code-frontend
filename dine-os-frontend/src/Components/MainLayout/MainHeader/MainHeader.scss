@@ -1,0 +1,198 @@
+.nav {
+    position: fixed;
+    background: #1A1A1A;
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    z-index: 1000;
+    width: 100%;
+    box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.08);
+
+    .navbar {
+        padding: 10px 50px;
+        // background-color: #f4eac5;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        height: 80px;
+
+        .logo-div {
+            width: 160px;
+            height: 80px;
+            // margin-left: -25px;
+            img {
+                // margin-top: -2px;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        .btn-div {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+
+            .call-icon {
+                display: none;
+            }
+
+            .lang-dropdown {
+                position: relative;
+
+                .lang-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    font-weight: 600;
+
+                    svg {
+                        font-size: 16px;
+                    }
+                }
+
+                .lang-menu {
+                    position: absolute;
+                    top: calc(100% + 6px);
+                    right: 0;
+                    background: #1A1A1A;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 10px;
+                    min-width: 120px;
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+                    padding: 6px;
+                    z-index: 1001;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+
+                    .lang-option {
+                        padding: 8px 10px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        transition: background-color .2s ease, color .2s ease;
+                        color: white;
+
+                        &:hover {
+                            background: #2a2a2a;
+                            color: #fff5e4;
+                        }
+
+                        &.selected {
+                            background: #2a2a2a;
+                            color: #FE931D;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .navbar.ar {
+        .btn-div {
+            .lang-dropdown {
+                position: relative;
+
+                .lang-menu {
+                    left: 0;
+                    right: auto;
+
+                    .lang-option {
+                        padding: 8px 10px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        transition: background-color .2s ease, color .2s ease;
+                        color: white;
+                        justify-content: flex-end;
+                        text-align: left;
+
+                        &:hover {
+                            background: #2a2a2a;
+                            color: #fff5e4;
+                        }
+
+                        &.selected {
+                            background: #2a2a2a;
+                            color: #FE931D;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 700px) {
+    .nav {
+        .navbar {
+            .btn-dark {
+                span {
+                    display: none;
+                }
+
+                .lang-text {
+                    display: block;
+                }
+
+                .lang-icon {
+                    display: none;
+                }
+
+                svg {
+                    font-size: 25px;
+                }
+
+                .call-icon {
+                    display: block;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 550px) {
+    .nav {
+        .navbar {
+            padding: 10px 30px;
+
+            .logo-div {
+                width: 150px;
+                height: 75px;
+            }
+        }
+    }
+}
+
+@media (max-width: 450px) {
+    .nav {
+        .navbar {
+            .logo-div {
+                width: 110px;
+                height: 55px;
+            }
+            .btn-dark {
+                padding: 8px;
+                height: auto;
+                // border: none;
+                // span {
+                //     display: none;
+                // }
+
+                svg {
+                    font-size: 20px;
+                }
+
+                .call-icon {
+                    display: block;
+                }
+            }
+        }
+    }
+}

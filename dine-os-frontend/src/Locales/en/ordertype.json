@@ -1,0 +1,39 @@
+{
+    "select_order_type": "Select Order Type",
+    "no_ordering_options": "No ordering options available",
+    "please_select_order_type": "Please select the Order type",
+    "next": "Next",
+    "select_table_number": "Select Table Number",
+    "select_table": "Select Table",
+    "back": "Back",
+    "submit": "Submit",
+    "location_details": "Location Details",
+    "address_details": "Address Details",
+    "personal_details": "Personal Details",
+    "address_no_name": "Villa / House No.",
+    "street": "Street",
+    "city": "City",
+    "state": "State",
+    "pincode": "Pincode",
+    "name": "Name",
+    "vehicle_number": "Vehicle Number",
+    "save": "Save",
+    "fill_all_required_fields": "Please fill all the required fields",
+    "select_table_first": "Please select a table first!",
+    "order_types": {
+        "Dine-In": "Dine-In",
+        "Home-Delivery": "Home-Delivery",
+        "Take-Away": "Take-Away"
+    },
+    "validation": {
+        "name_required": "Name is required",
+        "addressNo_required": "Villa / House No. is required",
+        "street_required": "Street is required",
+        "city_required": "City is required",
+        "state_required": "State is required",
+        "pincode_required": "Pincode is required",
+        "pincode_invalid": "Enter a valid pincode",
+        "phone_required": "Phone number is required",
+        "phone_invalid": "Enter a valid phone number"
+    }
+}

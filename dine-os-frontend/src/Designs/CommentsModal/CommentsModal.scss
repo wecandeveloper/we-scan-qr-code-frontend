@@ -1,0 +1,145 @@
+.comments-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+    padding: 20px;
+
+    .comments-modal-content {
+        background: white;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        z-index: 1003;
+
+        .comments-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+
+            h3 {
+                margin: 0 0 8px 0;
+                font-size: 20px;
+                font-weight: 600;
+                color: #333;
+            }
+
+            .product-name-text {
+                margin: 0;
+                font-size: 14px;
+                color: #666;
+                font-weight: 400;
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #666;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                transition: all 0.3s;
+
+                &:hover {
+                    background: #f5f5f5;
+                    color: #333;
+                }
+            }
+        }
+
+        .comments-modal-body {
+            padding: 20px;
+
+            .comments-textarea {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 14px;
+                font-family: inherit;
+                resize: vertical;
+                min-height: 120px;
+                margin-bottom: 20px;
+                transition: border-color 0.3s;
+
+                &:focus {
+                    outline: none;
+                    border-color: #ff9800;
+                }
+
+                &::placeholder {
+                    color: #999;
+                }
+            }
+
+            .comments-modal-footer {
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+
+                button {
+                    padding: 10px 24px;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.3s;
+
+                    &.cancel-btn {
+                        background: #f5f5f5;
+                        color: #333;
+
+                        &:hover {
+                            background: #e0e0e0;
+                        }
+                    }
+
+                    &.save-btn {
+                        background: #ff9800;
+                        color: white;
+
+                        &:hover {
+                            background: #f57c00;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// RTL support
+.comments-modal-overlay[dir="rtl"] {
+    .comments-modal-content {
+        .comments-modal-header {
+            .close-btn {
+                right: auto;
+                left: 15px;
+            }
+        }
+
+        .comments-modal-body {
+            .comments-modal-footer {
+                flex-direction: row-reverse;
+            }
+        }
+    }
+}
+

@@ -1,0 +1,335 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
+    z-index: 1001;
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        // width: 400px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+        animation: scaleUp 0.3s ease-in-out;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: gray;
+        transition: 0.3s;
+    
+        &:hover {
+        color: black;
+        }
+    }
+        
+    h2 {
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
+    
+    .contact-form {
+        color: #470531;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        width: 550px;
+        background-color: white; // White form background
+        font-family: "Montserrat", sans-serif;
+
+        .title {
+            font-size: 25px;
+        }
+
+        .form-description {
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .sameline {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: flex-start;
+            text-align: start;
+            gap: 10px;
+            width: 100%;
+            p {
+                width: 50%;
+                text-align: left;
+            }
+        }
+
+        .sameline.form-errors {
+            margin-top: -10px;
+            font-size: 12px;
+        }
+
+        .sameline.phone {
+            .form-field.country-code {
+                width: 20%;
+            }
+
+            .form-field.number {
+                width: 80%;
+            }
+        }
+    }
+
+    .form-field {
+        width: 100%;
+        // border: 2px solid #470531;
+        border-radius: 30px;
+
+        .MuiOutlinedInput-root {
+            color: #470531;
+            font-family: "Montserrat", sans-serif;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+
+            fieldset {
+                border-color: #470531;
+                border-width: 1.5px;
+                transition: 0.3s;
+            }
+
+            &:hover fieldset {
+                border-color: #470531;
+                border-width: 2px;
+            }
+
+            &.Mui-focused fieldset {
+                border-color: #470531;
+                border-width: 2px;
+            }
+        }
+
+        .MuiInputLabel-root {
+            color: #470531;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .MuiInputLabel-root.Mui-focused {
+            color: #470531;
+        }
+
+        .MuiInputBase-input,
+        .MuiSelect-select {
+            color: #470531;
+            font-family: "Montserrat", sans-serif;
+            text-align: left;
+        }
+
+        .start-adornment {
+            font-family: "Montserrat", sans-serif;
+            color: #470531;
+            font-weight: 500;
+        }
+    }
+
+    .btn-dark {
+        width: 150px;
+        height: 57px;
+    }
+
+    .verify-email-div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+
+        .verify-email {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .form-field.verify {
+            width: 150px;
+        }
+
+        .btn.submit {
+            height: 55px;
+            border-radius: 30px;
+        }
+
+        .otp-error {
+            width: 315px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .same-line {
+            display: flex;
+            flex-direction: column;
+            text-align: start;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .otp-container {
+            text-align: center;
+
+            .btn-dark {
+                width: 160px;
+            }
+
+            .cooldown-text {
+                margin-top: 8px;
+                font-size: 14px;
+                color: #470531;
+                font-weight: 500;
+            }
+        }
+
+        @keyframes unfill {
+            from {
+                width: 100%;
+            }
+            to {
+                width: 0%;
+            }
+        }
+    }
+
+
+    .goto-links {
+        margin-top: 20px;
+
+        span {
+            color: #470531;
+            text-decoration: underline;
+            transition: .3s;
+            cursor: pointer;
+        }
+
+        span:hover {
+            color: black;
+            transition: .3s;
+        }
+    }
+}
+
+@media (max-width: 650px) {
+    .modal-overlay { 
+        .modal-content {
+            width: 80%;
+        }
+
+        .contact-form {
+            width: 100%;
+        }
+    }
+}
+
+@media (max-width: 550px) {
+    .modal-overlay { 
+        .modal-content {
+            width: 90%;
+        }
+
+        .contact-form {
+            width: 100%;
+
+            .sameline {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        // .form-field {
+        //     width: 100%;
+        //     // border: 2px solid black;
+        //     border-radius: 10px;
+        //     font-size: 14px;
+
+        //     .MuiOutlinedInput-root {
+        //         color: black;
+        //         border-radius: 30px;
+        //         transition: all 0.3s ease;
+
+        //         fieldset {
+        //             border-color: black;
+        //             border-width: 1.5px;
+        //             transition: 0.3s;
+        //         }
+
+        //         &:hover fieldset {
+        //             border-color: black;
+        //             border-width: 2px;
+        //         }
+
+        //         &.Mui-focused fieldset {
+        //             border-color: black;
+        //             border-width: 2px;
+        //         }
+
+        //         /* ↓ Reduce internal padding of the input */
+        //         .MuiInputBase-input {
+        //             padding: 12px 12px; /* default is usually ~16px, adjust as needed */
+        //             font-size: 14px;
+        //         }
+
+        //         /* If you have multiline TextField */
+        //         .MuiInputBase-input.MuiOutlinedInput-inputMultiline {
+        //             padding: 12px 12px;
+        //             font-size: 14px;
+        //         }
+        //     }
+
+        //     /* Adjust label position */
+        //     .MuiInputLabel-root {
+        //         top: 50%;
+        //         padding-left: 20px;
+        //         transform: translateY(-50%); /* center label vertically */
+        //     }
+
+        //     .MuiInputLabel-root.Mui-focused {
+        //         color: black;
+        //         top: -8px; /* normal position when focused */
+        //         transform: translateY(0) scale(0.75); /* match MUI shrink style */
+        //     }
+
+        //     .MuiInputLabel-root {
+        //         color: black;
+        //     }
+
+        //     .MuiInputLabel-root.Mui-focused {
+        //         color: black;
+        //     }
+
+        //     .MuiInputBase-input,
+        //     .MuiSelect-select {
+        //         color: black;
+        //         text-align: left;
+        //     }
+
+        //     .start-adornment {
+        //         color: black;
+        //         font-weight: 500;
+        //     }
+        // }
+    }
+}

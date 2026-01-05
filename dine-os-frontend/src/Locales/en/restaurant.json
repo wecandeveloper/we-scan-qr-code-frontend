@@ -1,0 +1,18 @@
+{
+    "restaurant_not_found_title": "Restaurant Not Found",
+    "restaurant_not_found_message": "The QR code or restaurant link you're trying to access is invalid or no longer active. Please check with the restaurant staff or try scanning the correct QR code.",
+    "go_to_home": "Go to Home",
+    "restaurant_loading": "Restaurant Loading",
+    "please_wait": "Please Wait",
+    "search_placeholder": "Search",
+    "please_enter_search_term": "Please enter a search term.",
+    "orders": "Orders",
+    "change_table_or_order_type": "Change Table Number / Order type",
+    "google_review_link": "Google Review Link",
+    "call_waiter_hint": "Call Waiter!",
+    "waiter_call_select_order_type": "Please select the Order Type first!",
+    "waiter_call_home_delivery_error": "Waiter call is only available for Dine-In orders!",
+    "waiter_call_select_table_error": "Please select a table number from the Dine-In option",
+    "waiter_call_success": "Waiter called successfully!",
+    "waiter_call_failed": "Failed to call waiter. Try again!"
+}
